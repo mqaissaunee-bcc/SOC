@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOC Screen 3: Incident Response Console</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(90deg, #1a1a2e 0%, #16213e 100%);
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #e74c3c;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .header h1 {
+            font-size: 1.8em;
+            color: #e74c3c;
+            text-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
+        }
+        
+        .header-info {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .datetime {
+            font-size: 1.1em;
+            color: #e74c3c;
+        }
+        
+        .incident-stats {
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .incident-stat {
+            text-align: center;
+            padding: 5px 15px;
+            border-radius: 8px;
+            background: rgba(0,0,0,0.3);
+        }
+        
+        .incident-stat-value {
+            font-size: 1.4em;
+            font-weight: bold;
+        }
+        
+        .incident-stat-label {
+            font-size: 0.7em;
+            color: #888;
+            text-transform: uppercase;
+        }
+        
+        /* FIXED: Changed fixed widths to flexible, added min-height */
+        .main-container {
+            display: grid;
+            grid-template-columns: minmax(280px, 350px) 1fr minmax(250px, 300px);
+            grid-template-rows: minmax(300px, 1fr) minmax(300px, 1fr);
+            gap: 15px;
+            padding: 15px;
+            min-height: calc(100vh - 80px);
+        }
+        
+        /* FIXED: Proper flex container with overflow handling */
+        .card {
+            background: linear-gradient(145deg, #1e1e30 0%, #252540 100%);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid #333;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            min-height: 280px;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #444;
+            flex-shrink: 0;
+        }
+        
+        .card-title {
+            font-size: 1em;
+            color: #e74c3c;
+            font-weight: 600;
+        }
+        
+        /* Incident Queue - FIXED: spans full height with scroll */
+        .incident-queue {
+            grid-row: 1 / -1;
+        }
+        
+        .incident-list {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
+        }
+        
+        .incident-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .incident-list::-webkit-scrollbar-thumb {
+            background: #e74c3c;
+            border-radius: 3px;
+        }
+        
+        .incident-item {
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-left: 4px solid;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .incident-item:hover {
+            background: rgba(231, 76, 60, 0.1);
+            transform: translateX(3px);
+        }
+        
+        .incident-item.selected {
+            background: rgba(231, 76, 60, 0.2);
+            border-color: #e74c3c;
+        }
+        
+        .incident-item.severity-critical { border-left-color: #ff4757; }
+        .incident-item.severity-high { border-left-color: #ffa502; }
+        .incident-item.severity-medium { border-left-color: #ffd43b; }
+        .incident-item.severity-low { border-left-color: #2ed573; }
+        
+        .incident-id {
+            font-size: 0.8em;
+            color: #888;
+            margin-bottom: 5px;
+        }
+        
+        .incident-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+        
+        .incident-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8em;
+            color: #888;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        
+        .incident-status {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.75em;
+            text-transform: uppercase;
+        }
+        
+        .status-new { background: rgba(231,76,60,0.3); color: #e74c3c; }
+        .status-investigating { background: rgba(241,196,15,0.3); color: #f1c40f; }
+        .status-contained { background: rgba(52,152,219,0.3); color: #3498db; }
+        .status-resolved { background: rgba(46,213,115,0.3); color: #2ed573; }
+        
+        /* Case Details - FIXED: proper scrolling */
+        .case-details {
+            grid-column: 2;
+        }
+        
+        .case-content {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
+        }
+        
+        .case-section {
+            margin-bottom: 20px;
+        }
+        
+        .case-section-title {
+            font-size: 0.9em;
+            color: #888;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .case-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+        }
+        
+        .case-info-item {
+            background: rgba(0,0,0,0.2);
+            padding: 12px;
+            border-radius: 8px;
+        }
+        
+        .case-info-label {
+            font-size: 0.75em;
+            color: #888;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        
+        .case-info-value {
+            font-size: 1em;
+            color: #e0e0e0;
+        }
+        
+        /* IOC List */
+        .ioc-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .ioc-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 0.85em;
+            flex-wrap: wrap;
+        }
+        
+        .ioc-type {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75em;
+            min-width: 50px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        
+        .ioc-type.ip { background: rgba(231,76,60,0.3); color: #e74c3c; }
+        .ioc-type.hash { background: rgba(155,89,182,0.3); color: #9b59b6; }
+        .ioc-type.domain { background: rgba(52,152,219,0.3); color: #3498db; }
+        .ioc-type.file { background: rgba(241,196,15,0.3); color: #f1c40f; }
+        
+        /* Timeline - FIXED: proper scroll */
+        .timeline-section {
+            grid-column: 2;
+        }
+        
+        .attack-timeline {
+            flex: 1;
+            overflow-y: auto;
+            position: relative;
+            padding-left: 30px;
+            min-height: 0;
+        }
+        
+        .timeline-line {
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #e74c3c, #333);
+        }
+        
+        .timeline-event {
+            position: relative;
+            padding: 15px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 3px solid #e74c3c;
+        }
+        
+        .timeline-event::before {
+            content: '';
+            position: absolute;
+            left: -24px;
+            top: 20px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #e74c3c;
+            border: 2px solid #1e1e30;
+        }
+        
+        .timeline-time {
+            font-size: 0.8em;
+            color: #888;
+            margin-bottom: 5px;
+        }
+        
+        .timeline-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .timeline-description {
+            font-size: 0.9em;
+            color: #aaa;
+        }
+        
+        .timeline-mitre {
+            margin-top: 8px;
+            font-size: 0.8em;
+        }
+        
+        .mitre-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            background: rgba(155,89,182,0.3);
+            color: #9b59b6;
+            border-radius: 4px;
+            margin-right: 5px;
+        }
+        
+        /* Response Actions - FIXED: spans full height with scroll */
+        .response-panel {
+            grid-row: 1 / -1;
+        }
+        
+        .response-content {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
+        }
+        
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .action-btn {
+            padding: 12px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        
+        .action-btn.contain { background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; }
+        .action-btn.isolate { background: linear-gradient(135deg, #f39c12, #d68910); color: white; }
+        .action-btn.block { background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white; }
+        .action-btn.scan { background: linear-gradient(135deg, #3498db, #2980b9); color: white; }
+        .action-btn.escalate { background: linear-gradient(135deg, #1abc9c, #16a085); color: white; }
+        
+        /* Analyst Notes */
+        .notes-section {
+            margin-top: 20px;
+        }
+        
+        .notes-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+        
+        .note-item {
+            padding: 10px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 3px solid #3498db;
+        }
+        
+        .note-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8em;
+            color: #888;
+            margin-bottom: 5px;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        
+        .note-text {
+            font-size: 0.9em;
+        }
+        
+        .note-input-container {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .note-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #444;
+            border-radius: 8px;
+            background: rgba(0,0,0,0.3);
+            color: #e0e0e0;
+            font-size: 0.9em;
+            min-width: 0;
+        }
+        
+        .note-input:focus {
+            outline: none;
+            border-color: #e74c3c;
+        }
+        
+        .note-submit {
+            padding: 10px 20px;
+            background: #e74c3c;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        
+        /* Playbook Status */
+        .playbook-section {
+            margin-top: 20px;
+        }
+        
+        .playbook-step {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            margin-bottom: 5px;
+        }
+        
+        .playbook-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #444;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .playbook-checkbox.completed {
+            background: #2ed573;
+            border-color: #2ed573;
+        }
+        
+        .playbook-checkbox.completed::after {
+            content: '✔';
+            color: white;
+            font-size: 0.8em;
+        }
+        
+        .playbook-checkbox.in-progress {
+            border-color: #f1c40f;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(241, 196, 15, 0.4); }
+            50% { box-shadow: 0 0 0 5px rgba(241, 196, 15, 0); }
+        }
+        
+        .playbook-text {
+            font-size: 0.85em;
+        }
+        
+        .playbook-text.completed {
+            text-decoration: line-through;
+            color: #888;
+        }
+        
+        /* Affected Assets */
+        .assets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+        }
+        
+        .asset-item {
+            padding: 10px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .asset-icon {
+            width: 35px;
+            height: 35px;
+            background: rgba(231, 76, 60, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            flex-shrink: 0;
+        }
+        
+        .asset-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .asset-name {
+            font-size: 0.9em;
+            font-weight: 600;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .asset-type {
+            font-size: 0.75em;
+            color: #888;
+        }
+        
+        .asset-status {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        
+        .asset-status.compromised { background: #ff4757; }
+        .asset-status.at-risk { background: #ffa502; }
+        .asset-status.clean { background: #2ed573; }
+        
+        /* FIXED: Responsive design */
+        @media (max-width: 1200px) {
+            .main-container {
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: auto minmax(350px, auto) minmax(350px, auto) minmax(350px, auto);
+            }
+            .incident-queue {
+                grid-column: 1;
+                grid-row: 1 / 3;
+            }
+            .case-details {
+                grid-column: 2;
+                grid-row: 1;
+            }
+            .timeline-section {
+                grid-column: 2;
+                grid-row: 2;
+            }
+            .response-panel {
+                grid-column: 1 / -1;
+                grid-row: 3;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto minmax(300px, auto) minmax(300px, auto) minmax(300px, auto);
+            }
+            .incident-queue,
+            .case-details,
+            .timeline-section,
+            .response-panel {
+                grid-column: 1;
+            }
+            .incident-queue { grid-row: 1; }
+            .case-details { grid-row: 2; }
+            .timeline-section { grid-row: 3; }
+            .response-panel { grid-row: 4; }
+            
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .header h1 {
+                font-size: 1.4em;
+            }
+            
+            .action-buttons {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+            
+            .action-btn {
+                flex: 1;
+                min-width: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>🚨 Incident Response Console</h1>
+        <div class="header-info">
+            <div class="incident-stats">
+                <div class="incident-stat">
+                    <div class="incident-stat-value" style="color: #ff4757;" id="active-incidents">0</div>
+                    <div class="incident-stat-label">Active</div>
+                </div>
+                <div class="incident-stat">
+                    <div class="incident-stat-value" style="color: #f1c40f;" id="investigating">0</div>
+                    <div class="incident-stat-label">Investigating</div>
+                </div>
+                <div class="incident-stat">
+                    <div class="incident-stat-value" style="color: #3498db;" id="contained">0</div>
+                    <div class="incident-stat-label">Contained</div>
+                </div>
+                <div class="incident-stat">
+                    <div class="incident-stat-value" style="color: #2ed573;" id="resolved-today">0</div>
+                    <div class="incident-stat-label">Resolved</div>
+                </div>
+            </div>
+            <div class="datetime" id="datetime"></div>
+        </div>
+    </header>
+    
+    <main class="main-container">
+        <!-- Incident Queue -->
+        <div class="card incident-queue">
+            <div class="card-header">
+                <span class="card-title">📋 Active Incidents</span>
+                <span id="queue-count">0</span>
+            </div>
+            <div class="incident-list" id="incident-list"></div>
+        </div>
+        
+        <!-- Case Details -->
+        <div class="card case-details">
+            <div class="card-header">
+                <span class="card-title">🔍 Case Details</span>
+                <span id="case-id">INC-2024-0001</span>
+            </div>
+            <div class="case-content" id="case-content">
+                <div class="case-section">
+                    <div class="case-section-title">Overview</div>
+                    <div class="case-info-grid" id="case-overview"></div>
+                </div>
+                
+                <div class="case-section">
+                    <div class="case-section-title">Indicators of Compromise (IOCs)</div>
+                    <div class="ioc-list" id="ioc-list"></div>
+                </div>
+                
+                <div class="case-section">
+                    <div class="case-section-title">Affected Assets</div>
+                    <div class="assets-grid" id="assets-grid"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Timeline -->
+        <div class="card timeline-section">
+            <div class="card-header">
+                <span class="card-title">⏱️ Attack Timeline</span>
+            </div>
+            <div class="attack-timeline" id="attack-timeline">
+                <div class="timeline-line"></div>
+            </div>
+        </div>
+        
+        <!-- Response Actions Panel -->
+        <div class="card response-panel">
+            <div class="card-header">
+                <span class="card-title">⚡ Response Actions</span>
+            </div>
+            
+            <div class="response-content">
+                <div class="action-buttons">
+                    <button class="action-btn contain" onclick="performAction('contain')">🛑 Contain Threat</button>
+                    <button class="action-btn isolate" onclick="performAction('isolate')">🔒 Isolate Host</button>
+                    <button class="action-btn block" onclick="performAction('block')">🚫 Block IP/Domain</button>
+                    <button class="action-btn scan" onclick="performAction('scan')">🔍 Full Scan</button>
+                    <button class="action-btn escalate" onclick="performAction('escalate')">📢 Escalate to Tier 3</button>
+                </div>
+                
+                <div class="playbook-section">
+                    <div class="case-section-title">Playbook Progress</div>
+                    <div id="playbook-steps"></div>
+                </div>
+                
+                <div class="notes-section">
+                    <div class="case-section-title">Analyst Notes</div>
+                    <div class="notes-list" id="notes-list"></div>
+                    <div class="note-input-container">
+                        <input type="text" class="note-input" id="note-input" placeholder="Add investigation note...">
+                        <button class="note-submit" onclick="addNote()">Add</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        const incidentTypes = [
+            { type: 'Ransomware Attack', severity: 'critical', category: 'Malware', ttps: ['T1486', 'T1490'], playbook: ['Isolate affected systems', 'Identify ransomware variant', 'Check backup integrity', 'Assess encryption scope'] },
+            { type: 'C2 Communication', severity: 'critical', category: 'Malware', ttps: ['T1071', 'T1095'], playbook: ['Block C2 domains/IPs', 'Identify beacon behavior', 'Memory analysis', 'Network traffic capture'] },
+            { type: 'Data Exfiltration', severity: 'critical', category: 'Data Breach', ttps: ['T1041', 'T1048'], playbook: ['Block outbound connections', 'Identify data accessed', 'Review DLP alerts', 'Check cloud storage'] },
+            { type: 'Brute Force Attack', severity: 'high', category: 'Credential', ttps: ['T1110', 'T1078'], playbook: ['Review failed login attempts', 'Check account lockouts', 'Identify source IPs', 'Reset affected credentials'] },
+            { type: 'Phishing Campaign', severity: 'high', category: 'Social Engineering', ttps: ['T1566', 'T1204'], playbook: ['Identify affected users', 'Block malicious URLs', 'Quarantine emails', 'Scan endpoints'] },
+            { type: 'Lateral Movement', severity: 'high', category: 'Network', ttps: ['T1021', 'T1570'], playbook: ['Map affected systems', 'Review authentication logs', 'Check service accounts', 'Credential rotation'] },
+            { type: 'Suspicious PowerShell', severity: 'medium', category: 'Execution', ttps: ['T1059.001', 'T1027'], playbook: ['Capture script content', 'Decode obfuscation', 'Check execution context', 'Review process tree'] },
+            { type: 'Web Shell Detected', severity: 'medium', category: 'Persistence', ttps: ['T1505.003', 'T1059'], playbook: ['Identify web shell location', 'Analyze shell capabilities', 'Check for data access', 'Remove and patch'] }
+        ];
+        
+        const analysts = ['John Smith', 'Sarah Chen', 'Mike Johnson', 'Emily Davis', 'Alex Turner'];
+        
+        let incidents = [];
+        let selectedIncident = null;
+        let incidentIdCounter = 2024001;
+        let notes = [];
+        
+        function generateIncident() {
+            const template = incidentTypes[Math.floor(Math.random() * incidentTypes.length)];
+            const statuses = ['new', 'investigating', 'contained'];
+            
+            return {
+                id: `INC-${incidentIdCounter++}`,
+                type: template.type,
+                severity: template.severity,
+                category: template.category,
+                status: statuses[Math.floor(Math.random() * statuses.length)],
+                analyst: analysts[Math.floor(Math.random() * analysts.length)],
+                created: new Date(Date.now() - Math.random() * 86400000),
+                ttps: template.ttps,
+                playbook: template.playbook.map((step, i) => ({ text: step, completed: i < Math.floor(Math.random() * template.playbook.length) })),
+                iocs: generateIOCs(),
+                assets: generateAssets(),
+                timeline: generateTimeline(template.ttps)
+            };
+        }
+        
+        function generateIOCs() {
+            const iocs = [];
+            const types = ['ip', 'hash', 'domain', 'file'];
+            for (let i = 0; i < Math.floor(Math.random() * 3) + 2; i++) {
+                const type = types[Math.floor(Math.random() * types.length)];
+                let value;
+                switch(type) {
+                    case 'ip': value = `${Math.floor(Math.random() * 223) + 1}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`; break;
+                    case 'hash': value = Array(32).fill(0).map(() => '0123456789abcdef'[Math.floor(Math.random() * 16)]).join(''); break;
+                    case 'domain': value = ['malware-c2.evil', 'data-exfil.bad', 'phish-server.net'][Math.floor(Math.random() * 3)]; break;
+                    case 'file': value = ['payload.exe', 'dropper.dll', 'beacon.ps1'][Math.floor(Math.random() * 3)]; break;
+                }
+                iocs.push({ type, value });
+            }
+            return iocs;
+        }
+        
+        function generateAssets() {
+            const names = ['WKS-001', 'SRV-DB-01', 'WKS-ADMIN', 'SRV-WEB-02'];
+            const types = ['Workstation', 'Server', 'Domain Controller'];
+            const assets = [];
+            for (let i = 0; i < Math.floor(Math.random() * 2) + 1; i++) {
+                assets.push({
+                    name: names[Math.floor(Math.random() * names.length)],
+                    type: types[Math.floor(Math.random() * types.length)],
+                    status: ['compromised', 'at-risk', 'clean'][Math.floor(Math.random() * 3)]
+                });
+            }
+            return assets;
+        }
+        
+        function generateTimeline(ttps) {
+            const events = [
+                { title: 'Initial Access Detected', desc: 'Suspicious login from external IP' },
+                { title: 'Malware Execution', desc: 'PowerShell script executed' },
+                { title: 'Persistence Established', desc: 'Registry modification detected' },
+                { title: 'Discovery Activity', desc: 'Network enumeration observed' }
+            ];
+            const timeline = [];
+            let time = Date.now() - 3600000;
+            for (let i = 0; i < Math.floor(Math.random() * 3) + 2; i++) {
+                const event = events[i % events.length];
+                timeline.push({ time: new Date(time), title: event.title, description: event.desc, ttp: ttps[i % ttps.length] });
+                time += Math.floor(Math.random() * 600000) + 300000;
+            }
+            return timeline;
+        }
+        
+        function renderIncidentList() {
+            document.getElementById('incident-list').innerHTML = incidents.map(inc => `
+                <div class="incident-item severity-${inc.severity} ${selectedIncident?.id === inc.id ? 'selected' : ''}" onclick="selectIncident('${inc.id}')">
+                    <div class="incident-id">${inc.id}</div>
+                    <div class="incident-title">${inc.type}</div>
+                    <div class="incident-meta">
+                        <span class="incident-status status-${inc.status}">${inc.status}</span>
+                        <span>${formatTime(inc.created)}</span>
+                    </div>
+                </div>
+            `).join('');
+            document.getElementById('queue-count').textContent = incidents.length;
+        }
+        
+        function selectIncident(id) {
+            selectedIncident = incidents.find(i => i.id === id);
+            renderIncidentList();
+            renderCaseDetails();
+            renderTimeline();
+            renderPlaybook();
+        }
+        
+        function renderCaseDetails() {
+            if (!selectedIncident) return;
+            document.getElementById('case-id').textContent = selectedIncident.id;
+            document.getElementById('case-overview').innerHTML = `
+                <div class="case-info-item"><div class="case-info-label">Type</div><div class="case-info-value">${selectedIncident.type}</div></div>
+                <div class="case-info-item"><div class="case-info-label">Severity</div><div class="case-info-value" style="text-transform: uppercase; color: ${selectedIncident.severity === 'critical' ? '#ff4757' : '#ffa502'}">${selectedIncident.severity}</div></div>
+                <div class="case-info-item"><div class="case-info-label">Category</div><div class="case-info-value">${selectedIncident.category}</div></div>
+                <div class="case-info-item"><div class="case-info-label">Assigned</div><div class="case-info-value">${selectedIncident.analyst}</div></div>
+                <div class="case-info-item"><div class="case-info-label">Created</div><div class="case-info-value">${selectedIncident.created.toLocaleString()}</div></div>
+                <div class="case-info-item"><div class="case-info-label">Status</div><div class="case-info-value"><span class="incident-status status-${selectedIncident.status}">${selectedIncident.status}</span></div></div>
+            `;
+            document.getElementById('ioc-list').innerHTML = selectedIncident.iocs.map(ioc => `<div class="ioc-item"><span class="ioc-type ${ioc.type}">${ioc.type.toUpperCase()}</span><span>${ioc.value}</span></div>`).join('');
+            document.getElementById('assets-grid').innerHTML = selectedIncident.assets.map(asset => `
+                <div class="asset-item">
+                    <div class="asset-icon">${asset.type === 'Server' ? '🖥️' : '💻'}</div>
+                    <div class="asset-info"><div class="asset-name">${asset.name}</div><div class="asset-type">${asset.type}</div></div>
+                    <div class="asset-status ${asset.status}"></div>
+                </div>
+            `).join('');
+        }
+        
+        function renderTimeline() {
+            if (!selectedIncident) return;
+            const container = document.getElementById('attack-timeline');
+            container.innerHTML = '<div class="timeline-line"></div>' + selectedIncident.timeline.map(event => `
+                <div class="timeline-event">
+                    <div class="timeline-time">${event.time.toLocaleTimeString()}</div>
+                    <div class="timeline-title">${event.title}</div>
+                    <div class="timeline-description">${event.description}</div>
+                    <div class="timeline-mitre"><span class="mitre-tag">${event.ttp}</span></div>
+                </div>
+            `).join('');
+        }
+        
+        function renderPlaybook() {
+            if (!selectedIncident) return;
+            document.getElementById('playbook-steps').innerHTML = selectedIncident.playbook.map((step, i) => `
+                <div class="playbook-step">
+                    <div class="playbook-checkbox ${step.completed ? 'completed' : (i === selectedIncident.playbook.findIndex(s => !s.completed) ? 'in-progress' : '')}"></div>
+                    <span class="playbook-text ${step.completed ? 'completed' : ''}">${step.text}</span>
+                </div>
+            `).join('');
+        }
+        
+        function performAction(action) {
+            if (!selectedIncident) { alert('Please select an incident first'); return; }
+            const actions = { contain: 'Containment initiated', isolate: 'Host isolation sent', block: 'Block rules deployed', scan: 'Full scan initiated', escalate: 'Escalated to Tier 3' };
+            notes.unshift({ analyst: 'Current User', time: new Date(), text: `ACTION: ${actions[action]}` });
+            renderNotes();
+            const nextStep = selectedIncident.playbook.find(s => !s.completed);
+            if (nextStep) { nextStep.completed = true; renderPlaybook(); }
+        }
+        
+        function addNote() {
+            const input = document.getElementById('note-input');
+            if (!input.value.trim()) return;
+            notes.unshift({ analyst: 'Current User', time: new Date(), text: input.value });
+            input.value = '';
+            renderNotes();
+        }
+        
+        function renderNotes() {
+            document.getElementById('notes-list').innerHTML = notes.slice(0, 10).map(note => `
+                <div class="note-item"><div class="note-header"><span>${note.analyst}</span><span>${formatTime(note.time)}</span></div><div class="note-text">${note.text}</div></div>
+            `).join('');
+        }
+        
+        function formatTime(date) { return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }); }
+        
+        function updateStats() {
+            document.getElementById('active-incidents').textContent = incidents.filter(i => i.status === 'new').length;
+            document.getElementById('investigating').textContent = incidents.filter(i => i.status === 'investigating').length;
+            document.getElementById('contained').textContent = incidents.filter(i => i.status === 'contained').length;
+            document.getElementById('resolved-today').textContent = Math.floor(Math.random() * 10) + 5;
+        }
+        
+        function updateDateTime() {
+            document.getElementById('datetime').textContent = new Date().toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        }
+        
+        function init() {
+            for (let i = 0; i < 6; i++) incidents.push(generateIncident());
+            incidents.sort((a, b) => b.created - a.created);
+            renderIncidentList();
+            updateStats();
+            updateDateTime();
+            if (incidents.length > 0) selectIncident(incidents[0].id);
+            notes = [{ analyst: 'Sarah Chen', time: new Date(Date.now() - 300000), text: 'Initial triage completed.' }];
+            renderNotes();
+            setInterval(updateDateTime, 1000);
+            setInterval(() => { incidents.unshift(generateIncident()); if (incidents.length > 12) incidents.pop(); renderIncidentList(); updateStats(); }, 30000);
+        }
+        
+        document.getElementById('note-input').addEventListener('keypress', e => { if (e.key === 'Enter') addNote(); });
+        init();
+    </script>
+</body>
+</html>
