@@ -579,7 +579,7 @@
 </head>
 <body>
     <header class="header">
-        <h1>ðŸ” Threat Intelligence & Endpoint Status</h1>
+        <h1>🔍 Threat Intelligence & Endpoint Status</h1>
         <div class="header-info">
             <div class="endpoint-summary">
                 <div class="endpoint-stat">
@@ -607,7 +607,7 @@
         <!-- Threat Feed -->
         <div class="card threat-feed">
             <div class="card-header">
-                <span class="card-title">ðŸ“¡ Live Threat Intelligence Feed</span>
+                <span class="card-title">📡 Live Threat Intelligence Feed</span>
                 <span id="feed-update">Updated just now</span>
             </div>
             <div class="feed-container" id="threat-feed"></div>
@@ -616,7 +616,7 @@
         <!-- Endpoint Grid -->
         <div class="card endpoint-grid-section">
             <div class="card-header">
-                <span class="card-title">ðŸ–¥ï¸ Endpoint Status</span>
+                <span class="card-title">🖥️ Endpoint Status</span>
                 <span id="endpoint-total">0 endpoints</span>
             </div>
             <div class="search-box">
@@ -635,7 +635,7 @@
         <!-- IOC Feed -->
         <div class="card ioc-feed">
             <div class="card-header">
-                <span class="card-title">ðŸŽ¯ Indicators of Compromise</span>
+                <span class="card-title">🎯 Indicators of Compromise</span>
                 <span id="ioc-count">0 IOCs</span>
             </div>
             <div class="ioc-list" id="ioc-list"></div>
@@ -644,7 +644,7 @@
         <!-- Vulnerability Panel -->
         <div class="card vuln-panel">
             <div class="card-header">
-                <span class="card-title">âš ï¸ Vulnerability Management</span>
+                <span class="card-title">⚠️ Vulnerability Management</span>
             </div>
             <div class="vuln-summary">
                 <div class="vuln-stat">
@@ -670,7 +670,7 @@
         <!-- EDR Alerts -->
         <div class="card edr-alerts">
             <div class="card-header">
-                <span class="card-title">ðŸ›¡ï¸ EDR Detection Alerts</span>
+                <span class="card-title">🛡️ EDR Detection Alerts</span>
                 <span id="edr-count">0 alerts</span>
             </div>
             <div class="edr-list" id="edr-list"></div>
@@ -679,7 +679,7 @@
         <!-- Compliance -->
         <div class="card compliance-section">
             <div class="card-header">
-                <span class="card-title">ðŸ“‹ Compliance Status</span>
+                <span class="card-title">📋 Compliance Status</span>
             </div>
             <div class="compliance-grid" id="compliance-grid"></div>
         </div>
@@ -1482,7 +1482,7 @@
 </head>
 <body>
     <header class="header">
-        <h1>ðŸ” Threat Intelligence & Endpoint Status</h1>
+        <h1>🔍 Threat Intelligence & Endpoint Status</h1>
         <div class="header-info">
             <div class="endpoint-summary">
                 <div class="endpoint-stat">
@@ -1510,7 +1510,7 @@
         <!-- Threat Feed -->
         <div class="card threat-feed">
             <div class="card-header">
-                <span class="card-title">ðŸ“¡ Live Threat Intelligence Feed</span>
+                <span class="card-title">📡 Live Threat Intelligence Feed</span>
                 <span id="feed-update">Updated just now</span>
             </div>
             <div class="feed-container" id="threat-feed"></div>
@@ -1519,7 +1519,7 @@
         <!-- Endpoint Grid -->
         <div class="card endpoint-grid-section">
             <div class="card-header">
-                <span class="card-title">ðŸ–¥ï¸ Endpoint Status</span>
+                <span class="card-title">🖥️ Endpoint Status</span>
                 <span id="endpoint-total">0 endpoints</span>
             </div>
             <div class="search-box">
@@ -1538,7 +1538,7 @@
         <!-- IOC Feed -->
         <div class="card ioc-feed">
             <div class="card-header">
-                <span class="card-title">ðŸŽ¯ Indicators of Compromise</span>
+                <span class="card-title">🎯 Indicators of Compromise</span>
                 <span id="ioc-count">0 IOCs</span>
             </div>
             <div class="ioc-list" id="ioc-list"></div>
@@ -1547,7 +1547,7 @@
         <!-- Vulnerability Panel -->
         <div class="card vuln-panel">
             <div class="card-header">
-                <span class="card-title">âš ï¸ Vulnerability Management</span>
+                <span class="card-title">⚠️ Vulnerability Management</span>
             </div>
             <div class="vuln-summary">
                 <div class="vuln-stat">
@@ -1573,7 +1573,7 @@
         <!-- EDR Alerts -->
         <div class="card edr-alerts">
             <div class="card-header">
-                <span class="card-title">ðŸ›¡ï¸ EDR Detection Alerts</span>
+                <span class="card-title">🛡️ EDR Detection Alerts</span>
                 <span id="edr-count">0 alerts</span>
             </div>
             <div class="edr-list" id="edr-list"></div>
@@ -1582,7 +1582,7 @@
         <!-- Compliance -->
         <div class="card compliance-section">
             <div class="card-header">
-                <span class="card-title">ðŸ“‹ Compliance Status</span>
+                <span class="card-title">📋 Compliance Status</span>
             </div>
             <div class="compliance-grid" id="compliance-grid"></div>
         </div>
@@ -1628,9 +1628,9 @@
         
         function generateEndpoints() {
             const types = [
-                { prefix: 'WKS', icon: 'ðŸ’»', type: 'Workstation' },
-                { prefix: 'SRV', icon: 'ðŸ–¥ï¸', type: 'Server' },
-                { prefix: 'LPT', icon: 'ðŸ’¼', type: 'Laptop' }
+                { prefix: 'WKS', icon: '💻', type: 'Workstation' },
+                { prefix: 'SRV', icon: '🖥️', type: 'Server' },
+                { prefix: 'LPT', icon: '💼', type: 'Laptop' }
             ];
             const statuses = ['healthy', 'healthy', 'healthy', 'healthy', 'warning', 'warning', 'critical', 'offline'];
             
@@ -1675,7 +1675,7 @@
         function renderThreatFeed() {
             document.getElementById('threat-feed').innerHTML = threatIntelTypes.map(threat => `
                 <div class="threat-card ${threat.severity}">
-                    <div class="threat-source"><span>ðŸ“¡</span><span>${threatSources[Math.floor(Math.random() * threatSources.length)]}</span><span style="margin-left: auto; color: #666;">${Math.floor(Math.random() * 60)}m ago</span></div>
+                    <div class="threat-source"><span>📡</span><span>${threatSources[Math.floor(Math.random() * threatSources.length)]}</span><span style="margin-left: auto; color: #666;">${Math.floor(Math.random() * 60)}m ago</span></div>
                     <div class="threat-title">${threat.title}</div>
                     <div class="threat-tags">${threat.tags.map(tag => `<span class="threat-tag">${tag}</span>`).join('')}</div>
                 </div>

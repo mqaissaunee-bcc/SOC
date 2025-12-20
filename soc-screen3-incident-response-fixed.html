@@ -623,7 +623,7 @@
 </head>
 <body>
     <header class="header">
-        <h1>ðŸš¨ Incident Response Console</h1>
+        <h1>🚨 Incident Response Console</h1>
         <div class="header-info">
             <div class="incident-stats">
                 <div class="incident-stat">
@@ -651,7 +651,7 @@
         <!-- Incident Queue -->
         <div class="card incident-queue">
             <div class="card-header">
-                <span class="card-title">ðŸ“‹ Active Incidents</span>
+                <span class="card-title">📋 Active Incidents</span>
                 <span id="queue-count">0</span>
             </div>
             <div class="incident-list" id="incident-list"></div>
@@ -660,7 +660,7 @@
         <!-- Case Details -->
         <div class="card case-details">
             <div class="card-header">
-                <span class="card-title">ðŸ” Case Details</span>
+                <span class="card-title">🔍 Case Details</span>
                 <span id="case-id">INC-2024-0001</span>
             </div>
             <div class="case-content" id="case-content">
@@ -684,7 +684,7 @@
         <!-- Timeline -->
         <div class="card timeline-section">
             <div class="card-header">
-                <span class="card-title">â±ï¸ Attack Timeline</span>
+                <span class="card-title">⏱️ Attack Timeline</span>
             </div>
             <div class="attack-timeline" id="attack-timeline">
                 <div class="timeline-line"></div>
@@ -694,16 +694,16 @@
         <!-- Response Actions Panel -->
         <div class="card response-panel">
             <div class="card-header">
-                <span class="card-title">âš¡ Response Actions</span>
+                <span class="card-title">⚡ Response Actions</span>
             </div>
             
             <div class="response-content">
                 <div class="action-buttons">
-                    <button class="action-btn contain" onclick="performAction('contain')">ðŸ›‘ Contain Threat</button>
-                    <button class="action-btn isolate" onclick="performAction('isolate')">ðŸ”’ Isolate Host</button>
-                    <button class="action-btn block" onclick="performAction('block')">ðŸš« Block IP/Domain</button>
-                    <button class="action-btn scan" onclick="performAction('scan')">ðŸ” Full Scan</button>
-                    <button class="action-btn escalate" onclick="performAction('escalate')">ðŸ“¢ Escalate to Tier 3</button>
+                    <button class="action-btn contain" onclick="performAction('contain')">🛑 Contain Threat</button>
+                    <button class="action-btn isolate" onclick="performAction('isolate')">🔍’ Isolate Host</button>
+                    <button class="action-btn block" onclick="performAction('block')">🚫 Block IP/Domain</button>
+                    <button class="action-btn scan" onclick="performAction('scan')">🔍 Full Scan</button>
+                    <button class="action-btn escalate" onclick="performAction('escalate')">📢 Escalate to Tier 3</button>
                 </div>
                 
                 <div class="playbook-section">
@@ -978,7 +978,7 @@
             document.getElementById('ioc-list').innerHTML = selectedIncident.iocs.map(ioc => `<div class="ioc-item"><span class="ioc-type ${ioc.type}">${ioc.type.toUpperCase()}</span><span>${ioc.value}</span></div>`).join('');
             document.getElementById('assets-grid').innerHTML = selectedIncident.assets.map(asset => `
                 <div class="asset-item">
-                    <div class="asset-icon">${asset.type === 'Server' ? 'ðŸ–¥ï¸' : 'ðŸ’»'}</div>
+                    <div class="asset-icon">${asset.type === 'Server' ? '🖥️' : '💻'}</div>
                     <div class="asset-info"><div class="asset-name">${asset.name}</div><div class="asset-type">${asset.type}</div></div>
                     <div class="asset-status ${asset.status}"></div>
                 </div>
