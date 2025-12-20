@@ -497,7 +497,7 @@
 </head>
 <body>
     <header class="header">
-        <h1>🛡️ SIEM Dashboard - Security Operations Center</h1>
+        <h1>ðŸ›¡ï¸ SIEM Dashboard - Security Operations Center</h1>
         <div class="header-info">
             <div class="audio-indicator">
                 <div class="sound-wave">
@@ -545,7 +545,7 @@
         <!-- Alert Queue -->
         <div class="card alert-queue">
             <div class="card-header">
-                <span class="card-title">📋 Real-Time Alert Queue</span>
+                <span class="card-title">ðŸ“‹ Real-Time Alert Queue</span>
                 <span id="queue-count">0 alerts</span>
             </div>
             <div class="filter-controls">
@@ -561,13 +561,13 @@
         <!-- Activity Timeline -->
         <div class="card activity-timeline">
             <div class="card-header">
-                <span class="card-title">📊 Alerts Per Hour</span>
+                <span class="card-title">ðŸ“Š Alerts Per Hour</span>
             </div>
             <div class="chart-container">
                 <div class="bar-chart" id="hourly-chart"></div>
             </div>
             <div class="card-header" style="margin-top: 20px;">
-                <span class="card-title">⏱️ Recent Activity</span>
+                <span class="card-title">â±ï¸ Recent Activity</span>
             </div>
             <div class="timeline-content" id="timeline"></div>
         </div>
@@ -575,7 +575,7 @@
         <!-- MITRE ATT&CK Heatmap -->
         <div class="card mitre-section">
             <div class="card-header">
-                <span class="card-title">🎯 MITRE ATT&CK Coverage</span>
+                <span class="card-title">ðŸŽ¯ MITRE ATT&CK Coverage</span>
             </div>
             <div class="mitre-grid" id="mitre-grid"></div>
             <div style="margin-top: 15px; display: flex; justify-content: space-around; font-size: 0.75em; flex-wrap: wrap; gap: 10px;">
@@ -588,31 +588,258 @@
     </main>
     
     <script>
-        // Alert Types Database
+        // Alert Types Database - EXPANDED for 2+ hour viewing sessions
         const alertTypes = [
+            // Authentication Attacks (15)
             { type: 'Brute Force Attack', category: 'Authentication', tactics: ['TA0006'] },
             { type: 'Password Spraying', category: 'Authentication', tactics: ['TA0006'] },
+            { type: 'Credential Stuffing Attack', category: 'Authentication', tactics: ['TA0006'] },
+            { type: 'Kerberoasting Detected', category: 'Authentication', tactics: ['TA0006'] },
+            { type: 'AS-REP Roasting Attack', category: 'Authentication', tactics: ['TA0006'] },
+            { type: 'Golden Ticket Attack', category: 'Authentication', tactics: ['TA0006', 'TA0008'] },
+            { type: 'Silver Ticket Attack', category: 'Authentication', tactics: ['TA0006', 'TA0008'] },
+            { type: 'Pass-the-Hash Detected', category: 'Authentication', tactics: ['TA0006', 'TA0008'] },
+            { type: 'Pass-the-Ticket Detected', category: 'Authentication', tactics: ['TA0006', 'TA0008'] },
+            { type: 'NTLM Relay Attack', category: 'Authentication', tactics: ['TA0006'] },
+            { type: 'OAuth Token Theft', category: 'Authentication', tactics: ['TA0006'] },
+            { type: 'SAML Token Forgery', category: 'Authentication', tactics: ['TA0006'] },
+            { type: 'MFA Bypass Attempt', category: 'Authentication', tactics: ['TA0006'] },
+            { type: 'SSO Abuse Detected', category: 'Authentication', tactics: ['TA0006'] },
+            { type: 'Session Hijacking', category: 'Authentication', tactics: ['TA0006'] },
+            
+            // Credential Access (12)
             { type: 'Credential Dumping', category: 'Credential', tactics: ['TA0006'] },
+            { type: 'LSASS Memory Access', category: 'Credential', tactics: ['TA0006'] },
+            { type: 'SAM Database Access', category: 'Credential', tactics: ['TA0006'] },
+            { type: 'DCSync Attack Detected', category: 'Credential', tactics: ['TA0006'] },
+            { type: 'Mimikatz Activity', category: 'Credential', tactics: ['TA0006'] },
+            { type: 'Keylogger Detected', category: 'Credential', tactics: ['TA0006', 'TA0009'] },
+            { type: 'Browser Credential Theft', category: 'Credential', tactics: ['TA0006'] },
+            { type: 'Password Manager Access', category: 'Credential', tactics: ['TA0006'] },
+            { type: 'Vault Credential Access', category: 'Credential', tactics: ['TA0006'] },
+            { type: 'Cloud Credential Harvesting', category: 'Credential', tactics: ['TA0006'] },
+            { type: 'Private Key Extraction', category: 'Credential', tactics: ['TA0006'] },
+            { type: 'Credential File Access', category: 'Credential', tactics: ['TA0006'] },
+            
+            // Endpoint/Malware (18)
             { type: 'Malware Detected', category: 'Endpoint', tactics: ['TA0002', 'TA0005'] },
-            { type: 'Suspicious PowerShell', category: 'Execution', tactics: ['TA0002'] },
-            { type: 'Data Exfiltration Attempt', category: 'Exfiltration', tactics: ['TA0010'] },
-            { type: 'Lateral Movement Detected', category: 'Network', tactics: ['TA0008'] },
-            { type: 'C2 Communication', category: 'Network', tactics: ['TA0011'] },
-            { type: 'Phishing Email Detected', category: 'Email', tactics: ['TA0001'] },
-            { type: 'SQL Injection Attempt', category: 'Web', tactics: ['TA0001'] },
             { type: 'Ransomware Behavior', category: 'Endpoint', tactics: ['TA0040'] },
+            { type: 'Trojan Detected', category: 'Endpoint', tactics: ['TA0002'] },
+            { type: 'Rootkit Activity', category: 'Endpoint', tactics: ['TA0005', 'TA0003'] },
+            { type: 'Bootkit Detected', category: 'Endpoint', tactics: ['TA0003'] },
+            { type: 'Fileless Malware', category: 'Endpoint', tactics: ['TA0002', 'TA0005'] },
+            { type: 'Cryptominer Detected', category: 'Endpoint', tactics: ['TA0040'] },
+            { type: 'Wiper Malware Detected', category: 'Endpoint', tactics: ['TA0040'] },
+            { type: 'RAT Activity Detected', category: 'Endpoint', tactics: ['TA0011'] },
+            { type: 'Backdoor Communication', category: 'Endpoint', tactics: ['TA0011', 'TA0003'] },
+            { type: 'Spyware Activity', category: 'Endpoint', tactics: ['TA0009'] },
+            { type: 'Adware Installation', category: 'Endpoint', tactics: ['TA0002'] },
+            { type: 'PUP Detected', category: 'Endpoint', tactics: ['TA0002'] },
+            { type: 'Dropper Execution', category: 'Endpoint', tactics: ['TA0002'] },
+            { type: 'Loader Activity', category: 'Endpoint', tactics: ['TA0002'] },
+            { type: 'Infostealer Detected', category: 'Endpoint', tactics: ['TA0009', 'TA0010'] },
+            { type: 'Banking Trojan Activity', category: 'Endpoint', tactics: ['TA0009'] },
+            { type: 'Worm Propagation', category: 'Endpoint', tactics: ['TA0008'] },
+            
+            // Execution (14)
+            { type: 'Suspicious PowerShell', category: 'Execution', tactics: ['TA0002'] },
+            { type: 'Encoded PowerShell Command', category: 'Execution', tactics: ['TA0002', 'TA0005'] },
+            { type: 'WMI Execution', category: 'Execution', tactics: ['TA0002'] },
+            { type: 'WMIC Abuse', category: 'Execution', tactics: ['TA0002'] },
+            { type: 'Mshta Execution', category: 'Execution', tactics: ['TA0002', 'TA0005'] },
+            { type: 'Regsvr32 Abuse', category: 'Execution', tactics: ['TA0002', 'TA0005'] },
+            { type: 'Rundll32 Abuse', category: 'Execution', tactics: ['TA0002', 'TA0005'] },
+            { type: 'CMSTP Bypass', category: 'Execution', tactics: ['TA0002', 'TA0005'] },
+            { type: 'Script Host Execution', category: 'Execution', tactics: ['TA0002'] },
+            { type: 'Macro Execution', category: 'Execution', tactics: ['TA0002'] },
+            { type: 'HTA File Execution', category: 'Execution', tactics: ['TA0002'] },
+            { type: 'JavaScript Execution', category: 'Execution', tactics: ['TA0002'] },
+            { type: 'VBScript Execution', category: 'Execution', tactics: ['TA0002'] },
+            { type: 'Scheduled Task Creation', category: 'Execution', tactics: ['TA0002', 'TA0003'] },
+            
+            // Network/C2 (16)
+            { type: 'C2 Communication', category: 'Network', tactics: ['TA0011'] },
+            { type: 'Lateral Movement Detected', category: 'Network', tactics: ['TA0008'] },
+            { type: 'DNS Tunneling', category: 'Network', tactics: ['TA0011', 'TA0010'] },
+            { type: 'ICMP Tunneling', category: 'Network', tactics: ['TA0011'] },
+            { type: 'Beaconing Activity', category: 'Network', tactics: ['TA0011'] },
+            { type: 'Domain Fronting', category: 'Network', tactics: ['TA0011'] },
+            { type: 'Fast Flux DNS', category: 'Network', tactics: ['TA0011'] },
+            { type: 'DGA Domain Contact', category: 'Network', tactics: ['TA0011'] },
+            { type: 'Tor Network Access', category: 'Network', tactics: ['TA0011'] },
+            { type: 'VPN Tunnel Detected', category: 'Network', tactics: ['TA0011'] },
+            { type: 'Proxy Chain Detected', category: 'Network', tactics: ['TA0011'] },
+            { type: 'RDP Tunnel Detected', category: 'Network', tactics: ['TA0008', 'TA0011'] },
+            { type: 'SSH Tunnel Detected', category: 'Network', tactics: ['TA0008', 'TA0011'] },
+            { type: 'SMB Lateral Movement', category: 'Network', tactics: ['TA0008'] },
+            { type: 'WinRM Abuse', category: 'Network', tactics: ['TA0008'] },
+            { type: 'DCOM Exploitation', category: 'Network', tactics: ['TA0008'] },
+            
+            // Email (10)
+            { type: 'Phishing Email Detected', category: 'Email', tactics: ['TA0001'] },
+            { type: 'Spear Phishing Attempt', category: 'Email', tactics: ['TA0001'] },
+            { type: 'BEC Attack Detected', category: 'Email', tactics: ['TA0001'] },
+            { type: 'Malicious Attachment', category: 'Email', tactics: ['TA0001'] },
+            { type: 'Malicious Link Clicked', category: 'Email', tactics: ['TA0001'] },
+            { type: 'Email Forwarding Rule', category: 'Email', tactics: ['TA0009', 'TA0010'] },
+            { type: 'Inbox Rule Manipulation', category: 'Email', tactics: ['TA0003'] },
+            { type: 'Email Account Compromise', category: 'Email', tactics: ['TA0001'] },
+            { type: 'Whaling Attack Detected', category: 'Email', tactics: ['TA0001'] },
+            { type: 'Vishing Attempt Reported', category: 'Email', tactics: ['TA0001'] },
+            
+            // Web (12)
+            { type: 'SQL Injection Attempt', category: 'Web', tactics: ['TA0001'] },
+            { type: 'XSS Attack Detected', category: 'Web', tactics: ['TA0001'] },
+            { type: 'CSRF Attack Blocked', category: 'Web', tactics: ['TA0001'] },
+            { type: 'Path Traversal Attempt', category: 'Web', tactics: ['TA0001'] },
+            { type: 'LFI Attack Detected', category: 'Web', tactics: ['TA0001'] },
+            { type: 'RFI Attack Detected', category: 'Web', tactics: ['TA0001'] },
+            { type: 'Command Injection', category: 'Web', tactics: ['TA0001', 'TA0002'] },
+            { type: 'SSRF Attack Detected', category: 'Web', tactics: ['TA0001'] },
+            { type: 'XXE Attack Blocked', category: 'Web', tactics: ['TA0001'] },
+            { type: 'Deserialization Attack', category: 'Web', tactics: ['TA0001'] },
+            { type: 'API Abuse Detected', category: 'Web', tactics: ['TA0001'] },
+            { type: 'Web Scraping Activity', category: 'Web', tactics: ['TA0043'] },
+            
+            // Reconnaissance (10)
             { type: 'Port Scan Detected', category: 'Reconnaissance', tactics: ['TA0043'] },
+            { type: 'Network Enumeration', category: 'Reconnaissance', tactics: ['TA0043'] },
+            { type: 'Service Discovery', category: 'Reconnaissance', tactics: ['TA0043'] },
+            { type: 'LDAP Enumeration', category: 'Reconnaissance', tactics: ['TA0043', 'TA0007'] },
+            { type: 'AD Enumeration', category: 'Reconnaissance', tactics: ['TA0043', 'TA0007'] },
+            { type: 'DNS Zone Transfer', category: 'Reconnaissance', tactics: ['TA0043'] },
+            { type: 'SNMP Enumeration', category: 'Reconnaissance', tactics: ['TA0043'] },
+            { type: 'Share Enumeration', category: 'Reconnaissance', tactics: ['TA0007'] },
+            { type: 'User Enumeration', category: 'Reconnaissance', tactics: ['TA0043'] },
+            { type: 'Vulnerability Scanning', category: 'Reconnaissance', tactics: ['TA0043'] },
+            
+            // Persistence (12)
             { type: 'Web Shell Detected', category: 'Persistence', tactics: ['TA0003'] },
+            { type: 'Registry Run Key Added', category: 'Persistence', tactics: ['TA0003'] },
+            { type: 'Startup Folder Modified', category: 'Persistence', tactics: ['TA0003'] },
+            { type: 'Service Installation', category: 'Persistence', tactics: ['TA0003'] },
+            { type: 'DLL Hijacking', category: 'Persistence', tactics: ['TA0003', 'TA0004'] },
+            { type: 'COM Hijacking', category: 'Persistence', tactics: ['TA0003'] },
+            { type: 'WMI Subscription', category: 'Persistence', tactics: ['TA0003'] },
+            { type: 'Scheduled Task Persistence', category: 'Persistence', tactics: ['TA0003'] },
+            { type: 'Account Creation', category: 'Persistence', tactics: ['TA0003'] },
+            { type: 'SSH Key Added', category: 'Persistence', tactics: ['TA0003'] },
+            { type: 'Cron Job Added', category: 'Persistence', tactics: ['TA0003'] },
+            { type: 'BITS Job Persistence', category: 'Persistence', tactics: ['TA0003'] },
+            
+            // Privilege Escalation (10)
             { type: 'Privilege Escalation', category: 'Privilege', tactics: ['TA0004'] },
-            { type: 'Log Clearing', category: 'Defense Evasion', tactics: ['TA0005'] }
+            { type: 'UAC Bypass Detected', category: 'Privilege', tactics: ['TA0004', 'TA0005'] },
+            { type: 'Token Manipulation', category: 'Privilege', tactics: ['TA0004'] },
+            { type: 'Sudo Abuse', category: 'Privilege', tactics: ['TA0004'] },
+            { type: 'SUID Exploitation', category: 'Privilege', tactics: ['TA0004'] },
+            { type: 'Kernel Exploit Detected', category: 'Privilege', tactics: ['TA0004'] },
+            { type: 'Named Pipe Impersonation', category: 'Privilege', tactics: ['TA0004'] },
+            { type: 'Potato Attack Detected', category: 'Privilege', tactics: ['TA0004'] },
+            { type: 'Print Spooler Exploit', category: 'Privilege', tactics: ['TA0004'] },
+            { type: 'Service Account Abuse', category: 'Privilege', tactics: ['TA0004'] },
+            
+            // Defense Evasion (14)
+            { type: 'Log Clearing', category: 'Defense Evasion', tactics: ['TA0005'] },
+            { type: 'Timestomping Detected', category: 'Defense Evasion', tactics: ['TA0005'] },
+            { type: 'Process Injection', category: 'Defense Evasion', tactics: ['TA0005'] },
+            { type: 'Process Hollowing', category: 'Defense Evasion', tactics: ['TA0005'] },
+            { type: 'DLL Side-Loading', category: 'Defense Evasion', tactics: ['TA0005'] },
+            { type: 'Masquerading Detected', category: 'Defense Evasion', tactics: ['TA0005'] },
+            { type: 'Hidden Files Created', category: 'Defense Evasion', tactics: ['TA0005'] },
+            { type: 'AV Disabled', category: 'Defense Evasion', tactics: ['TA0005'] },
+            { type: 'Firewall Rule Modified', category: 'Defense Evasion', tactics: ['TA0005'] },
+            { type: 'AMSI Bypass', category: 'Defense Evasion', tactics: ['TA0005'] },
+            { type: 'ETW Tampering', category: 'Defense Evasion', tactics: ['TA0005'] },
+            { type: 'Indicator Removal', category: 'Defense Evasion', tactics: ['TA0005'] },
+            { type: 'Binary Padding', category: 'Defense Evasion', tactics: ['TA0005'] },
+            { type: 'Code Signing Abuse', category: 'Defense Evasion', tactics: ['TA0005'] },
+            
+            // Exfiltration (8)
+            { type: 'Data Exfiltration Attempt', category: 'Exfiltration', tactics: ['TA0010'] },
+            { type: 'Large File Upload', category: 'Exfiltration', tactics: ['TA0010'] },
+            { type: 'Cloud Storage Upload', category: 'Exfiltration', tactics: ['TA0010'] },
+            { type: 'USB Data Copy', category: 'Exfiltration', tactics: ['TA0010'] },
+            { type: 'Email Data Exfil', category: 'Exfiltration', tactics: ['TA0010'] },
+            { type: 'FTP Data Transfer', category: 'Exfiltration', tactics: ['TA0010'] },
+            { type: 'Encrypted Channel Exfil', category: 'Exfiltration', tactics: ['TA0010'] },
+            { type: 'Steganography Detected', category: 'Exfiltration', tactics: ['TA0010'] },
+            
+            // Collection (8)
+            { type: 'Screen Capture Detected', category: 'Collection', tactics: ['TA0009'] },
+            { type: 'Audio Capture Detected', category: 'Collection', tactics: ['TA0009'] },
+            { type: 'Clipboard Data Access', category: 'Collection', tactics: ['TA0009'] },
+            { type: 'Email Collection', category: 'Collection', tactics: ['TA0009'] },
+            { type: 'Archive Created', category: 'Collection', tactics: ['TA0009'] },
+            { type: 'Database Dump', category: 'Collection', tactics: ['TA0009'] },
+            { type: 'Sensitive File Access', category: 'Collection', tactics: ['TA0009'] },
+            { type: 'Browser Data Collection', category: 'Collection', tactics: ['TA0009'] },
+            
+            // Impact (8)
+            { type: 'Service Stopped', category: 'Impact', tactics: ['TA0040'] },
+            { type: 'Data Encrypted', category: 'Impact', tactics: ['TA0040'] },
+            { type: 'Data Destroyed', category: 'Impact', tactics: ['TA0040'] },
+            { type: 'Defacement Detected', category: 'Impact', tactics: ['TA0040'] },
+            { type: 'Resource Hijacking', category: 'Impact', tactics: ['TA0040'] },
+            { type: 'System Shutdown', category: 'Impact', tactics: ['TA0040'] },
+            { type: 'Firmware Corruption', category: 'Impact', tactics: ['TA0040'] },
+            { type: 'Disk Wipe Detected', category: 'Impact', tactics: ['TA0040'] },
+            
+            // Cloud (10)
+            { type: 'Cloud IAM Change', category: 'Cloud', tactics: ['TA0003', 'TA0004'] },
+            { type: 'S3 Bucket Exposed', category: 'Cloud', tactics: ['TA0010'] },
+            { type: 'Cloud Instance Launched', category: 'Cloud', tactics: ['TA0042'] },
+            { type: 'Cloud API Abuse', category: 'Cloud', tactics: ['TA0002'] },
+            { type: 'Cloud Trail Disabled', category: 'Cloud', tactics: ['TA0005'] },
+            { type: 'Cloud Key Compromised', category: 'Cloud', tactics: ['TA0006'] },
+            { type: 'Container Escape', category: 'Cloud', tactics: ['TA0004'] },
+            { type: 'Kubernetes Abuse', category: 'Cloud', tactics: ['TA0002'] },
+            { type: 'Serverless Injection', category: 'Cloud', tactics: ['TA0002'] },
+            { type: 'Cloud Storage Enumeration', category: 'Cloud', tactics: ['TA0007'] }
         ];
         
         const severities = ['critical', 'high', 'medium', 'low'];
-        const sources = ['Firewall', 'EDR', 'IDS/IPS', 'WAF', 'Email Gateway', 'SIEM', 'Proxy'];
-        const users = ['jsmith', 'admin', 'svc_backup', 'guest', 'dev_user', 'db_admin', 'SYSTEM'];
         
-        const internalIPs = ['10.0.1.', '10.0.2.', '192.168.1.', '172.16.0.'];
-        const externalIPs = ['45.33.', '185.220.', '91.121.', '104.248.'];
+        // Expanded sources (25+)
+        const sources = [
+            'Firewall', 'EDR', 'IDS/IPS', 'WAF', 'Email Gateway', 'SIEM', 'Proxy',
+            'Antivirus', 'DLP', 'CASB', 'NDR', 'Sandbox', 'Honeypot', 'DNS Security',
+            'Load Balancer', 'VPN Gateway', 'Cloud WAF', 'API Gateway', 'SOAR',
+            'Threat Intel', 'User Behavior', 'Network TAP', 'Packet Broker', 'Deception',
+            'Container Security', 'CWPP', 'CSPM', 'Zero Trust', 'PAM'
+        ];
+        
+        // Expanded users (50+)
+        const users = [
+            'jsmith', 'admin', 'svc_backup', 'guest', 'dev_user', 'db_admin', 'SYSTEM',
+            'mjohnson', 'agarcia', 'rwilliams', 'kbrown', 'ldavis', 'cmiller', 'dwilson',
+            'jmoore', 'tanderson', 'jthomas', 'mwhite', 'dharris', 'smartin', 'jthompson',
+            'svc_sql', 'svc_web', 'svc_app', 'svc_scan', 'svc_deploy', 'svc_monitor',
+            'administrator', 'root', 'LOCAL_SERVICE', 'NETWORK_SERVICE', 'DefaultAccount',
+            'cjackson', 'blee', 'nwalker', 'ahall', 'jallen', 'pyoung', 'mking', 'lwright',
+            'kscott', 'btorres', 'phill', 'jgreen', 'badams', 'rnelson', 'mcarter',
+            'svc_backup2', 'svc_replica', 'svc_audit', 'service_acct', 'automation',
+            'deploy_user', 'jenkins', 'gitlab', 'ansible', 'terraform'
+        ];
+        
+        // Expanded internal IP ranges (15+)
+        const internalIPs = [
+            '10.0.1.', '10.0.2.', '10.0.3.', '10.0.4.', '10.0.5.', 
+            '10.1.1.', '10.1.2.', '10.2.0.', '10.10.10.', '10.20.30.',
+            '192.168.1.', '192.168.2.', '192.168.10.', '192.168.100.',
+            '172.16.0.', '172.16.1.', '172.17.0.', '172.18.0.', '172.31.0.'
+        ];
+        
+        // Expanded external IP ranges (40+ representing various threat origins)
+        const externalIPs = [
+            '45.33.', '185.220.', '91.121.', '104.248.', '23.129.', '51.15.', '62.210.',
+            '77.247.', '89.248.', '94.102.', '103.75.', '109.70.', '116.202.', '128.199.',
+            '134.209.', '138.68.', '139.162.', '141.98.', '142.93.', '143.110.',
+            '157.245.', '159.65.', '159.89.', '161.35.', '164.90.', '165.22.',
+            '167.71.', '167.172.', '170.64.', '174.138.', '178.128.', '178.62.',
+            '185.56.', '185.129.', '188.166.', '192.81.', '193.26.', '194.5.',
+            '195.123.', '198.211.', '206.189.', '207.154.', '209.97.', '212.71.'
+        ];
         
         let alerts = [];
         let alertId = 1000;

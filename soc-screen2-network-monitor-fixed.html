@@ -538,7 +538,7 @@
 </head>
 <body>
     <header class="header">
-        <h1>🌐 Network Traffic Monitor</h1>
+        <h1>ðŸŒ Network Traffic Monitor</h1>
         <div class="header-info">
             <div class="network-status">
                 <div class="network-stat">
@@ -562,7 +562,7 @@
         <!-- World Map -->
         <div class="card world-map-section">
             <div class="card-header">
-                <span class="card-title">🗺️ Global Threat Map - Live Attack Visualization</span>
+                <span class="card-title">ðŸ—ºï¸ Global Threat Map - Live Attack Visualization</span>
                 <span id="attacks-per-min">0 attacks/min</span>
             </div>
             <div class="world-map-container" id="map-container">
@@ -615,7 +615,7 @@
         <!-- Traffic Graph -->
         <div class="card">
             <div class="card-header">
-                <span class="card-title">📈 Network Traffic (Real-Time)</span>
+                <span class="card-title">ðŸ“ˆ Network Traffic (Real-Time)</span>
             </div>
             <div class="traffic-graph">
                 <canvas id="traffic-canvas" class="traffic-canvas"></canvas>
@@ -639,7 +639,7 @@
         <!-- Top Talkers -->
         <div class="card top-talkers">
             <div class="card-header">
-                <span class="card-title">🔍 Top Talkers (External IPs)</span>
+                <span class="card-title">ðŸ” Top Talkers (External IPs)</span>
             </div>
             <div class="talker-list" id="talker-list"></div>
         </div>
@@ -647,7 +647,7 @@
         <!-- Firewall Logs -->
         <div class="card firewall-logs">
             <div class="card-header">
-                <span class="card-title">🔥 Firewall Logs (Live)</span>
+                <span class="card-title">ðŸ”¥ Firewall Logs (Live)</span>
                 <span id="log-count">0 events</span>
             </div>
             <div class="log-list" id="log-list">
@@ -666,32 +666,83 @@
         <!-- Port Activity -->
         <div class="card port-activity">
             <div class="card-header">
-                <span class="card-title">🔌 Port Activity Monitor</span>
+                <span class="card-title">ðŸ”Œ Port Activity Monitor</span>
             </div>
             <div class="port-grid" id="port-grid"></div>
         </div>
     </main>
     
     <script>
-        // Configuration
+        // Configuration - EXPANDED for 2+ hour viewing sessions
         const countries = [
+            // North America
             { name: 'United States', code: 'US', x: 200, y: 140 },
+            { name: 'Canada', code: 'CA', x: 200, y: 110 },
+            { name: 'Mexico', code: 'MX', x: 180, y: 175 },
+            // Europe
             { name: 'Russia', code: 'RU', x: 650, y: 120 },
-            { name: 'China', code: 'CN', x: 780, y: 160 },
             { name: 'Germany', code: 'DE', x: 500, y: 130 },
-            { name: 'Brazil', code: 'BR', x: 280, y: 260 },
+            { name: 'UK', code: 'UK', x: 450, y: 115 },
+            { name: 'France', code: 'FR', x: 475, y: 135 },
+            { name: 'Netherlands', code: 'NL', x: 485, y: 120 },
+            { name: 'Ukraine', code: 'UA', x: 560, y: 130 },
+            { name: 'Poland', code: 'PL', x: 525, y: 125 },
+            { name: 'Romania', code: 'RO', x: 540, y: 140 },
+            { name: 'Sweden', code: 'SE', x: 505, y: 100 },
+            { name: 'Italy', code: 'IT', x: 505, y: 150 },
+            { name: 'Spain', code: 'ES', x: 460, y: 155 },
+            // Asia
+            { name: 'China', code: 'CN', x: 780, y: 160 },
             { name: 'India', code: 'IN', x: 680, y: 190 },
             { name: 'Japan', code: 'JP', x: 870, y: 180 },
-            { name: 'UK', code: 'UK', x: 450, y: 115 },
-            { name: 'Australia', code: 'AU', x: 820, y: 300 }
+            { name: 'South Korea', code: 'KR', x: 840, y: 165 },
+            { name: 'Taiwan', code: 'TW', x: 830, y: 185 },
+            { name: 'Vietnam', code: 'VN', x: 770, y: 200 },
+            { name: 'Singapore', code: 'SG', x: 765, y: 235 },
+            { name: 'Indonesia', code: 'ID', x: 780, y: 255 },
+            { name: 'Iran', code: 'IR', x: 620, y: 165 },
+            { name: 'North Korea', code: 'KP', x: 835, y: 155 },
+            // South America
+            { name: 'Brazil', code: 'BR', x: 280, y: 260 },
+            { name: 'Argentina', code: 'AR', x: 260, y: 310 },
+            { name: 'Colombia', code: 'CO', x: 240, y: 225 },
+            // Africa
+            { name: 'Nigeria', code: 'NG', x: 490, y: 215 },
+            { name: 'South Africa', code: 'ZA', x: 540, y: 310 },
+            { name: 'Egypt', code: 'EG', x: 545, y: 175 },
+            // Oceania
+            { name: 'Australia', code: 'AU', x: 820, y: 300 },
+            // Middle East
+            { name: 'Israel', code: 'IL', x: 560, y: 170 },
+            { name: 'Turkey', code: 'TR', x: 550, y: 155 },
+            { name: 'UAE', code: 'AE', x: 610, y: 185 },
+            { name: 'Saudi Arabia', code: 'SA', x: 590, y: 190 }
         ];
         
         const targetLocation = { x: 220, y: 145 };
         
-        const firewallActions = ['ALLOW', 'DENY', 'DROP'];
-        const protocols = ['TCP', 'UDP', 'ICMP', 'HTTP', 'HTTPS', 'SSH', 'DNS'];
-        const firewallRules = ['Default-Allow', 'Block-Known-Bad', 'Rate-Limit', 'Geo-Block', 'IDS-Alert'];
+        const firewallActions = ['ALLOW', 'DENY', 'DROP', 'REJECT', 'LOG', 'QUARANTINE'];
         
+        // Expanded protocols (25+)
+        const protocols = [
+            'TCP', 'UDP', 'ICMP', 'HTTP', 'HTTPS', 'SSH', 'DNS',
+            'FTP', 'SFTP', 'SMTP', 'POP3', 'IMAP', 'RDP', 'SMB',
+            'LDAP', 'LDAPS', 'NTP', 'SNMP', 'SIP', 'RTP',
+            'TLS', 'SSL', 'GRE', 'ESP', 'AH'
+        ];
+        
+        // Expanded firewall rules (30+)
+        const firewallRules = [
+            'Default-Allow', 'Block-Known-Bad', 'Rate-Limit', 'Geo-Block', 'IDS-Alert',
+            'Block-Scanner', 'Allow-Trusted', 'Block-TOR', 'Block-VPN', 'Allow-Partner',
+            'Block-Botnet', 'Rate-Limit-SSH', 'Block-Brute-Force', 'Allow-CDN', 'Block-C2',
+            'Allow-DNS', 'Block-Crypto', 'Allow-SMTP', 'Block-RDP-External', 'Allow-VPN-Users',
+            'Block-Port-Scan', 'Allow-Load-Balancer', 'Block-SQL-Inject', 'Allow-Monitoring',
+            'Block-Malware-Hash', 'Allow-Backup', 'Block-DGA', 'Rate-Limit-API', 'Block-Spam',
+            'Allow-Internal', 'Block-Anonymous', 'Emergency-Block', 'Quarantine-Suspected'
+        ];
+        
+        // Expanded monitored ports (24+)
         const monitoredPorts = [
             { port: 22, service: 'SSH', connections: 0, status: 'active' },
             { port: 80, service: 'HTTP', connections: 0, status: 'active' },
@@ -700,7 +751,23 @@
             { port: 3306, service: 'MySQL', connections: 0, status: 'active' },
             { port: 21, service: 'FTP', connections: 0, status: 'alert' },
             { port: 25, service: 'SMTP', connections: 0, status: 'active' },
-            { port: 53, service: 'DNS', connections: 0, status: 'active' }
+            { port: 53, service: 'DNS', connections: 0, status: 'active' },
+            { port: 445, service: 'SMB', connections: 0, status: 'warning' },
+            { port: 135, service: 'RPC', connections: 0, status: 'active' },
+            { port: 139, service: 'NetBIOS', connections: 0, status: 'warning' },
+            { port: 1433, service: 'MSSQL', connections: 0, status: 'active' },
+            { port: 1521, service: 'Oracle', connections: 0, status: 'active' },
+            { port: 5432, service: 'PostgreSQL', connections: 0, status: 'active' },
+            { port: 27017, service: 'MongoDB', connections: 0, status: 'warning' },
+            { port: 6379, service: 'Redis', connections: 0, status: 'active' },
+            { port: 8080, service: 'HTTP-Alt', connections: 0, status: 'active' },
+            { port: 8443, service: 'HTTPS-Alt', connections: 0, status: 'active' },
+            { port: 5900, service: 'VNC', connections: 0, status: 'alert' },
+            { port: 23, service: 'Telnet', connections: 0, status: 'alert' },
+            { port: 161, service: 'SNMP', connections: 0, status: 'active' },
+            { port: 389, service: 'LDAP', connections: 0, status: 'active' },
+            { port: 636, service: 'LDAPS', connections: 0, status: 'active' },
+            { port: 5985, service: 'WinRM', connections: 0, status: 'warning' }
         ];
         
         let attackCount = 0;

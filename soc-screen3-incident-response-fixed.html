@@ -480,7 +480,7 @@
         }
         
         .playbook-checkbox.completed::after {
-            content: '✔';
+            content: 'âœ”';
             color: white;
             font-size: 0.8em;
         }
@@ -623,7 +623,7 @@
 </head>
 <body>
     <header class="header">
-        <h1>🚨 Incident Response Console</h1>
+        <h1>ðŸš¨ Incident Response Console</h1>
         <div class="header-info">
             <div class="incident-stats">
                 <div class="incident-stat">
@@ -651,7 +651,7 @@
         <!-- Incident Queue -->
         <div class="card incident-queue">
             <div class="card-header">
-                <span class="card-title">📋 Active Incidents</span>
+                <span class="card-title">ðŸ“‹ Active Incidents</span>
                 <span id="queue-count">0</span>
             </div>
             <div class="incident-list" id="incident-list"></div>
@@ -660,7 +660,7 @@
         <!-- Case Details -->
         <div class="card case-details">
             <div class="card-header">
-                <span class="card-title">🔍 Case Details</span>
+                <span class="card-title">ðŸ” Case Details</span>
                 <span id="case-id">INC-2024-0001</span>
             </div>
             <div class="case-content" id="case-content">
@@ -684,7 +684,7 @@
         <!-- Timeline -->
         <div class="card timeline-section">
             <div class="card-header">
-                <span class="card-title">⏱️ Attack Timeline</span>
+                <span class="card-title">â±ï¸ Attack Timeline</span>
             </div>
             <div class="attack-timeline" id="attack-timeline">
                 <div class="timeline-line"></div>
@@ -694,16 +694,16 @@
         <!-- Response Actions Panel -->
         <div class="card response-panel">
             <div class="card-header">
-                <span class="card-title">⚡ Response Actions</span>
+                <span class="card-title">âš¡ Response Actions</span>
             </div>
             
             <div class="response-content">
                 <div class="action-buttons">
-                    <button class="action-btn contain" onclick="performAction('contain')">🛑 Contain Threat</button>
-                    <button class="action-btn isolate" onclick="performAction('isolate')">🔒 Isolate Host</button>
-                    <button class="action-btn block" onclick="performAction('block')">🚫 Block IP/Domain</button>
-                    <button class="action-btn scan" onclick="performAction('scan')">🔍 Full Scan</button>
-                    <button class="action-btn escalate" onclick="performAction('escalate')">📢 Escalate to Tier 3</button>
+                    <button class="action-btn contain" onclick="performAction('contain')">ðŸ›‘ Contain Threat</button>
+                    <button class="action-btn isolate" onclick="performAction('isolate')">ðŸ”’ Isolate Host</button>
+                    <button class="action-btn block" onclick="performAction('block')">ðŸš« Block IP/Domain</button>
+                    <button class="action-btn scan" onclick="performAction('scan')">ðŸ” Full Scan</button>
+                    <button class="action-btn escalate" onclick="performAction('escalate')">ðŸ“¢ Escalate to Tier 3</button>
                 </div>
                 
                 <div class="playbook-section">
@@ -724,18 +724,156 @@
     </main>
     
     <script>
+        // EXPANDED incident types for 2+ hour viewing sessions (45+ types)
         const incidentTypes = [
+            // Critical - Malware (8)
             { type: 'Ransomware Attack', severity: 'critical', category: 'Malware', ttps: ['T1486', 'T1490'], playbook: ['Isolate affected systems', 'Identify ransomware variant', 'Check backup integrity', 'Assess encryption scope'] },
             { type: 'C2 Communication', severity: 'critical', category: 'Malware', ttps: ['T1071', 'T1095'], playbook: ['Block C2 domains/IPs', 'Identify beacon behavior', 'Memory analysis', 'Network traffic capture'] },
+            { type: 'Wiper Malware Detected', severity: 'critical', category: 'Malware', ttps: ['T1485', 'T1561'], playbook: ['Immediate isolation', 'Preserve evidence', 'Assess damage scope', 'Activate DR plan'] },
+            { type: 'Rootkit Installation', severity: 'critical', category: 'Malware', ttps: ['T1014', 'T1547'], playbook: ['Boot from clean media', 'Memory forensics', 'Check MBR/VBR', 'Full system rebuild'] },
+            { type: 'APT Activity Detected', severity: 'critical', category: 'Malware', ttps: ['T1203', 'T1055'], playbook: ['Engage threat intel', 'Map infrastructure', 'Identify objectives', 'Coordinate with authorities'] },
+            { type: 'Supply Chain Compromise', severity: 'critical', category: 'Malware', ttps: ['T1195', 'T1199'], playbook: ['Identify compromised software', 'Check update sources', 'Scan all systems', 'Vendor notification'] },
+            { type: 'Zero-Day Exploitation', severity: 'critical', category: 'Malware', ttps: ['T1190', 'T1203'], playbook: ['Emergency patching', 'Implement workarounds', 'Monitor exploitation', 'Vendor coordination'] },
+            { type: 'Bootkit Detected', severity: 'critical', category: 'Malware', ttps: ['T1542', 'T1014'], playbook: ['Offline analysis', 'BIOS/UEFI check', 'Secure boot validation', 'Hardware replacement'] },
+            
+            // Critical - Data Breach (5)
             { type: 'Data Exfiltration', severity: 'critical', category: 'Data Breach', ttps: ['T1041', 'T1048'], playbook: ['Block outbound connections', 'Identify data accessed', 'Review DLP alerts', 'Check cloud storage'] },
+            { type: 'Database Breach', severity: 'critical', category: 'Data Breach', ttps: ['T1213', 'T1005'], playbook: ['Revoke database access', 'Audit query logs', 'Identify extracted data', 'Reset credentials'] },
+            { type: 'PII Data Exposure', severity: 'critical', category: 'Data Breach', ttps: ['T1530', 'T1567'], playbook: ['Identify exposed records', 'Notify legal/compliance', 'Prepare breach notification', 'Credit monitoring'] },
+            { type: 'Intellectual Property Theft', severity: 'critical', category: 'Data Breach', ttps: ['T1039', 'T1074'], playbook: ['Identify stolen assets', 'Legal preservation', 'Monitor dark web', 'Patent protection'] },
+            { type: 'Cloud Storage Exposure', severity: 'critical', category: 'Data Breach', ttps: ['T1530', 'T1537'], playbook: ['Revoke public access', 'Audit bucket policies', 'Scan for sensitive data', 'Enable logging'] },
+            
+            // High - Credential (6)
             { type: 'Brute Force Attack', severity: 'high', category: 'Credential', ttps: ['T1110', 'T1078'], playbook: ['Review failed login attempts', 'Check account lockouts', 'Identify source IPs', 'Reset affected credentials'] },
+            { type: 'Credential Stuffing', severity: 'high', category: 'Credential', ttps: ['T1110.004', 'T1078'], playbook: ['Check breach databases', 'Force password resets', 'Enable MFA', 'Rate limiting'] },
+            { type: 'Pass-the-Hash Attack', severity: 'high', category: 'Credential', ttps: ['T1550.002', 'T1003'], playbook: ['Identify compromised hashes', 'Check lateral movement', 'Reset affected accounts', 'Audit admin access'] },
+            { type: 'Kerberoasting Detected', severity: 'high', category: 'Credential', ttps: ['T1558.003', 'T1078'], playbook: ['Identify targeted SPNs', 'Check service accounts', 'Rotate passwords', 'Audit Kerberos logs'] },
+            { type: 'Golden Ticket Attack', severity: 'high', category: 'Credential', ttps: ['T1558.001', 'T1550'], playbook: ['Reset KRBTGT twice', 'Audit DC access', 'Check persistence', 'Full AD assessment'] },
+            { type: 'OAuth Token Theft', severity: 'high', category: 'Credential', ttps: ['T1528', 'T1550'], playbook: ['Revoke all tokens', 'Check app permissions', 'Audit API access', 'Review consent grants'] },
+            
+            // High - Social Engineering (4)
             { type: 'Phishing Campaign', severity: 'high', category: 'Social Engineering', ttps: ['T1566', 'T1204'], playbook: ['Identify affected users', 'Block malicious URLs', 'Quarantine emails', 'Scan endpoints'] },
+            { type: 'Business Email Compromise', severity: 'high', category: 'Social Engineering', ttps: ['T1566.002', 'T1534'], playbook: ['Verify financial requests', 'Check email rules', 'Review sent items', 'Notify finance'] },
+            { type: 'Spear Phishing Executive', severity: 'high', category: 'Social Engineering', ttps: ['T1566.001', 'T1598'], playbook: ['Executive device scan', 'Review email access', 'Check for forwarding', 'Security awareness'] },
+            { type: 'Vishing Attack Reported', severity: 'high', category: 'Social Engineering', ttps: ['T1566', 'T1204'], playbook: ['Document call details', 'Check for compliance', 'Alert security team', 'User awareness'] },
+            
+            // High - Network (5)
             { type: 'Lateral Movement', severity: 'high', category: 'Network', ttps: ['T1021', 'T1570'], playbook: ['Map affected systems', 'Review authentication logs', 'Check service accounts', 'Credential rotation'] },
+            { type: 'Network Intrusion Detected', severity: 'high', category: 'Network', ttps: ['T1190', 'T1133'], playbook: ['Identify entry point', 'Check firewall logs', 'Scan for implants', 'Patch vulnerabilities'] },
+            { type: 'DNS Tunneling Detected', severity: 'high', category: 'Network', ttps: ['T1071.004', 'T1048'], playbook: ['Block DNS server', 'Analyze query patterns', 'Check data exfil', 'DNS filtering'] },
+            { type: 'VPN Compromise', severity: 'high', category: 'Network', ttps: ['T1133', 'T1078'], playbook: ['Revoke VPN access', 'Check session logs', 'Audit user activity', 'Reset credentials'] },
+            { type: 'Man-in-the-Middle Attack', severity: 'high', category: 'Network', ttps: ['T1557', 'T1040'], playbook: ['Identify MITM point', 'Check certificates', 'Audit network traffic', 'Enable HSTS'] },
+            
+            // Medium - Execution (6)
             { type: 'Suspicious PowerShell', severity: 'medium', category: 'Execution', ttps: ['T1059.001', 'T1027'], playbook: ['Capture script content', 'Decode obfuscation', 'Check execution context', 'Review process tree'] },
-            { type: 'Web Shell Detected', severity: 'medium', category: 'Persistence', ttps: ['T1505.003', 'T1059'], playbook: ['Identify web shell location', 'Analyze shell capabilities', 'Check for data access', 'Remove and patch'] }
+            { type: 'WMI Abuse Detected', severity: 'medium', category: 'Execution', ttps: ['T1047', 'T1059'], playbook: ['Review WMI subscriptions', 'Check for persistence', 'Audit WMI logs', 'Disable unnecessary WMI'] },
+            { type: 'Macro Execution', severity: 'medium', category: 'Execution', ttps: ['T1059.005', 'T1204'], playbook: ['Quarantine document', 'Analyze macro code', 'Check for downloads', 'User education'] },
+            { type: 'Scheduled Task Abuse', severity: 'medium', category: 'Execution', ttps: ['T1053', 'T1059'], playbook: ['Review task scheduler', 'Check task actions', 'Audit task creation', 'Remove malicious tasks'] },
+            { type: 'LOLBIN Abuse', severity: 'medium', category: 'Execution', ttps: ['T1218', 'T1059'], playbook: ['Identify binary used', 'Check command line', 'Review parent process', 'Application whitelisting'] },
+            { type: 'Script Host Execution', severity: 'medium', category: 'Execution', ttps: ['T1059.005', 'T1059.007'], playbook: ['Capture script', 'Check network activity', 'Review child processes', 'Disable script hosts'] },
+            
+            // Medium - Persistence (5)
+            { type: 'Web Shell Detected', severity: 'medium', category: 'Persistence', ttps: ['T1505.003', 'T1059'], playbook: ['Identify web shell location', 'Analyze shell capabilities', 'Check for data access', 'Remove and patch'] },
+            { type: 'Registry Persistence', severity: 'medium', category: 'Persistence', ttps: ['T1547.001', 'T1112'], playbook: ['Identify registry key', 'Check autoruns', 'Remove persistence', 'Monitor for return'] },
+            { type: 'Service Installation', severity: 'medium', category: 'Persistence', ttps: ['T1543.003', 'T1569'], playbook: ['Identify service', 'Check service binary', 'Review permissions', 'Remove malicious service'] },
+            { type: 'DLL Hijacking', severity: 'medium', category: 'Persistence', ttps: ['T1574.001', 'T1574'], playbook: ['Identify hijacked DLL', 'Check application path', 'Replace with legitimate', 'Patch application'] },
+            { type: 'Startup Folder Modification', severity: 'medium', category: 'Persistence', ttps: ['T1547.001', 'T1204'], playbook: ['Check startup items', 'Remove malicious files', 'Audit folder access', 'Enable monitoring'] },
+            
+            // Medium - Other (6)
+            { type: 'Privilege Escalation Attempt', severity: 'medium', category: 'Privilege', ttps: ['T1068', 'T1548'], playbook: ['Identify escalation method', 'Check for exploitation', 'Patch vulnerability', 'Audit privileges'] },
+            { type: 'Insider Threat Indicator', severity: 'medium', category: 'Insider', ttps: ['T1078', 'T1213'], playbook: ['Review user activity', 'Check data access', 'HR coordination', 'Preserve evidence'] },
+            { type: 'Unauthorized Access Attempt', severity: 'medium', category: 'Access', ttps: ['T1078', 'T1110'], playbook: ['Review access logs', 'Check source IP', 'Verify user identity', 'Enable MFA'] },
+            { type: 'Cryptomining Detected', severity: 'medium', category: 'Resource', ttps: ['T1496', 'T1059'], playbook: ['Identify mining process', 'Check for spreading', 'Remove miner', 'Patch entry point'] },
+            { type: 'Policy Violation', severity: 'medium', category: 'Compliance', ttps: ['T1078', 'T1213'], playbook: ['Document violation', 'Assess risk', 'HR notification', 'Policy enforcement'] },
+            { type: 'Shadow IT Discovery', severity: 'medium', category: 'Compliance', ttps: ['T1199', 'T1078'], playbook: ['Identify service', 'Assess security', 'User notification', 'Onboard or block'] }
         ];
         
-        const analysts = ['John Smith', 'Sarah Chen', 'Mike Johnson', 'Emily Davis', 'Alex Turner'];
+        // Expanded analysts (25+)
+        const analysts = [
+            'John Smith', 'Sarah Chen', 'Mike Johnson', 'Emily Davis', 'Alex Turner',
+            'Jessica Williams', 'David Kim', 'Rachel Martinez', 'James Wilson', 'Amanda Brown',
+            'Christopher Lee', 'Michelle Garcia', 'Daniel Rodriguez', 'Ashley Taylor', 'Matthew Anderson',
+            'Stephanie Thomas', 'Andrew Jackson', 'Nicole White', 'Joshua Harris', 'Samantha Clark',
+            'Ryan Lewis', 'Brittany Walker', 'Kevin Hall', 'Megan Allen', 'Brian Young'
+        ];
+        
+        // Expanded domain IOCs (60+)
+        const maliciousDomains = [
+            'malware-c2.evil', 'data-exfil.bad', 'phish-server.net', 'cobalt-strike.xyz', 'beacon-srv.info',
+            'apt29-infra.ru', 'ransomware-pay.onion', 'cryptolocker.cc', 'emotet-c2.net', 'trickbot-srv.com',
+            'qakbot-relay.org', 'icedid-panel.net', 'bazarloader.xyz', 'ryuk-payment.cc', 'conti-leak.onion',
+            'lockbit-blog.onion', 'revil-decrypt.cc', 'darkside-srv.net', 'blackmatter.xyz', 'hive-ransom.cc',
+            'lazarus-c2.kp', 'apt41-staging.cn', 'fancy-bear.ru', 'cozy-bear.su', 'sandworm-ops.ua',
+            'turla-implant.info', 'equation-group.xyz', 'nsa-tools.net', 'shadow-brokers.onion', 'vault7-leak.cc',
+            'phishing-kit.net', 'credential-harvest.xyz', 'fake-login.info', 'o365-spoof.com', 'google-auth.net',
+            'microsoft-verify.xyz', 'apple-id-reset.info', 'amazon-secure.cc', 'paypal-confirm.net', 'bank-verify.xyz',
+            'dga-domain-1234.net', 'dga-domain-5678.com', 'fast-flux.xyz', 'bullet-proof.su', 'anon-hosting.ru',
+            'tor-exit-node.onion', 'proxy-chain.net', 'vpn-anonymous.xyz', 'crypto-mixer.cc', 'btc-tumbler.onion',
+            'exploit-kit.xyz', 'drive-by-download.net', 'malvertising.info', 'watering-hole.cc', 'typosquat-amaz0n.com',
+            'homoglyph-g00gle.net', 'punycode-apple.xyz', 'subdomain-takeover.info', 'dangling-dns.cc', 'expired-cert.net'
+        ];
+        
+        // Expanded file IOCs (50+)
+        const maliciousFiles = [
+            'payload.exe', 'dropper.dll', 'beacon.ps1', 'mimikatz.exe', 'pwdump.exe',
+            'lazagne.py', 'bloodhound.ps1', 'sharphound.exe', 'rubeus.exe', 'kekeo.exe',
+            'cobalt-strike.dll', 'meterpreter.exe', 'empire.ps1', 'covenant.exe', 'sliver.exe',
+            'emotet.doc', 'trickbot.xlsm', 'qakbot.zip', 'icedid.iso', 'bazarloader.lnk',
+            'ransomware.exe', 'encryptor.dll', 'decryptor.exe', 'readme-ransom.txt', 'how-to-decrypt.hta',
+            'webshell.aspx', 'c99shell.php', 'b374k.php', 'weevely.py', 'chopper.aspx',
+            'persistence.vbs', 'startup.bat', 'autorun.inf', 'task.xml', 'service.dll',
+            'keylogger.exe', 'screenlogger.dll', 'clipboard.ps1', 'webcam.exe', 'microphone.dll',
+            'exfil-tool.py', 'compress.7z', 'encrypt-data.exe', 'dns-tunnel.ps1', 'icmp-exfil.py',
+            'exploit.bin', 'shellcode.raw', 'rop-chain.bin', 'heap-spray.js', 'buffer-overflow.c'
+        ];
+        
+        // Expanded asset names (40+)
+        const assetNames = [
+            'WKS-001', 'SRV-DB-01', 'WKS-ADMIN', 'SRV-WEB-02', 'DC-PRIMARY',
+            'SRV-FILE-01', 'WKS-DEV-05', 'SRV-MAIL-01', 'WKS-HR-03', 'SRV-APP-02',
+            'WKS-FIN-07', 'SRV-BACKUP-01', 'WKS-EXEC-01', 'SRV-PROXY-01', 'DC-SECONDARY',
+            'WKS-IT-002', 'SRV-DNS-01', 'WKS-SALES-04', 'SRV-DHCP-01', 'WKS-LEGAL-02',
+            'SRV-SIEM-01', 'WKS-SEC-001', 'SRV-LOG-01', 'WKS-MKT-003', 'SRV-SCAN-01',
+            'LPT-REMOTE-01', 'SRV-JUMP-01', 'VDI-POOL-05', 'SRV-CITRIX-01', 'WKS-KIOSK-01',
+            'SRV-DOCKER-01', 'K8S-NODE-01', 'AWS-EC2-PROD', 'AZURE-VM-DEV', 'GCP-COMPUTE-01',
+            'IOT-SENSOR-15', 'CAM-LOBBY-01', 'PRINTER-FL3', 'VOIP-PHONE-42', 'BADGE-READER-05'
+        ];
+        
+        const assetTypes = ['Workstation', 'Server', 'Domain Controller', 'Laptop', 'Virtual Machine', 'Container', 'Cloud Instance', 'IoT Device'];
+        
+        // Expanded timeline events (30+)
+        const timelineEvents = [
+            { title: 'Initial Access Detected', desc: 'Suspicious login from external IP' },
+            { title: 'Malware Execution', desc: 'PowerShell script executed' },
+            { title: 'Persistence Established', desc: 'Registry modification detected' },
+            { title: 'Discovery Activity', desc: 'Network enumeration observed' },
+            { title: 'Credential Access', desc: 'LSASS memory access detected' },
+            { title: 'Lateral Movement', desc: 'RDP connection to secondary host' },
+            { title: 'Data Collection', desc: 'Archive creation in temp folder' },
+            { title: 'Exfiltration Attempt', desc: 'Large outbound data transfer' },
+            { title: 'Privilege Escalation', desc: 'UAC bypass technique used' },
+            { title: 'Defense Evasion', desc: 'Antivirus service disabled' },
+            { title: 'C2 Beacon', desc: 'Periodic HTTPS connections detected' },
+            { title: 'Reconnaissance', desc: 'AD enumeration via LDAP' },
+            { title: 'Email Compromise', desc: 'Forwarding rule created' },
+            { title: 'Phishing Click', desc: 'User accessed malicious URL' },
+            { title: 'Malware Download', desc: 'Executable downloaded from C2' },
+            { title: 'Process Injection', desc: 'Code injected into explorer.exe' },
+            { title: 'Token Theft', desc: 'Access token manipulation detected' },
+            { title: 'Scheduled Task', desc: 'Persistence via task scheduler' },
+            { title: 'Service Creation', desc: 'New service installed for persistence' },
+            { title: 'DLL Side-Loading', desc: 'Malicious DLL loaded by legitimate app' },
+            { title: 'Browser Credential Theft', desc: 'Chrome password database accessed' },
+            { title: 'Keylogger Active', desc: 'Keyboard hook installed' },
+            { title: 'Screen Capture', desc: 'Screenshot utility executed' },
+            { title: 'USB Data Copy', desc: 'Large file copy to removable media' },
+            { title: 'Cloud Upload', desc: 'Data uploaded to external cloud storage' },
+            { title: 'Encryption Started', desc: 'File encryption activity detected' },
+            { title: 'Ransom Note', desc: 'Ransom note file created' },
+            { title: 'Backup Deletion', desc: 'Shadow copies deleted' },
+            { title: 'Log Tampering', desc: 'Event log clearing detected' },
+            { title: 'Firewall Modified', desc: 'Firewall rules changed' }
+        ];
         
         let incidents = [];
         let selectedIncident = null;
@@ -771,8 +909,8 @@
                 switch(type) {
                     case 'ip': value = `${Math.floor(Math.random() * 223) + 1}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`; break;
                     case 'hash': value = Array(32).fill(0).map(() => '0123456789abcdef'[Math.floor(Math.random() * 16)]).join(''); break;
-                    case 'domain': value = ['malware-c2.evil', 'data-exfil.bad', 'phish-server.net'][Math.floor(Math.random() * 3)]; break;
-                    case 'file': value = ['payload.exe', 'dropper.dll', 'beacon.ps1'][Math.floor(Math.random() * 3)]; break;
+                    case 'domain': value = maliciousDomains[Math.floor(Math.random() * maliciousDomains.length)]; break;
+                    case 'file': value = maliciousFiles[Math.floor(Math.random() * maliciousFiles.length)]; break;
                 }
                 iocs.push({ type, value });
             }
@@ -780,13 +918,11 @@
         }
         
         function generateAssets() {
-            const names = ['WKS-001', 'SRV-DB-01', 'WKS-ADMIN', 'SRV-WEB-02'];
-            const types = ['Workstation', 'Server', 'Domain Controller'];
             const assets = [];
             for (let i = 0; i < Math.floor(Math.random() * 2) + 1; i++) {
                 assets.push({
-                    name: names[Math.floor(Math.random() * names.length)],
-                    type: types[Math.floor(Math.random() * types.length)],
+                    name: assetNames[Math.floor(Math.random() * assetNames.length)],
+                    type: assetTypes[Math.floor(Math.random() * assetTypes.length)],
                     status: ['compromised', 'at-risk', 'clean'][Math.floor(Math.random() * 3)]
                 });
             }
@@ -794,16 +930,12 @@
         }
         
         function generateTimeline(ttps) {
-            const events = [
-                { title: 'Initial Access Detected', desc: 'Suspicious login from external IP' },
-                { title: 'Malware Execution', desc: 'PowerShell script executed' },
-                { title: 'Persistence Established', desc: 'Registry modification detected' },
-                { title: 'Discovery Activity', desc: 'Network enumeration observed' }
-            ];
             const timeline = [];
             let time = Date.now() - 3600000;
-            for (let i = 0; i < Math.floor(Math.random() * 3) + 2; i++) {
-                const event = events[i % events.length];
+            const numEvents = Math.floor(Math.random() * 3) + 2;
+            const shuffled = [...timelineEvents].sort(() => Math.random() - 0.5);
+            for (let i = 0; i < numEvents; i++) {
+                const event = shuffled[i];
                 timeline.push({ time: new Date(time), title: event.title, description: event.desc, ttp: ttps[i % ttps.length] });
                 time += Math.floor(Math.random() * 600000) + 300000;
             }
@@ -846,7 +978,7 @@
             document.getElementById('ioc-list').innerHTML = selectedIncident.iocs.map(ioc => `<div class="ioc-item"><span class="ioc-type ${ioc.type}">${ioc.type.toUpperCase()}</span><span>${ioc.value}</span></div>`).join('');
             document.getElementById('assets-grid').innerHTML = selectedIncident.assets.map(asset => `
                 <div class="asset-item">
-                    <div class="asset-icon">${asset.type === 'Server' ? '🖥️' : '💻'}</div>
+                    <div class="asset-icon">${asset.type === 'Server' ? 'ðŸ–¥ï¸' : 'ðŸ’»'}</div>
                     <div class="asset-info"><div class="asset-name">${asset.name}</div><div class="asset-type">${asset.type}</div></div>
                     <div class="asset-status ${asset.status}"></div>
                 </div>
