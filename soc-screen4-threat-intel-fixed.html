@@ -26,8 +26,6 @@
             justify-content: space-between;
             align-items: center;
             border-bottom: 2px solid #9b59b6;
-            flex-wrap: wrap;
-            gap: 15px;
         }
         
         .header h1 {
@@ -40,7 +38,6 @@
             display: flex;
             gap: 30px;
             align-items: center;
-            flex-wrap: wrap;
         }
         
         .datetime {
@@ -51,7 +48,6 @@
         .endpoint-summary {
             display: flex;
             gap: 20px;
-            flex-wrap: wrap;
         }
         
         .endpoint-stat {
@@ -72,26 +68,25 @@
             text-transform: uppercase;
         }
         
-        /* FIXED: min-height and improved grid rows */
         .main-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
             grid-template-rows: auto minmax(280px, 1fr) minmax(280px, 1fr);
             gap: 15px;
             padding: 15px;
-            min-height: calc(100vh - 80px);
+            height: calc(100vh - 80px);
         }
         
-        /* FIXED: Proper flex container */
         .card {
             background: linear-gradient(145deg, #1e1e30 0%, #252540 100%);
             border-radius: 12px;
             padding: 15px;
             border: 1px solid #333;
             box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            overflow: hidden;
             display: flex;
             flex-direction: column;
-            min-height: 250px;
+            min-height: 280px;
         }
         
         .card-header {
@@ -101,7 +96,6 @@
             margin-bottom: 15px;
             padding-bottom: 10px;
             border-bottom: 1px solid #444;
-            flex-shrink: 0;
         }
         
         .card-title {
@@ -113,7 +107,6 @@
         /* Threat Feed Section */
         .threat-feed {
             grid-column: 1 / -1;
-            min-height: auto;
         }
         
         .feed-container {
@@ -174,20 +167,19 @@
             font-size: 0.75em;
         }
         
-        /* Endpoint Grid - FIXED: proper overflow handling */
+        /* Endpoint Grid */
         .endpoint-grid-section {
-            display: flex;
-            flex-direction: column;
+            overflow: hidden;
         }
         
         .endpoint-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
             gap: 10px;
             flex: 1;
+            min-height: 0;
             overflow-y: auto;
             padding-right: 5px;
-            min-height: 0;
         }
         
         .endpoint-grid::-webkit-scrollbar {
@@ -223,9 +215,6 @@
             font-size: 0.85em;
             font-weight: 600;
             margin-bottom: 5px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
         }
         
         .endpoint-status-indicator {
@@ -251,16 +240,15 @@
             color: #888;
         }
         
-        /* IOC Feed - FIXED: proper scrolling */
+        /* IOC Feed */
         .ioc-feed {
-            display: flex;
-            flex-direction: column;
+            overflow: hidden;
         }
         
         .ioc-list {
             flex: 1;
-            overflow-y: auto;
             min-height: 0;
+            overflow-y: auto;
         }
         
         .ioc-item {
@@ -287,7 +275,6 @@
             font-size: 0.75em;
             min-width: 55px;
             text-align: center;
-            flex-shrink: 0;
         }
         
         .ioc-type-badge.ip { background: rgba(231,76,60,0.3); color: #e74c3c; }
@@ -306,22 +293,20 @@
         .ioc-confidence {
             width: 60px;
             text-align: right;
-            flex-shrink: 0;
         }
         
         .confidence-high { color: #ff4757; }
         .confidence-medium { color: #ffa502; }
         .confidence-low { color: #2ed573; }
         
-        /* Vulnerability Panel - FIXED: proper scrolling */
+        /* Vulnerability Panel */
         .vuln-panel {
-            display: flex;
-            flex-direction: column;
+            overflow: hidden;
         }
         
         .vuln-summary {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 10px;
             margin-bottom: 15px;
             flex-shrink: 0;
@@ -346,8 +331,8 @@
         
         .vuln-list {
             flex: 1;
-            overflow-y: auto;
             min-height: 0;
+            overflow-y: auto;
         }
         
         .vuln-item {
@@ -368,8 +353,6 @@
             justify-content: space-between;
             align-items: flex-start;
             margin-bottom: 8px;
-            flex-wrap: wrap;
-            gap: 5px;
         }
         
         .vuln-cve {
@@ -398,16 +381,15 @@
             color: #888;
         }
         
-        /* EDR Alerts - FIXED: proper scrolling */
+        /* EDR Alerts */
         .edr-alerts {
-            display: flex;
-            flex-direction: column;
+            overflow: hidden;
         }
         
         .edr-list {
             flex: 1;
-            overflow-y: auto;
             min-height: 0;
+            overflow-y: auto;
         }
         
         .edr-alert {
@@ -428,8 +410,6 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 8px;
-            flex-wrap: wrap;
-            gap: 5px;
         }
         
         .edr-type {
@@ -450,7 +430,6 @@
             display: flex;
             gap: 20px;
             margin-top: 5px;
-            flex-wrap: wrap;
         }
         
         .edr-detail {
@@ -464,15 +443,16 @@
         
         /* Compliance Widget */
         .compliance-section {
-            display: flex;
-            flex-direction: column;
+            margin-top: auto;
         }
         
         .compliance-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 10px;
             flex: 1;
+            min-height: 0;
+            overflow-y: auto;
         }
         
         .compliance-item {
@@ -512,13 +492,10 @@
             display: flex;
             gap: 10px;
             margin-bottom: 15px;
-            flex-shrink: 0;
-            flex-wrap: wrap;
         }
         
         .search-input {
             flex: 1;
-            min-width: 150px;
             padding: 8px 12px;
             border: 1px solid #444;
             border-radius: 6px;
@@ -539,41 +516,6 @@
             background: rgba(0,0,0,0.3);
             color: #e0e0e0;
             cursor: pointer;
-        }
-        
-        /* FIXED: Responsive design */
-        @media (max-width: 1200px) {
-            .main-container {
-                grid-template-columns: 1fr;
-                grid-template-rows: auto repeat(5, minmax(280px, auto));
-            }
-            .threat-feed,
-            .endpoint-grid-section,
-            .ioc-feed,
-            .vuln-panel,
-            .edr-alerts,
-            .compliance-section {
-                grid-column: 1;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .header h1 {
-                font-size: 1.4em;
-            }
-            
-            .threat-card {
-                min-width: 220px;
-            }
-            
-            .endpoint-grid {
-                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            }
         }
     </style>
 </head>
@@ -616,7 +558,7 @@
         <!-- Endpoint Grid -->
         <div class="card endpoint-grid-section">
             <div class="card-header">
-                <span class="card-title">🖥️ Endpoint Status</span>
+                <span class="card-title">🖥️ Endpoint Status</span>
                 <span id="endpoint-total">0 endpoints</span>
             </div>
             <div class="search-box">
@@ -670,14 +612,14 @@
         <!-- EDR Alerts -->
         <div class="card edr-alerts">
             <div class="card-header">
-                <span class="card-title">🛡️ EDR Detection Alerts</span>
+                <span class="card-title">🛡️ EDR Detection Alerts</span>
                 <span id="edr-count">0 alerts</span>
             </div>
             <div class="edr-list" id="edr-list"></div>
         </div>
         
         <!-- Compliance -->
-        <div class="card compliance-section">
+        <div class="card">
             <div class="card-header">
                 <span class="card-title">📋 Compliance Status</span>
             </div>
@@ -686,1078 +628,438 @@
     </main>
     
     <script>
-        // EXPANDED threat sources (25+)
+        // Configuration
         const threatSources = [
-            'AlienVault OTX', 'MISP', 'VirusTotal', 'Mandiant', 'CrowdStrike', 'Recorded Future', 'Cisco Talos', 'Microsoft MSTIC',
-            'IBM X-Force', 'Palo Alto Unit 42', 'FireEye', 'Symantec', 'McAfee', 'Kaspersky GReAT', 'ESET',
-            'Proofpoint', 'Secureworks', 'Digital Shadows', 'RiskIQ', 'DomainTools', 'GreyNoise', 'Shodan',
-            'CISA', 'FBI IC3', 'US-CERT', 'NCSC-UK', 'ENISA'
+            'AlienVault OTX', 'MISP', 'VirusTotal', 'Mandiant', 'CrowdStrike', 'Recorded Future',
+            'Palo Alto Unit 42', 'Cisco Talos', 'Microsoft MSTIC', 'Google TAG', 'IBM X-Force',
+            'Proofpoint', 'Secureworks', 'SentinelOne', 'Symantec', 'ThreatConnect',
+            'Anomali', 'ESET', 'Kaspersky GReAT', 'FireEye', 'Trend Micro', 'Sophos',
+            'US-CERT', 'CISA', 'FS-ISAC', 'H-ISAC', 'FBI Flash', 'NSA Cybersecurity'
         ];
         
-        // EXPANDED threat intel types (50+)
         const threatIntelTypes = [
-            // Critical APT Campaigns (15)
+            // Critical APT Threats
             { title: 'APT29 Campaign Detected', tags: ['APT', 'Russia', 'Espionage'], severity: 'critical' },
-            { title: 'APT28 Phishing Infrastructure', tags: ['APT', 'Russia', 'Phishing'], severity: 'critical' },
-            { title: 'Lazarus Group Activity', tags: ['APT', 'DPRK', 'Financial'], severity: 'critical' },
+            { title: 'APT28 Targeting Active', tags: ['APT', 'Russia', 'GRU'], severity: 'critical' },
+            { title: 'Lazarus Group Activity', tags: ['APT', 'North Korea', 'Financial'], severity: 'critical' },
             { title: 'APT41 Supply Chain Attack', tags: ['APT', 'China', 'Supply Chain'], severity: 'critical' },
-            { title: 'Sandworm ICS Targeting', tags: ['APT', 'Russia', 'ICS'], severity: 'critical' },
-            { title: 'Turla Watering Hole', tags: ['APT', 'Russia', 'Watering Hole'], severity: 'critical' },
-            { title: 'Equation Group Tools Leaked', tags: ['APT', 'NSA', 'Exploit'], severity: 'critical' },
-            { title: 'Kimsuky Credential Harvesting', tags: ['APT', 'DPRK', 'Credential'], severity: 'critical' },
-            { title: 'OceanLotus New Implant', tags: ['APT', 'Vietnam', 'Espionage'], severity: 'critical' },
-            { title: 'MuddyWater PowerShell', tags: ['APT', 'Iran', 'PowerShell'], severity: 'critical' },
-            { title: 'Charming Kitten OAuth Abuse', tags: ['APT', 'Iran', 'OAuth'], severity: 'critical' },
-            { title: 'Gamaredon Targeting Ukraine', tags: ['APT', 'Russia', 'Ukraine'], severity: 'critical' },
-            { title: 'TA505 Malspam Campaign', tags: ['eCrime', 'Malspam', 'Banking'], severity: 'critical' },
-            { title: 'FIN7 Point-of-Sale Attack', tags: ['eCrime', 'POS', 'Financial'], severity: 'critical' },
-            { title: 'Evil Corp Sanctions Evasion', tags: ['eCrime', 'Russia', 'Ransomware'], severity: 'critical' },
-            // Critical Ransomware (12)
-            { title: 'New Ransomware Variant', tags: ['Ransomware', 'LockBit'], severity: 'critical' },
-            { title: 'Conti Successor Group', tags: ['Ransomware', 'Royal'], severity: 'critical' },
-            { title: 'BlackCat ALPHV Update', tags: ['Ransomware', 'Rust'], severity: 'critical' },
-            { title: 'Play Ransomware Campaign', tags: ['Ransomware', 'Healthcare'], severity: 'critical' },
-            { title: 'Cl0p MOVEit Exploitation', tags: ['Ransomware', 'Zero-Day'], severity: 'critical' },
-            { title: 'Akira Ransomware IOCs', tags: ['Ransomware', 'VMware'], severity: 'critical' },
-            { title: 'Black Basta Activity', tags: ['Ransomware', 'QakBot'], severity: 'critical' },
-            { title: 'Rhysida Healthcare Targets', tags: ['Ransomware', 'Healthcare'], severity: 'critical' },
-            { title: 'NoEscape RaaS Launch', tags: ['Ransomware', 'RaaS'], severity: 'critical' },
-            { title: 'Medusa Leak Site Update', tags: ['Ransomware', 'Extortion'], severity: 'critical' },
-            { title: 'Vice Society Education', tags: ['Ransomware', 'Education'], severity: 'critical' },
-            { title: 'BianLian Encryption Shift', tags: ['Ransomware', 'Extortion'], severity: 'critical' },
-            // Critical Other (8)
-            { title: 'Cobalt Strike Beacon IOCs', tags: ['C2', 'Red Team'], severity: 'critical' },
-            { title: 'Zero-Day Exploit Active', tags: ['0-day', 'CVE-2024'], severity: 'critical' },
-            { title: 'Supply Chain Compromise', tags: ['Supply Chain', 'NPM'], severity: 'high' },
-            { title: 'Wiper Malware Detection', tags: ['Wiper', 'Destructive'], severity: 'critical' },
-            { title: 'Botnet Infrastructure', tags: ['Botnet', 'DDoS'], severity: 'critical' },
-            { title: 'Emotet Resurgence', tags: ['Malware', 'Loader'], severity: 'critical' },
-            { title: 'QakBot New Variant', tags: ['Malware', 'Banking'], severity: 'critical' },
-            { title: 'IcedID Distribution', tags: ['Malware', 'Loader'], severity: 'critical' },
-            // High Severity (10)
+            { title: 'Sandworm Destructive Campaign', tags: ['APT', 'Russia', 'Wiper'], severity: 'critical' },
+            { title: 'Kimsuky Spearphishing Wave', tags: ['APT', 'North Korea', 'Phishing'], severity: 'critical' },
+            { title: 'APT10 Cloud Targeting', tags: ['APT', 'China', 'Cloud'], severity: 'critical' },
+            { title: 'Charming Kitten Operation', tags: ['APT', 'Iran', 'Credential'], severity: 'critical' },
+            // Ransomware
+            { title: 'New Ransomware Variant', tags: ['Ransomware', 'LockBit', 'Encryption'], severity: 'critical' },
+            { title: 'BlackCat/ALPHV Campaign', tags: ['Ransomware', 'RaaS', 'Double Extortion'], severity: 'critical' },
+            { title: 'Play Ransomware Active', tags: ['Ransomware', 'Play', 'Healthcare'], severity: 'critical' },
+            { title: 'Royal Ransomware IOCs', tags: ['Ransomware', 'Royal', 'Finance'], severity: 'critical' },
+            { title: 'Clop MOVEit Exploitation', tags: ['Ransomware', 'Clop', 'Zero-Day'], severity: 'critical' },
+            { title: 'Akira Ransomware Surge', tags: ['Ransomware', 'Akira', 'SMB'], severity: 'high' },
+            { title: 'Rhysida Targeting Education', tags: ['Ransomware', 'Rhysida', 'Education'], severity: 'high' },
+            // C2 & Malware
+            { title: 'Cobalt Strike Beacon IOCs', tags: ['C2', 'Red Team', 'Malware'], severity: 'critical' },
+            { title: 'Sliver C2 Framework Detected', tags: ['C2', 'Sliver', 'Open Source'], severity: 'high' },
+            { title: 'BruteRatel C4 Activity', tags: ['C2', 'BruteRatel', 'Red Team'], severity: 'high' },
+            { title: 'Emotet Resurgence', tags: ['Malware', 'Emotet', 'Loader'], severity: 'high' },
+            { title: 'QakBot Distribution', tags: ['Malware', 'QakBot', 'Banking'], severity: 'high' },
+            { title: 'IcedID Campaign Active', tags: ['Malware', 'IcedID', 'Loader'], severity: 'high' },
+            { title: 'AsyncRAT Deployment', tags: ['RAT', 'AsyncRAT', 'Remote Access'], severity: 'high' },
+            { title: 'Remcos RAT Infrastructure', tags: ['RAT', 'Remcos', 'C2'], severity: 'high' },
+            // Supply Chain & Vulns
+            { title: 'Supply Chain Compromise', tags: ['Supply Chain', 'NPM', 'Malicious Package'], severity: 'high' },
+            { title: 'Zero-Day Exploit Active', tags: ['0-day', 'CVE-2024', 'RCE'], severity: 'critical' },
+            { title: 'PyPI Malicious Package', tags: ['Supply Chain', 'Python', 'Typosquatting'], severity: 'high' },
+            { title: 'NPM Protestware Alert', tags: ['Supply Chain', 'NPM', 'Sabotage'], severity: 'medium' },
+            { title: 'GitHub Actions Compromise', tags: ['Supply Chain', 'CI/CD', 'Token Theft'], severity: 'high' },
+            // Phishing & Social
             { title: 'Phishing Kit Infrastructure', tags: ['Phishing', 'Credential Theft'], severity: 'high' },
-            { title: 'BEC Campaign Detected', tags: ['BEC', 'Wire Fraud'], severity: 'high' },
-            { title: 'Malvertising Network', tags: ['Malvertising', 'Exploit Kit'], severity: 'high' },
-            { title: 'Typosquatting Domains', tags: ['Phishing', 'Brand Abuse'], severity: 'high' },
-            { title: 'Credential Marketplace', tags: ['Dark Web', 'Credentials'], severity: 'high' },
-            { title: 'Stealer Malware Campaign', tags: ['Infostealer', 'RedLine'], severity: 'high' },
-            { title: 'RAT Distribution', tags: ['RAT', 'AsyncRAT'], severity: 'high' },
-            { title: 'Exploit Kit Activity', tags: ['Exploit Kit', 'Drive-by'], severity: 'high' },
-            { title: 'DDoS-for-Hire Service', tags: ['DDoS', 'Booter'], severity: 'high' },
-            { title: 'Insider Threat Indicators', tags: ['Insider', 'Data Theft'], severity: 'high' },
-            // Medium Severity (5)
-            { title: 'Cryptominer Distribution', tags: ['Cryptominer'], severity: 'medium' },
-            { title: 'Adware Campaign', tags: ['Adware', 'PUP'], severity: 'medium' },
-            { title: 'Tech Support Scam', tags: ['Scam', 'Social Engineering'], severity: 'medium' },
-            { title: 'Fake Update Campaign', tags: ['SocGholish', 'Drive-by'], severity: 'medium' },
-            { title: 'Browser Extension Malware', tags: ['Browser', 'Extension'], severity: 'medium' }
+            { title: 'BEC Campaign Finance Sector', tags: ['BEC', 'Wire Fraud', 'Finance'], severity: 'high' },
+            { title: 'QR Code Phishing Surge', tags: ['Phishing', 'QR Code', 'Mobile'], severity: 'medium' },
+            { title: 'OAuth Phishing Apps', tags: ['Phishing', 'OAuth', 'Cloud'], severity: 'high' },
+            { title: 'MFA Fatigue Attacks', tags: ['Social', 'MFA', 'Push Bombing'], severity: 'high' },
+            // Other
+            { title: 'Cryptominer Distribution', tags: ['Cryptominer', 'Resource Abuse'], severity: 'medium' },
+            { title: 'DDoS Botnet Expansion', tags: ['DDoS', 'Botnet', 'IoT'], severity: 'high' },
+            { title: 'Data Broker Leak Detected', tags: ['Data Leak', 'PII', 'Breach'], severity: 'high' },
+            { title: 'Malicious Browser Extension', tags: ['Browser', 'Adware', 'Spyware'], severity: 'medium' },
+            { title: 'Infostealer Campaign', tags: ['Infostealer', 'RedLine', 'Credential'], severity: 'high' },
+            { title: 'Formjacking Attack Wave', tags: ['Web', 'Magecart', 'Payment'], severity: 'high' },
+            { title: 'DNS Hijacking Campaign', tags: ['DNS', 'Hijacking', 'BGP'], severity: 'high' },
+            { title: 'Insider Threat Indicators', tags: ['Insider', 'Data Theft', 'UEBA'], severity: 'medium' }
         ];
         
-        // EXPANDED CVE list (35+)
         const cveList = [
+            // Critical RCE/Auth Bypass
             { id: 'CVE-2024-21887', title: 'Ivanti Connect Secure RCE', cvss: 9.8, severity: 'critical', affected: '47 systems' },
-            { id: 'CVE-2024-1709', title: 'ConnectWise Auth Bypass', cvss: 10.0, severity: 'critical', affected: '12 systems' },
+            { id: 'CVE-2024-1709', title: 'ConnectWise ScreenConnect Auth Bypass', cvss: 10.0, severity: 'critical', affected: '12 systems' },
+            { id: 'CVE-2024-27198', title: 'JetBrains TeamCity Auth Bypass', cvss: 9.8, severity: 'critical', affected: '3 systems' },
             { id: 'CVE-2024-3094', title: 'XZ Utils Backdoor', cvss: 10.0, severity: 'critical', affected: '156 systems' },
+            { id: 'CVE-2024-21762', title: 'FortiOS SSLVPN RCE', cvss: 9.6, severity: 'critical', affected: '5 systems' },
+            { id: 'CVE-2024-23897', title: 'Jenkins Arbitrary File Read', cvss: 9.8, severity: 'critical', affected: '2 systems' },
+            { id: 'CVE-2024-21893', title: 'Ivanti SSRF Vulnerability', cvss: 8.2, severity: 'high', affected: '47 systems' },
+            { id: 'CVE-2024-20931', title: 'Oracle WebLogic RCE', cvss: 9.8, severity: 'critical', affected: '8 systems' },
+            { id: 'CVE-2024-29849', title: 'Veeam Backup RCE', cvss: 9.8, severity: 'critical', affected: '4 systems' },
+            { id: 'CVE-2024-4577', title: 'PHP-CGI Argument Injection', cvss: 9.8, severity: 'critical', affected: '23 systems' },
             { id: 'CVE-2024-6387', title: 'OpenSSH RegreSSHion', cvss: 8.1, severity: 'high', affected: '312 systems' },
-            { id: 'CVE-2024-0204', title: 'GoAnywhere MFT RCE', cvss: 9.8, severity: 'critical', affected: '8 systems' },
-            { id: 'CVE-2024-21893', title: 'Ivanti SSRF Vulnerability', cvss: 8.2, severity: 'high', affected: '45 systems' },
-            { id: 'CVE-2024-27198', title: 'TeamCity Auth Bypass', cvss: 9.8, severity: 'critical', affected: '15 systems' },
-            { id: 'CVE-2024-1708', title: 'ConnectWise Path Traversal', cvss: 8.4, severity: 'high', affected: '12 systems' },
-            { id: 'CVE-2024-20353', title: 'Cisco ASA WebVPN DoS', cvss: 8.6, severity: 'high', affected: '28 systems' },
-            { id: 'CVE-2024-20359', title: 'Cisco ASA Code Execution', cvss: 6.0, severity: 'medium', affected: '28 systems' },
-            { id: 'CVE-2024-3400', title: 'Palo Alto PAN-OS RCE', cvss: 10.0, severity: 'critical', affected: '67 systems' },
-            { id: 'CVE-2024-21762', title: 'Fortinet FortiOS RCE', cvss: 9.8, severity: 'critical', affected: '89 systems' },
-            { id: 'CVE-2024-23897', title: 'Jenkins Arbitrary File Read', cvss: 9.8, severity: 'critical', affected: '34 systems' },
-            { id: 'CVE-2024-4577', title: 'PHP CGI Argument Injection', cvss: 9.8, severity: 'critical', affected: '156 systems' },
-            { id: 'CVE-2024-28995', title: 'SolarWinds Serv-U Path Traversal', cvss: 8.6, severity: 'high', affected: '23 systems' },
-            { id: 'CVE-2024-5806', title: 'MOVEit Transfer Auth Bypass', cvss: 9.1, severity: 'critical', affected: '19 systems' },
-            { id: 'CVE-2024-6327', title: 'Telerik Report Server RCE', cvss: 9.9, severity: 'critical', affected: '7 systems' },
-            { id: 'CVE-2024-38077', title: 'Windows RDL Service RCE', cvss: 9.8, severity: 'critical', affected: '234 systems' },
-            { id: 'CVE-2024-38063', title: 'Windows TCP/IP RCE', cvss: 9.8, severity: 'critical', affected: '567 systems' },
-            { id: 'CVE-2024-38178', title: 'Windows Scripting Engine RCE', cvss: 7.5, severity: 'high', affected: '445 systems' },
-            { id: 'CVE-2024-30088', title: 'Windows Kernel Elevation', cvss: 7.0, severity: 'high', affected: '678 systems' },
-            { id: 'CVE-2024-37085', title: 'VMware ESXi Auth Bypass', cvss: 9.8, severity: 'critical', affected: '45 systems' },
-            { id: 'CVE-2024-22252', title: 'VMware Workstation Use-After-Free', cvss: 9.3, severity: 'critical', affected: '123 systems' },
-            { id: 'CVE-2024-20767', title: 'ColdFusion Access Control Bypass', cvss: 8.2, severity: 'high', affected: '18 systems' },
-            { id: 'CVE-2024-27348', title: 'Apache HugeGraph RCE', cvss: 9.8, severity: 'critical', affected: '5 systems' },
-            { id: 'CVE-2024-27316', title: 'Apache HTTP Server DoS', cvss: 7.5, severity: 'high', affected: '234 systems' },
-            { id: 'CVE-2024-4040', title: 'CrushFTP VFS Escape', cvss: 9.8, severity: 'critical', affected: '12 systems' },
-            { id: 'CVE-2024-1212', title: 'Progress Kemp LoadMaster RCE', cvss: 10.0, severity: 'critical', affected: '8 systems' },
-            { id: 'CVE-2024-36401', title: 'GeoServer RCE', cvss: 9.8, severity: 'critical', affected: '15 systems' },
-            { id: 'CVE-2024-29824', title: 'Ivanti EPM SQL Injection', cvss: 9.6, severity: 'critical', affected: '34 systems' },
-            { id: 'CVE-2024-8190', title: 'Ivanti CSA OS Command Injection', cvss: 7.2, severity: 'high', affected: '23 systems' },
-            { id: 'CVE-2024-8963', title: 'Ivanti CSA Path Traversal', cvss: 9.4, severity: 'critical', affected: '23 systems' },
-            { id: 'CVE-2024-11667', title: 'Zyxel Firewall Command Injection', cvss: 9.8, severity: 'critical', affected: '78 systems' },
-            { id: 'CVE-2024-50623', title: 'Cleo Integration RCE', cvss: 9.8, severity: 'critical', affected: '45 systems' },
-            { id: 'CVE-2024-12356', title: 'BeyondTrust RS Command Injection', cvss: 9.8, severity: 'critical', affected: '12 systems' }
+            { id: 'CVE-2024-38856', title: 'Apache OFBiz RCE', cvss: 9.8, severity: 'critical', affected: '2 systems' },
+            // High severity
+            { id: 'CVE-2024-20353', title: 'Cisco ASA DoS Vulnerability', cvss: 8.6, severity: 'high', affected: '8 systems' },
+            { id: 'CVE-2024-0519', title: 'Chrome V8 Memory Corruption', cvss: 8.8, severity: 'high', affected: '892 systems' },
+            { id: 'CVE-2024-3400', title: 'Palo Alto PAN-OS Command Injection', cvss: 10.0, severity: 'critical', affected: '6 systems' },
+            { id: 'CVE-2024-21412', title: 'Windows SmartScreen Bypass', cvss: 8.1, severity: 'high', affected: '1247 systems' },
+            { id: 'CVE-2024-21351', title: 'Windows SmartScreen Bypass 2', cvss: 7.6, severity: 'high', affected: '1247 systems' },
+            { id: 'CVE-2024-30088', title: 'Windows Kernel Elevation of Privilege', cvss: 7.0, severity: 'high', affected: '1543 systems' },
+            { id: 'CVE-2024-38063', title: 'Windows TCP/IP RCE', cvss: 9.8, severity: 'critical', affected: '1543 systems' },
+            { id: 'CVE-2024-38077', title: 'Windows RD Licensing RCE', cvss: 9.8, severity: 'critical', affected: '45 systems' },
+            { id: 'CVE-2024-43461', title: 'Windows MSHTML Spoofing', cvss: 8.8, severity: 'high', affected: '1543 systems' },
+            { id: 'CVE-2024-9680', title: 'Firefox Use-After-Free', cvss: 9.8, severity: 'critical', affected: '423 systems' },
+            { id: 'CVE-2024-43573', title: 'Windows MSHTML RCE', cvss: 8.1, severity: 'high', affected: '1543 systems' },
+            { id: 'CVE-2024-47575', title: 'Fortinet FortiManager RCE', cvss: 9.8, severity: 'critical', affected: '3 systems' },
+            // Medium severity
+            { id: 'CVE-2024-22024', title: 'Ivanti XXE Vulnerability', cvss: 6.5, severity: 'medium', affected: '47 systems' },
+            { id: 'CVE-2024-5806', title: 'MOVEit SQL Injection', cvss: 6.5, severity: 'medium', affected: '8 systems' },
+            { id: 'CVE-2024-27322', title: 'R Language Deserialization', cvss: 8.8, severity: 'high', affected: '12 systems' },
+            { id: 'CVE-2024-4040', title: 'CrushFTP VFS Sandbox Escape', cvss: 7.2, severity: 'high', affected: '2 systems' }
         ];
         
-        // EXPANDED EDR alert types (20+)
         const edrAlertTypes = [
-            { type: 'Malware Detected', category: 'malware', details: ['Trojan.GenericKD', 'Ransomware.Locky', 'Backdoor.Cobalt', 'Trojan.Emotet', 'Worm.Conficker', 'Virus.Sality'] },
-            { type: 'Suspicious Process', category: 'suspicious', details: ['PowerShell encoded command', 'LSASS memory access', 'Rundll32 suspicious args', 'WMI process spawn', 'Mshta script execution', 'Regsvr32 network activity'] },
-            { type: 'PUP Detected', category: 'pup', details: ['Adware.BrowserModifier', 'PUP.ToolbarInstaller', 'PUP.BundledInstaller', 'Adware.Vonteera', 'PUP.CryptoMiner'] },
-            { type: 'Threat Blocked', category: 'blocked', details: ['Exploit attempt blocked', 'C2 connection blocked', 'Malicious download blocked', 'Script execution blocked', 'Process injection blocked'] },
-            { type: 'Ransomware Behavior', category: 'malware', details: ['Mass file encryption', 'Shadow copy deletion', 'Ransom note creation', 'File extension change', 'Recovery key deletion'] },
-            { type: 'Credential Theft', category: 'suspicious', details: ['Mimikatz execution', 'SAM database access', 'Credential file access', 'Browser password dump', 'DPAPI abuse'] },
-            { type: 'Lateral Movement', category: 'suspicious', details: ['PsExec execution', 'WMI remote execution', 'RDP brute force', 'SMB share access', 'Pass-the-hash detected'] },
-            { type: 'Persistence Mechanism', category: 'suspicious', details: ['Registry autorun modified', 'Scheduled task created', 'Service installed', 'Startup folder modified', 'WMI subscription created'] },
-            { type: 'Data Exfiltration', category: 'suspicious', details: ['Large archive created', 'Cloud upload detected', 'FTP transfer detected', 'USB mass copy', 'DNS tunneling'] },
-            { type: 'Defense Evasion', category: 'suspicious', details: ['AV service stopped', 'Event log cleared', 'Timestomping detected', 'Process injection', 'AMSI bypass'] },
-            { type: 'Reconnaissance', category: 'suspicious', details: ['Network enumeration', 'AD query detected', 'Port scanning', 'Service discovery', 'User enumeration'] },
-            { type: 'Exploit Attempt', category: 'blocked', details: ['Buffer overflow blocked', 'Heap spray blocked', 'ROP chain detected', 'Use-after-free blocked'] },
-            { type: 'Fileless Attack', category: 'suspicious', details: ['Memory-only payload', 'Reflective DLL injection', 'Process hollowing', 'Living-off-the-land'] },
-            { type: 'Backdoor Activity', category: 'malware', details: ['Reverse shell detected', 'Beacon communication', 'Web shell access', 'RAT connection'] },
-            { type: 'Cryptominer', category: 'pup', details: ['XMRig detected', 'CPU spike anomaly', 'Mining pool connection', 'Stratum protocol'] },
-            { type: 'Rootkit Detected', category: 'malware', details: ['Hidden process found', 'Kernel hook detected', 'Driver manipulation', 'SSDT modification'] },
-            { type: 'Botnet Activity', category: 'malware', details: ['IRC communication', 'DDoS participation', 'Spam relay', 'Botnet check-in'] },
-            { type: 'Phishing Response', category: 'suspicious', details: ['Credential form submit', 'OAuth consent given', 'MFA code entered', 'Attachment executed'] },
-            { type: 'Insider Threat', category: 'suspicious', details: ['Mass file download', 'Email forwarding rule', 'Unusual access time', 'Privilege escalation attempt'] },
-            { type: 'Supply Chain', category: 'suspicious', details: ['Unsigned update', 'Compromised package', 'Typosquat dependency', 'Modified installer'] }
-        ];
-        
-        // EXPANDED endpoint types
-        const endpointTypes = [
-            { prefix: 'WKS', icon: '💻', type: 'Workstation' },
-            { prefix: 'SRV', icon: '🖥️', type: 'Server' },
-            { prefix: 'LPT', icon: '💼', type: 'Laptop' },
-            { prefix: 'VDI', icon: '🖥️', type: 'Virtual Desktop' },
-            { prefix: 'DC', icon: '🏛️', type: 'Domain Controller' },
-            { prefix: 'DB', icon: '🗄️', type: 'Database Server' },
-            { prefix: 'WEB', icon: '🌐', type: 'Web Server' },
-            { prefix: 'APP', icon: '📦', type: 'Application Server' },
-            { prefix: 'FILE', icon: '📁', type: 'File Server' },
-            { prefix: 'MAIL', icon: '📧', type: 'Mail Server' }
-        ];
-        
-        // EXPANDED EDR users
-        const edrUsers = [
-            'SYSTEM', 'admin', 'jsmith', 'mjohnson', 'agarcia', 'rwilliams', 'kbrown',
-            'LOCAL_SERVICE', 'NETWORK_SERVICE', 'svc_backup', 'svc_sql', 'svc_web',
-            'administrator', 'root', 'ldavis', 'cmiller', 'dwilson', 'jmoore',
-            'deploy_user', 'jenkins', 'ansible', 'terraform', 'automation'
+            { type: 'Malware Detected', category: 'malware', details: ['Trojan.GenericKD', 'Ransomware.Locky', 'Backdoor.Cobalt', 'Trojan.Emotet', 'Ransomware.LockBit', 'Backdoor.Sliver', 'Trojan.QakBot', 'Ransomware.BlackCat', 'Backdoor.BruteRatel', 'Trojan.IcedID', 'Ransomware.Royal', 'Infostealer.RedLine'] },
+            { type: 'Suspicious Process', category: 'suspicious', details: ['PowerShell encoded command', 'LSASS memory access', 'Scheduled task creation', 'WMI command execution', 'Mimikatz signature', 'Credential dumping', 'Registry persistence', 'DLL injection detected', 'Process hollowing', 'Parent process spoofing', 'Token manipulation', 'Named pipe impersonation'] },
+            { type: 'PUP Detected', category: 'pup', details: ['Adware.BrowserModifier', 'PUP.ToolbarInstaller', 'Bundleware detected', 'Adware.SearchHijacker', 'PUP.OptimizationTool', 'Adware.PopupGenerator', 'PUP.SystemCleaner', 'Adware.CookieTracker', 'PUP.DriverUpdater', 'Adware.BrowserExtension'] },
+            { type: 'Threat Blocked', category: 'blocked', details: ['Exploit attempt blocked', 'Malicious download prevented', 'C2 connection blocked', 'Ransomware behavior stopped', 'Credential theft prevented', 'Script execution blocked', 'Lateral movement stopped', 'Data exfiltration blocked', 'USB malware quarantined', 'Phishing payload blocked'] },
+            { type: 'Behavioral Alert', category: 'behavior', details: ['Unusual process chain', 'Suspicious file access', 'Abnormal network activity', 'Off-hours login', 'Mass file modification', 'Shadow copy deletion', 'Boot config modification', 'Security tool tampering', 'Unusual child process', 'High entropy file write'] },
+            { type: 'Exploit Detected', category: 'exploit', details: ['Buffer overflow attempt', 'Heap spray detected', 'ROP chain execution', 'Use-after-free exploit', 'Integer overflow', 'Format string attack', 'Stack pivoting', 'Shellcode execution', 'Return-to-libc', 'JIT spray detected'] }
         ];
         
         const complianceFrameworks = [
-            { name: 'NIST CSF' }, { name: 'ISO 27001' }, { name: 'PCI-DSS' },
-            { name: 'HIPAA' }, { name: 'SOC 2' }, { name: 'CIS Controls' },
-            { name: 'GDPR' }, { name: 'CCPA' }, { name: 'FedRAMP' },
-            { name: 'CMMC' }, { name: 'NERC CIP' }, { name: 'SOX' }
+            { name: 'NIST CSF', score: 0 },
+            { name: 'ISO 27001', score: 0 },
+            { name: 'PCI-DSS', score: 0 },
+            { name: 'HIPAA', score: 0 },
+            { name: 'SOC 2', score: 0 },
+            { name: 'CIS Controls', score: 0 },
+            { name: 'GDPR', score: 0 },
+            { name: 'CCPA', score: 0 },
+            { name: 'CMMC', score: 0 },
+            { name: 'FedRAMP', score: 0 }
         ];
         
+        // State
         let endpoints = [];
         let iocs = [];
         let edrAlerts = [];
         let currentFilter = 'all';
         let searchTerm = '';
         
-        function generateEndpoints() {
-            const statuses = ['healthy', 'healthy', 'healthy', 'healthy', 'warning', 'warning', 'critical', 'offline'];
-            
-            for (let i = 0; i < 80; i++) {
-                const typeInfo = endpointTypes[Math.floor(Math.random() * endpointTypes.length)];
-                endpoints.push({
-                    id: `${typeInfo.prefix}-${String(Math.floor(Math.random() * 999) + 1).padStart(3, '0')}`,
-                    type: typeInfo.type,
-                    icon: typeInfo.icon,
-                    status: statuses[Math.floor(Math.random() * statuses.length)]
-                });
-            }
-        }
-        
-        function generateIOC() {
-            const types = ['ip', 'hash', 'domain', 'url', 'cve'];
-            const type = types[Math.floor(Math.random() * types.length)];
-            let value;
-            switch(type) {
-                case 'ip': value = `${Math.floor(Math.random() * 223) + 1}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`; break;
-                case 'hash': value = Array(32).fill(0).map(() => '0123456789abcdef'[Math.floor(Math.random() * 16)]).join(''); break;
-                case 'domain': value = `${Math.random().toString(36).substring(7)}.malware.com`; break;
-                case 'url': value = `https://mal${Math.random().toString(36).substring(7)}.com/payload.exe`; break;
-                case 'cve': value = `CVE-2024-${Math.floor(Math.random() * 9999)}`; break;
-            }
-            return { type, value, confidence: ['high', 'medium', 'low'][Math.floor(Math.random() * 3)], source: threatSources[Math.floor(Math.random() * threatSources.length)] };
-        }
-        
-        function generateEDRAlert() {
-            const template = edrAlertTypes[Math.floor(Math.random() * edrAlertTypes.length)];
-            const endpoint = endpoints[Math.floor(Math.random() * endpoints.length)];
-            return {
-                type: template.type,
-                category: template.category,
-                detail: template.details[Math.floor(Math.random() * template.details.length)],
-                endpoint: endpoint ? endpoint.id : 'WKS-001',
-                user: edrUsers[Math.floor(Math.random() * edrUsers.length)],
-                time: new Date()
-            };
-        }
-        
-        function renderThreatFeed() {
-            // Shuffle and take first 8 for variety
-            const shuffled = [...threatIntelTypes].sort(() => Math.random() - 0.5).slice(0, 8);
-            document.getElementById('threat-feed').innerHTML = shuffled.map(threat => `
-                <div class="threat-card ${threat.severity}">
-                    <div class="threat-source"><span>📡</span><span>${threatSources[Math.floor(Math.random() * threatSources.length)]}</span><span style="margin-left: auto; color: #666;">${Math.floor(Math.random() * 60)}m ago</span></div>
-                    <div class="threat-title">${threat.title}</div>
-                    <div class="threat-tags">${threat.tags.map(tag => `<span class="threat-tag">${tag}</span>`).join('')}</div>
-                </div>
-            `).join('');
-        }l lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOC Screen 4: Threat Intel & Endpoint Status</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 100%);
-            color: #e0e0e0;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-        
-        .header {
-            background: linear-gradient(90deg, #1a1a2e 0%, #16213e 100%);
-            padding: 15px 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid #9b59b6;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        
-        .header h1 {
-            font-size: 1.8em;
-            color: #9b59b6;
-            text-shadow: 0 0 10px rgba(155, 89, 182, 0.5);
-        }
-        
-        .header-info {
-            display: flex;
-            gap: 30px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        
-        .datetime {
-            font-size: 1.1em;
-            color: #9b59b6;
-        }
-        
-        .endpoint-summary {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .endpoint-stat {
-            text-align: center;
-            padding: 5px 15px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 8px;
-        }
-        
-        .endpoint-stat-value {
-            font-size: 1.3em;
-            font-weight: bold;
-        }
-        
-        .endpoint-stat-label {
-            font-size: 0.7em;
-            color: #888;
-            text-transform: uppercase;
-        }
-        
-        /* FIXED: min-height and improved grid rows */
-        .main-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-template-rows: auto minmax(280px, 1fr) minmax(280px, 1fr);
-            gap: 15px;
-            padding: 15px;
-            min-height: calc(100vh - 80px);
-        }
-        
-        /* FIXED: Proper flex container */
-        .card {
-            background: linear-gradient(145deg, #1e1e30 0%, #252540 100%);
-            border-radius: 12px;
-            padding: 15px;
-            border: 1px solid #333;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-            display: flex;
-            flex-direction: column;
-            min-height: 250px;
-        }
-        
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #444;
-            flex-shrink: 0;
-        }
-        
-        .card-title {
-            font-size: 1em;
-            color: #9b59b6;
-            font-weight: 600;
-        }
-        
-        /* Threat Feed Section */
-        .threat-feed {
-            grid-column: 1 / -1;
-            min-height: auto;
-        }
-        
-        .feed-container {
-            display: flex;
-            gap: 15px;
-            overflow-x: auto;
-            padding-bottom: 10px;
-        }
-        
-        .feed-container::-webkit-scrollbar {
-            height: 6px;
-        }
-        
-        .feed-container::-webkit-scrollbar-thumb {
-            background: #9b59b6;
-            border-radius: 3px;
-        }
-        
-        .threat-card {
-            min-width: 280px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 10px;
-            padding: 15px;
-            border-left: 4px solid;
-            flex-shrink: 0;
-        }
-        
-        .threat-card.critical { border-left-color: #ff4757; }
-        .threat-card.high { border-left-color: #ffa502; }
-        .threat-card.medium { border-left-color: #ffd43b; }
-        
-        .threat-source {
-            font-size: 0.75em;
-            color: #888;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .threat-title {
-            font-weight: 600;
-            margin-bottom: 8px;
-            font-size: 0.95em;
-        }
-        
-        .threat-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-        }
-        
-        .threat-tag {
-            padding: 2px 8px;
-            background: rgba(155, 89, 182, 0.2);
-            color: #9b59b6;
-            border-radius: 10px;
-            font-size: 0.75em;
-        }
-        
-        /* Endpoint Grid - FIXED: proper overflow handling */
-        .endpoint-grid-section {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .endpoint-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 10px;
-            flex: 1;
-            overflow-y: auto;
-            padding-right: 5px;
-            min-height: 0;
-        }
-        
-        .endpoint-grid::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        .endpoint-grid::-webkit-scrollbar-thumb {
-            background: #9b59b6;
-            border-radius: 3px;
-        }
-        
-        .endpoint-tile {
-            background: rgba(0,0,0,0.3);
-            border-radius: 8px;
-            padding: 12px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: 1px solid transparent;
-        }
-        
-        .endpoint-tile:hover {
-            border-color: #9b59b6;
-            transform: translateY(-2px);
-        }
-        
-        .endpoint-icon {
-            font-size: 2em;
-            margin-bottom: 8px;
-        }
-        
-        .endpoint-name {
-            font-size: 0.85em;
-            font-weight: 600;
-            margin-bottom: 5px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        
-        .endpoint-status-indicator {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin-right: 5px;
-        }
-        
-        .endpoint-status-indicator.healthy { background: #2ed573; }
-        .endpoint-status-indicator.warning { background: #ffa502; animation: blink 1s infinite; }
-        .endpoint-status-indicator.critical { background: #ff4757; animation: blink 0.5s infinite; }
-        .endpoint-status-indicator.offline { background: #666; }
-        
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-        
-        .endpoint-details {
-            font-size: 0.75em;
-            color: #888;
-        }
-        
-        /* IOC Feed - FIXED: proper scrolling */
-        .ioc-feed {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .ioc-list {
-            flex: 1;
-            overflow-y: auto;
-            min-height: 0;
-        }
-        
-        .ioc-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 6px;
-            margin-bottom: 8px;
-            font-family: monospace;
-            font-size: 0.85em;
-            animation: slideIn 0.3s ease;
-        }
-        
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-10px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-        
-        .ioc-type-badge {
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 0.75em;
-            min-width: 55px;
-            text-align: center;
-            flex-shrink: 0;
-        }
-        
-        .ioc-type-badge.ip { background: rgba(231,76,60,0.3); color: #e74c3c; }
-        .ioc-type-badge.hash { background: rgba(155,89,182,0.3); color: #9b59b6; }
-        .ioc-type-badge.domain { background: rgba(52,152,219,0.3); color: #3498db; }
-        .ioc-type-badge.url { background: rgba(46,213,115,0.3); color: #2ed573; }
-        .ioc-type-badge.cve { background: rgba(241,196,15,0.3); color: #f1c40f; }
-        
-        .ioc-value {
-            flex: 1;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        
-        .ioc-confidence {
-            width: 60px;
-            text-align: right;
-            flex-shrink: 0;
-        }
-        
-        .confidence-high { color: #ff4757; }
-        .confidence-medium { color: #ffa502; }
-        .confidence-low { color: #2ed573; }
-        
-        /* Vulnerability Panel - FIXED: proper scrolling */
-        .vuln-panel {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .vuln-summary {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
-            gap: 10px;
-            margin-bottom: 15px;
-            flex-shrink: 0;
-        }
-        
-        .vuln-stat {
-            background: rgba(0,0,0,0.3);
-            padding: 12px;
-            border-radius: 8px;
-            text-align: center;
-        }
-        
-        .vuln-stat-value {
-            font-size: 1.8em;
-            font-weight: bold;
-        }
-        
-        .vuln-stat-label {
-            font-size: 0.75em;
-            color: #888;
-        }
-        
-        .vuln-list {
-            flex: 1;
-            overflow-y: auto;
-            min-height: 0;
-        }
-        
-        .vuln-item {
-            background: rgba(0,0,0,0.2);
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 10px;
-            border-left: 4px solid;
-        }
-        
-        .vuln-item.critical { border-left-color: #ff4757; }
-        .vuln-item.high { border-left-color: #ffa502; }
-        .vuln-item.medium { border-left-color: #ffd43b; }
-        .vuln-item.low { border-left-color: #2ed573; }
-        
-        .vuln-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 8px;
-            flex-wrap: wrap;
-            gap: 5px;
-        }
-        
-        .vuln-cve {
-            font-weight: 600;
-            color: #9b59b6;
-        }
-        
-        .vuln-cvss {
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 0.8em;
-            font-weight: bold;
-        }
-        
-        .cvss-critical { background: rgba(255,71,87,0.3); color: #ff4757; }
-        .cvss-high { background: rgba(255,165,2,0.3); color: #ffa502; }
-        .cvss-medium { background: rgba(255,212,59,0.3); color: #ffd43b; }
-        
-        .vuln-title {
-            font-size: 0.9em;
-            margin-bottom: 5px;
-        }
-        
-        .vuln-affected {
-            font-size: 0.8em;
-            color: #888;
-        }
-        
-        /* EDR Alerts - FIXED: proper scrolling */
-        .edr-alerts {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .edr-list {
-            flex: 1;
-            overflow-y: auto;
-            min-height: 0;
-        }
-        
-        .edr-alert {
-            background: rgba(0,0,0,0.2);
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 10px;
-            border-left: 4px solid;
-        }
-        
-        .edr-alert.malware { border-left-color: #ff4757; }
-        .edr-alert.suspicious { border-left-color: #ffa502; }
-        .edr-alert.pup { border-left-color: #ffd43b; }
-        .edr-alert.blocked { border-left-color: #2ed573; }
-        
-        .edr-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-            flex-wrap: wrap;
-            gap: 5px;
-        }
-        
-        .edr-type {
-            font-weight: 600;
-        }
-        
-        .edr-time {
-            font-size: 0.8em;
-            color: #888;
-        }
-        
-        .edr-details {
-            font-size: 0.85em;
-            color: #aaa;
-        }
-        
-        .edr-details-row {
-            display: flex;
-            gap: 20px;
-            margin-top: 5px;
-            flex-wrap: wrap;
-        }
-        
-        .edr-detail {
-            display: flex;
-            gap: 5px;
-        }
-        
-        .edr-detail-label {
-            color: #666;
-        }
-        
-        /* Compliance Widget */
-        .compliance-section {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .compliance-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            gap: 10px;
-            flex: 1;
-        }
-        
-        .compliance-item {
-            background: rgba(0,0,0,0.2);
-            border-radius: 8px;
-            padding: 15px;
-            text-align: center;
-        }
-        
-        .compliance-score {
-            font-size: 1.5em;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        
-        .compliance-label {
-            font-size: 0.8em;
-            color: #888;
-        }
-        
-        .compliance-bar {
-            height: 4px;
-            background: #333;
-            border-radius: 2px;
-            margin-top: 8px;
-            overflow: hidden;
-        }
-        
-        .compliance-fill {
-            height: 100%;
-            border-radius: 2px;
-            transition: width 0.5s ease;
-        }
-        
-        /* Search/Filter */
-        .search-box {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-            flex-shrink: 0;
-            flex-wrap: wrap;
-        }
-        
-        .search-input {
-            flex: 1;
-            min-width: 150px;
-            padding: 8px 12px;
-            border: 1px solid #444;
-            border-radius: 6px;
-            background: rgba(0,0,0,0.3);
-            color: #e0e0e0;
-            font-size: 0.9em;
-        }
-        
-        .search-input:focus {
-            outline: none;
-            border-color: #9b59b6;
-        }
-        
-        .filter-dropdown {
-            padding: 8px 12px;
-            border: 1px solid #444;
-            border-radius: 6px;
-            background: rgba(0,0,0,0.3);
-            color: #e0e0e0;
-            cursor: pointer;
-        }
-        
-        /* FIXED: Responsive design */
-        @media (max-width: 1200px) {
-            .main-container {
-                grid-template-columns: 1fr;
-                grid-template-rows: auto repeat(5, minmax(280px, auto));
-            }
-            .threat-feed,
-            .endpoint-grid-section,
-            .ioc-feed,
-            .vuln-panel,
-            .edr-alerts,
-            .compliance-section {
-                grid-column: 1;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .header h1 {
-                font-size: 1.4em;
-            }
-            
-            .threat-card {
-                min-width: 220px;
-            }
-            
-            .endpoint-grid {
-                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            }
-        }
-    </style>
-</head>
-<body>
-    <header class="header">
-        <h1>🔍 Threat Intelligence & Endpoint Status</h1>
-        <div class="header-info">
-            <div class="endpoint-summary">
-                <div class="endpoint-stat">
-                    <div class="endpoint-stat-value" style="color: #2ed573;" id="healthy-count">0</div>
-                    <div class="endpoint-stat-label">Healthy</div>
-                </div>
-                <div class="endpoint-stat">
-                    <div class="endpoint-stat-value" style="color: #ffa502;" id="warning-count">0</div>
-                    <div class="endpoint-stat-label">Warning</div>
-                </div>
-                <div class="endpoint-stat">
-                    <div class="endpoint-stat-value" style="color: #ff4757;" id="critical-count">0</div>
-                    <div class="endpoint-stat-label">Critical</div>
-                </div>
-                <div class="endpoint-stat">
-                    <div class="endpoint-stat-value" style="color: #666;" id="offline-count">0</div>
-                    <div class="endpoint-stat-label">Offline</div>
-                </div>
-            </div>
-            <div class="datetime" id="datetime"></div>
-        </div>
-    </header>
-    
-    <main class="main-container">
-        <!-- Threat Feed -->
-        <div class="card threat-feed">
-            <div class="card-header">
-                <span class="card-title">📡 Live Threat Intelligence Feed</span>
-                <span id="feed-update">Updated just now</span>
-            </div>
-            <div class="feed-container" id="threat-feed"></div>
-        </div>
-        
-        <!-- Endpoint Grid -->
-        <div class="card endpoint-grid-section">
-            <div class="card-header">
-                <span class="card-title">🖥️ Endpoint Status</span>
-                <span id="endpoint-total">0 endpoints</span>
-            </div>
-            <div class="search-box">
-                <input type="text" class="search-input" placeholder="Search endpoints..." id="endpoint-search">
-                <select class="filter-dropdown" id="status-filter">
-                    <option value="all">All Status</option>
-                    <option value="healthy">Healthy</option>
-                    <option value="warning">Warning</option>
-                    <option value="critical">Critical</option>
-                    <option value="offline">Offline</option>
-                </select>
-            </div>
-            <div class="endpoint-grid" id="endpoint-grid"></div>
-        </div>
-        
-        <!-- IOC Feed -->
-        <div class="card ioc-feed">
-            <div class="card-header">
-                <span class="card-title">🎯 Indicators of Compromise</span>
-                <span id="ioc-count">0 IOCs</span>
-            </div>
-            <div class="ioc-list" id="ioc-list"></div>
-        </div>
-        
-        <!-- Vulnerability Panel -->
-        <div class="card vuln-panel">
-            <div class="card-header">
-                <span class="card-title">⚠️ Vulnerability Management</span>
-            </div>
-            <div class="vuln-summary">
-                <div class="vuln-stat">
-                    <div class="vuln-stat-value" style="color: #ff4757;" id="vuln-critical">0</div>
-                    <div class="vuln-stat-label">Critical</div>
-                </div>
-                <div class="vuln-stat">
-                    <div class="vuln-stat-value" style="color: #ffa502;" id="vuln-high">0</div>
-                    <div class="vuln-stat-label">High</div>
-                </div>
-                <div class="vuln-stat">
-                    <div class="vuln-stat-value" style="color: #ffd43b;" id="vuln-medium">0</div>
-                    <div class="vuln-stat-label">Medium</div>
-                </div>
-                <div class="vuln-stat">
-                    <div class="vuln-stat-value" style="color: #2ed573;" id="vuln-low">0</div>
-                    <div class="vuln-stat-label">Low</div>
-                </div>
-            </div>
-            <div class="vuln-list" id="vuln-list"></div>
-        </div>
-        
-        <!-- EDR Alerts -->
-        <div class="card edr-alerts">
-            <div class="card-header">
-                <span class="card-title">🛡️ EDR Detection Alerts</span>
-                <span id="edr-count">0 alerts</span>
-            </div>
-            <div class="edr-list" id="edr-list"></div>
-        </div>
-        
-        <!-- Compliance -->
-        <div class="card compliance-section">
-            <div class="card-header">
-                <span class="card-title">📋 Compliance Status</span>
-            </div>
-            <div class="compliance-grid" id="compliance-grid"></div>
-        </div>
-    </main>
-    
-    <script>
-        const threatSources = ['AlienVault OTX', 'MISP', 'VirusTotal', 'Mandiant', 'CrowdStrike', 'Recorded Future', 'Cisco Talos', 'Microsoft MSTIC'];
-        
-        const threatIntelTypes = [
-            { title: 'APT29 Campaign Detected', tags: ['APT', 'Russia', 'Espionage'], severity: 'critical' },
-            { title: 'New Ransomware Variant', tags: ['Ransomware', 'LockBit'], severity: 'critical' },
-            { title: 'Cobalt Strike Beacon IOCs', tags: ['C2', 'Red Team'], severity: 'critical' },
-            { title: 'Phishing Kit Infrastructure', tags: ['Phishing', 'Credential Theft'], severity: 'high' },
-            { title: 'Supply Chain Compromise', tags: ['Supply Chain', 'NPM'], severity: 'high' },
-            { title: 'Zero-Day Exploit Active', tags: ['0-day', 'CVE-2024'], severity: 'critical' },
-            { title: 'Cryptominer Distribution', tags: ['Cryptominer'], severity: 'medium' }
-        ];
-        
-        const cveList = [
-            { id: 'CVE-2024-21887', title: 'Ivanti Connect Secure RCE', cvss: 9.8, severity: 'critical', affected: '47 systems' },
-            { id: 'CVE-2024-1709', title: 'ConnectWise Auth Bypass', cvss: 10.0, severity: 'critical', affected: '12 systems' },
-            { id: 'CVE-2024-3094', title: 'XZ Utils Backdoor', cvss: 10.0, severity: 'critical', affected: '156 systems' },
-            { id: 'CVE-2024-6387', title: 'OpenSSH RegreSSHion', cvss: 8.1, severity: 'high', affected: '312 systems' }
-        ];
-        
-        const edrAlertTypes = [
-            { type: 'Malware Detected', category: 'malware', details: ['Trojan.GenericKD', 'Ransomware.Locky', 'Backdoor.Cobalt'] },
-            { type: 'Suspicious Process', category: 'suspicious', details: ['PowerShell encoded command', 'LSASS memory access'] },
-            { type: 'PUP Detected', category: 'pup', details: ['Adware.BrowserModifier', 'PUP.ToolbarInstaller'] },
-            { type: 'Threat Blocked', category: 'blocked', details: ['Exploit attempt blocked', 'C2 connection blocked'] }
-        ];
-        
-        const complianceFrameworks = [
-            { name: 'NIST CSF' }, { name: 'ISO 27001' }, { name: 'PCI-DSS' },
-            { name: 'HIPAA' }, { name: 'SOC 2' }, { name: 'CIS Controls' }
-        ];
-        
-        let endpoints = [];
-        let iocs = [];
-        let edrAlerts = [];
-        let currentFilter = 'all';
-        let searchTerm = '';
-        
+        // Generate Endpoints
         function generateEndpoints() {
             const types = [
                 { prefix: 'WKS', icon: '💻', type: 'Workstation' },
-                { prefix: 'SRV', icon: '🖥️', type: 'Server' },
-                { prefix: 'LPT', icon: '💼', type: 'Laptop' }
+                { prefix: 'SRV', icon: '🖥️', type: 'Server' },
+                { prefix: 'DC', icon: '🏢', type: 'Domain Controller' },
+                { prefix: 'DB', icon: '🗄️', type: 'Database' },
+                { prefix: 'WEB', icon: '🌐', type: 'Web Server' },
+                { prefix: 'LPT', icon: '💼', type: 'Laptop' },
+                { prefix: 'APP', icon: '📱', type: 'App Server' },
+                { prefix: 'FW', icon: '🛡️', type: 'Firewall' },
+                { prefix: 'VPN', icon: '🔐', type: 'VPN Gateway' },
+                { prefix: 'MX', icon: '📧', type: 'Mail Server' },
+                { prefix: 'FS', icon: '📁', type: 'File Server' },
+                { prefix: 'PRNT', icon: '🖨️', type: 'Print Server' },
+                { prefix: 'DNS', icon: '🔗', type: 'DNS Server' },
+                { prefix: 'DHCP', icon: '📡', type: 'DHCP Server' },
+                { prefix: 'BAK', icon: '💾', type: 'Backup Server' },
+                { prefix: 'VM', icon: '☁️', type: 'Virtual Machine' },
+                { prefix: 'CONT', icon: '📦', type: 'Container Host' },
+                { prefix: 'K8S', icon: '⚙️', type: 'Kubernetes Node' },
+                { prefix: 'PROXY', icon: '🔀', type: 'Proxy Server' },
+                { prefix: 'SIEM', icon: '👁️', type: 'SIEM Server' }
             ];
-            const statuses = ['healthy', 'healthy', 'healthy', 'healthy', 'warning', 'warning', 'critical', 'offline'];
             
-            for (let i = 0; i < 50; i++) {
+            const departments = ['IT', 'HR', 'FIN', 'SALES', 'MKT', 'ENG', 'OPS', 'LEGAL', 'EXEC', 'RND'];
+            const statuses = ['healthy', 'healthy', 'healthy', 'healthy', 'healthy', 'warning', 'warning', 'critical', 'offline'];
+            
+            for (let i = 0; i < 100; i++) {
                 const typeInfo = types[Math.floor(Math.random() * types.length)];
+                const dept = departments[Math.floor(Math.random() * departments.length)];
                 endpoints.push({
-                    id: `${typeInfo.prefix}-${String(Math.floor(Math.random() * 999) + 1).padStart(3, '0')}`,
+                    id: `${typeInfo.prefix}-${dept}-${String(Math.floor(Math.random() * 999) + 1).padStart(3, '0')}`,
                     type: typeInfo.type,
                     icon: typeInfo.icon,
-                    status: statuses[Math.floor(Math.random() * statuses.length)]
+                    status: statuses[Math.floor(Math.random() * statuses.length)],
+                    lastSeen: new Date(Date.now() - Math.random() * 3600000),
+                    ip: `10.${Math.floor(Math.random() * 50)}.${Math.floor(Math.random() * 254)}.${Math.floor(Math.random() * 254) + 1}`
                 });
             }
         }
         
+        // Generate IOC
         function generateIOC() {
             const types = ['ip', 'hash', 'domain', 'url', 'cve'];
             const type = types[Math.floor(Math.random() * types.length)];
             let value;
+            
             switch(type) {
-                case 'ip': value = `${Math.floor(Math.random() * 223) + 1}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`; break;
-                case 'hash': value = Array(32).fill(0).map(() => '0123456789abcdef'[Math.floor(Math.random() * 16)]).join(''); break;
-                case 'domain': value = `${Math.random().toString(36).substring(7)}.malware.com`; break;
-                case 'url': value = `https://mal${Math.random().toString(36).substring(7)}.com/payload.exe`; break;
-                case 'cve': value = `CVE-2024-${Math.floor(Math.random() * 9999)}`; break;
+                case 'ip':
+                    value = `${Math.floor(Math.random() * 223) + 1}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`;
+                    break;
+                case 'hash':
+                    value = Array(64).fill(0).map(() => '0123456789abcdef'[Math.floor(Math.random() * 16)]).join('');
+                    break;
+                case 'domain':
+                    const domains = ['malware-c2.xyz', 'evil-payload.net', 'data-exfil.com', 'phish-server.io', 'backdoor.club'];
+                    value = `${Math.random().toString(36).substring(7)}.${domains[Math.floor(Math.random() * domains.length)]}`;
+                    break;
+                case 'url':
+                    value = `https://mal${Math.random().toString(36).substring(7)}.com/payload.exe`;
+                    break;
+                case 'cve':
+                    value = `CVE-2024-${Math.floor(Math.random() * 9999)}`;
+                    break;
             }
-            return { type, value, confidence: ['high', 'medium', 'low'][Math.floor(Math.random() * 3)], source: threatSources[Math.floor(Math.random() * threatSources.length)] };
+            
+            const confidences = ['high', 'medium', 'low'];
+            
+            return {
+                type,
+                value,
+                confidence: confidences[Math.floor(Math.random() * confidences.length)],
+                source: threatSources[Math.floor(Math.random() * threatSources.length)]
+            };
         }
         
+        // Generate EDR Alert
         function generateEDRAlert() {
             const template = edrAlertTypes[Math.floor(Math.random() * edrAlertTypes.length)];
             const endpoint = endpoints[Math.floor(Math.random() * endpoints.length)];
+            
             return {
                 type: template.type,
                 category: template.category,
                 detail: template.details[Math.floor(Math.random() * template.details.length)],
                 endpoint: endpoint.id,
-                user: ['SYSTEM', 'admin', 'jsmith'][Math.floor(Math.random() * 3)],
+                user: ['SYSTEM', 'admin', 'jsmith', 'svc_account'][Math.floor(Math.random() * 4)],
                 time: new Date()
             };
         }
         
+        // Render Threat Feed
         function renderThreatFeed() {
-            document.getElementById('threat-feed').innerHTML = threatIntelTypes.map(threat => `
+            const feed = document.getElementById('threat-feed');
+            feed.innerHTML = threatIntelTypes.slice(0, 8).map(threat => `
                 <div class="threat-card ${threat.severity}">
-                    <div class="threat-source"><span>📡</span><span>${threatSources[Math.floor(Math.random() * threatSources.length)]}</span><span style="margin-left: auto; color: #666;">${Math.floor(Math.random() * 60)}m ago</span></div>
+                    <div class="threat-source">
+                        <span>📡</span>
+                        <span>${threatSources[Math.floor(Math.random() * threatSources.length)]}</span>
+                        <span style="margin-left: auto; color: #666;">${Math.floor(Math.random() * 60)}m ago</span>
+                    </div>
                     <div class="threat-title">${threat.title}</div>
-                    <div class="threat-tags">${threat.tags.map(tag => `<span class="threat-tag">${tag}</span>`).join('')}</div>
+                    <div class="threat-tags">
+                        ${threat.tags.map(tag => `<span class="threat-tag">${tag}</span>`).join('')}
+                    </div>
                 </div>
             `).join('');
         }
         
+        // Render Endpoints
         function renderEndpoints() {
-            let filtered = endpoints;
-            if (currentFilter !== 'all') filtered = filtered.filter(e => e.status === currentFilter);
-            if (searchTerm) filtered = filtered.filter(e => e.id.toLowerCase().includes(searchTerm.toLowerCase()));
+            const grid = document.getElementById('endpoint-grid');
             
-            document.getElementById('endpoint-grid').innerHTML = filtered.map(ep => `
+            let filtered = endpoints;
+            if (currentFilter !== 'all') {
+                filtered = filtered.filter(e => e.status === currentFilter);
+            }
+            if (searchTerm) {
+                filtered = filtered.filter(e => 
+                    e.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    e.type.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+            }
+            
+            grid.innerHTML = filtered.map(ep => `
                 <div class="endpoint-tile">
                     <div class="endpoint-icon">${ep.icon}</div>
                     <div class="endpoint-name">${ep.id}</div>
-                    <div class="endpoint-details"><span class="endpoint-status-indicator ${ep.status}"></span>${ep.status}</div>
+                    <div class="endpoint-details">
+                        <span class="endpoint-status-indicator ${ep.status}"></span>
+                        ${ep.status}
+                    </div>
                 </div>
             `).join('');
             
             document.getElementById('endpoint-total').textContent = `${filtered.length} endpoints`;
-            document.getElementById('healthy-count').textContent = endpoints.filter(e => e.status === 'healthy').length;
-            document.getElementById('warning-count').textContent = endpoints.filter(e => e.status === 'warning').length;
-            document.getElementById('critical-count').textContent = endpoints.filter(e => e.status === 'critical').length;
-            document.getElementById('offline-count').textContent = endpoints.filter(e => e.status === 'offline').length;
+            
+            // Update counts
+            const counts = {
+                healthy: endpoints.filter(e => e.status === 'healthy').length,
+                warning: endpoints.filter(e => e.status === 'warning').length,
+                critical: endpoints.filter(e => e.status === 'critical').length,
+                offline: endpoints.filter(e => e.status === 'offline').length
+            };
+            
+            document.getElementById('healthy-count').textContent = counts.healthy;
+            document.getElementById('warning-count').textContent = counts.warning;
+            document.getElementById('critical-count').textContent = counts.critical;
+            document.getElementById('offline-count').textContent = counts.offline;
         }
         
+        // Render IOCs
         function renderIOCs() {
-            document.getElementById('ioc-list').innerHTML = iocs.slice(0, 12).map(ioc => `
+            const list = document.getElementById('ioc-list');
+            list.innerHTML = iocs.slice(0, 15).map(ioc => `
                 <div class="ioc-item">
                     <span class="ioc-type-badge ${ioc.type}">${ioc.type.toUpperCase()}</span>
                     <span class="ioc-value" title="${ioc.value}">${ioc.value}</span>
                     <span class="ioc-confidence confidence-${ioc.confidence}">${ioc.confidence.toUpperCase()}</span>
                 </div>
             `).join('');
+            
             document.getElementById('ioc-count').textContent = `${iocs.length} IOCs`;
         }
         
+        // Render Vulnerabilities
         function renderVulnerabilities() {
-            document.getElementById('vuln-list').innerHTML = cveList.map(vuln => `
+            const list = document.getElementById('vuln-list');
+            const vulns = cveList.slice(0, 5);
+            
+            list.innerHTML = vulns.map(vuln => `
                 <div class="vuln-item ${vuln.severity}">
-                    <div class="vuln-header"><span class="vuln-cve">${vuln.id}</span><span class="vuln-cvss cvss-${vuln.severity}">CVSS ${vuln.cvss}</span></div>
+                    <div class="vuln-header">
+                        <span class="vuln-cve">${vuln.id}</span>
+                        <span class="vuln-cvss cvss-${vuln.severity}">CVSS ${vuln.cvss}</span>
+                    </div>
                     <div class="vuln-title">${vuln.title}</div>
                     <div class="vuln-affected">Affected: ${vuln.affected}</div>
                 </div>
             `).join('');
-            document.getElementById('vuln-critical').textContent = cveList.filter(v => v.severity === 'critical').length;
-            document.getElementById('vuln-high').textContent = cveList.filter(v => v.severity === 'high').length;
-            document.getElementById('vuln-medium').textContent = 12;
-            document.getElementById('vuln-low').textContent = 34;
+            
+            // Update counts
+            const counts = {
+                critical: cveList.filter(v => v.severity === 'critical').length,
+                high: cveList.filter(v => v.severity === 'high').length,
+                medium: 12,
+                low: 34
+            };
+            
+            document.getElementById('vuln-critical').textContent = counts.critical;
+            document.getElementById('vuln-high').textContent = counts.high;
+            document.getElementById('vuln-medium').textContent = counts.medium;
+            document.getElementById('vuln-low').textContent = counts.low;
         }
         
+        // Render EDR Alerts
         function renderEDRAlerts() {
-            document.getElementById('edr-list').innerHTML = edrAlerts.slice(0, 6).map(alert => `
+            const list = document.getElementById('edr-list');
+            list.innerHTML = edrAlerts.slice(0, 8).map(alert => `
                 <div class="edr-alert ${alert.category}">
-                    <div class="edr-header"><span class="edr-type">${alert.type}</span><span class="edr-time">${formatTime(alert.time)}</span></div>
-                    <div class="edr-details">${alert.detail}<div class="edr-details-row"><div class="edr-detail"><span class="edr-detail-label">Host:</span><span>${alert.endpoint}</span></div><div class="edr-detail"><span class="edr-detail-label">User:</span><span>${alert.user}</span></div></div></div>
+                    <div class="edr-header">
+                        <span class="edr-type">${alert.type}</span>
+                        <span class="edr-time">${formatTime(alert.time)}</span>
+                    </div>
+                    <div class="edr-details">
+                        ${alert.detail}
+                        <div class="edr-details-row">
+                            <div class="edr-detail">
+                                <span class="edr-detail-label">Host:</span>
+                                <span>${alert.endpoint}</span>
+                            </div>
+                            <div class="edr-detail">
+                                <span class="edr-detail-label">User:</span>
+                                <span>${alert.user}</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             `).join('');
+            
             document.getElementById('edr-count').textContent = `${edrAlerts.length} alerts`;
         }
         
+        // Render Compliance
         function renderCompliance() {
-            document.getElementById('compliance-grid').innerHTML = complianceFrameworks.map(fw => {
+            const grid = document.getElementById('compliance-grid');
+            grid.innerHTML = complianceFrameworks.map(fw => {
                 const score = Math.floor(Math.random() * 30) + 70;
                 const color = score >= 90 ? '#2ed573' : score >= 75 ? '#ffa502' : '#ff4757';
-                return `<div class="compliance-item"><div class="compliance-score" style="color: ${color}">${score}%</div><div class="compliance-label">${fw.name}</div><div class="compliance-bar"><div class="compliance-fill" style="width: ${score}%; background: ${color}"></div></div></div>`;
+                return `
+                    <div class="compliance-item">
+                        <div class="compliance-score" style="color: ${color}">${score}%</div>
+                        <div class="compliance-label">${fw.name}</div>
+                        <div class="compliance-bar">
+                            <div class="compliance-fill" style="width: ${score}%; background: ${color}"></div>
+                        </div>
+                    </div>
+                `;
             }).join('');
         }
         
-        function formatTime(date) { return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' }); }
-        
-        function updateDateTime() {
-            document.getElementById('datetime').textContent = new Date().toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        // Add new IOC
+        function addIOC() {
+            const ioc = generateIOC();
+            iocs.unshift(ioc);
+            if (iocs.length > 50) iocs.pop();
+            renderIOCs();
         }
         
-        document.getElementById('endpoint-search').addEventListener('input', e => { searchTerm = e.target.value; renderEndpoints(); });
-        document.getElementById('status-filter').addEventListener('change', e => { currentFilter = e.target.value; renderEndpoints(); });
+        // Add new EDR Alert
+        function addEDRAlert() {
+            const alert = generateEDRAlert();
+            edrAlerts.unshift(alert);
+            if (edrAlerts.length > 20) edrAlerts.pop();
+            renderEDRAlerts();
+        }
         
+        // Update endpoint status randomly
+        function updateEndpointStatus() {
+            const idx = Math.floor(Math.random() * endpoints.length);
+            const statuses = ['healthy', 'warning', 'critical'];
+            endpoints[idx].status = statuses[Math.floor(Math.random() * statuses.length)];
+            renderEndpoints();
+        }
+        
+        // Format time
+        function formatTime(date) {
+            return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        }
+        
+        // Update datetime
+        function updateDateTime() {
+            document.getElementById('datetime').textContent = 
+                new Date().toLocaleString('en-US', {
+                    weekday: 'short',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+        }
+        
+        // Event listeners
+        document.getElementById('endpoint-search').addEventListener('input', (e) => {
+            searchTerm = e.target.value;
+            renderEndpoints();
+        });
+        
+        document.getElementById('status-filter').addEventListener('change', (e) => {
+            currentFilter = e.target.value;
+            renderEndpoints();
+        });
+        
+        // Initialize
         function init() {
             generateEndpoints();
-            for (let i = 0; i < 15; i++) iocs.push(generateIOC());
-            for (let i = 0; i < 8; i++) { const alert = generateEDRAlert(); alert.time = new Date(Date.now() - Math.random() * 3600000); edrAlerts.push(alert); }
+            
+            // Generate initial IOCs
+            for (let i = 0; i < 20; i++) {
+                iocs.push(generateIOC());
+            }
+            
+            // Generate initial EDR alerts
+            for (let i = 0; i < 10; i++) {
+                const alert = generateEDRAlert();
+                alert.time = new Date(Date.now() - Math.random() * 3600000);
+                edrAlerts.push(alert);
+            }
             edrAlerts.sort((a, b) => b.time - a.time);
             
             renderThreatFeed();
@@ -1768,9 +1070,12 @@
             renderCompliance();
             updateDateTime();
             
+            // Set intervals
             setInterval(updateDateTime, 1000);
-            setInterval(() => { iocs.unshift(generateIOC()); if (iocs.length > 30) iocs.pop(); renderIOCs(); }, 5000);
-            setInterval(() => { edrAlerts.unshift(generateEDRAlert()); if (edrAlerts.length > 15) edrAlerts.pop(); renderEDRAlerts(); }, 8000);
+            setInterval(addIOC, 5000);
+            setInterval(addEDRAlert, 8000);
+            setInterval(updateEndpointStatus, 10000);
+            setInterval(renderCompliance, 30000);
         }
         
         init();
