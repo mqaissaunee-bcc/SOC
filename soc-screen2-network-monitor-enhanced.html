@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOC Screen 2: Network Monitor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(90deg, #1a1a2e 0%, #16213e 100%);
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #0f4c75;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .header h1 {
+            font-size: 1.8em;
+            color: #00d4ff;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+        }
+        
+        .header-info {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .datetime {
+            font-size: 1.1em;
+            color: #00d4ff;
+        }
+        
+        .network-status {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .network-stat {
+            text-align: center;
+        }
+        
+        .network-stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        
+        .network-stat-label {
+            font-size: 0.75em;
+            color: #888;
+        }
+        
+        /* FIXED: Changed height to min-height, improved grid rows */
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto minmax(280px, 1fr) minmax(280px, 1fr);
+            gap: 15px;
+            padding: 15px;
+            min-height: calc(100vh - 80px);
+        }
+        
+        /* FIXED: Removed overflow:hidden, added proper flex layout */
+        .card {
+            background: linear-gradient(145deg, #1e1e30 0%, #252540 100%);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #333;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            min-height: 250px;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #444;
+            flex-shrink: 0;
+        }
+        
+        .card-title {
+            font-size: 1.1em;
+            color: #00d4ff;
+            font-weight: 600;
+        }
+        
+        /* World Map */
+        .world-map-section {
+            grid-column: 1 / -1;
+        }
+        
+        .world-map-container {
+            position: relative;
+            width: 100%;
+            height: 320px;
+            min-height: 240px;
+            background: #0d1421;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .world-map {
+            width: 100%;
+            height: 100%;
+            opacity: 0.6;
+        }
+        
+        .attack-point {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            cursor: pointer;
+            z-index: 10;
+        }
+        
+        .attack-point::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            animation: attackPulse 2s infinite;
+        }
+        
+        .attack-point.critical { background: #ff4757; }
+        .attack-point.critical::before { background: rgba(255, 71, 87, 0.4); }
+        .attack-point.high { background: #ffa502; }
+        .attack-point.high::before { background: rgba(255, 165, 2, 0.4); }
+        .attack-point.medium { background: #ffd43b; }
+        .attack-point.medium::before { background: rgba(255, 212, 59, 0.4); }
+        
+        @keyframes attackPulse {
+            0% { width: 100%; height: 100%; opacity: 1; }
+            100% { width: 300%; height: 300%; opacity: 0; }
+        }
+        
+        .attack-line {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, var(--line-color, #ff4757) 0%, transparent 100%);
+            transform-origin: left center;
+            animation: attackLine 2s ease-out forwards;
+            z-index: 5;
+            pointer-events: none;
+            border-radius: 2px;
+            box-shadow: 0 0 6px var(--line-color, #ff4757);
+        }
+        
+        .attack-line.critical {
+            --line-color: #ff4757;
+            height: 3px;
+        }
+        
+        .attack-line.high {
+            --line-color: #ffa502;
+        }
+        
+        @keyframes attackLine {
+            0% { 
+                width: 0; 
+                opacity: 1;
+                filter: blur(0px);
+            }
+            50% {
+                opacity: 0.8;
+            }
+            100% { 
+                width: 100%; 
+                opacity: 0;
+                filter: blur(2px);
+            }
+        }
+        
+        .map-legend {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.8em;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 5px;
+        }
+        
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        
+        .map-stats {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .map-stat {
+            background: rgba(0,0,0,0.7);
+            padding: 10px 15px;
+            border-radius: 8px;
+        }
+        
+        .map-stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #ff4757;
+        }
+        
+        .map-stat-label {
+            font-size: 0.75em;
+            color: #888;
+        }
+        
+        /* Traffic Graph */
+        .traffic-graph {
+            height: 180px;
+            min-height: 120px;
+            position: relative;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .traffic-canvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .traffic-legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 10px;
+            font-size: 0.85em;
+            flex-wrap: wrap;
+        }
+        
+        .traffic-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .traffic-legend-color {
+            width: 20px;
+            height: 3px;
+            border-radius: 2px;
+        }
+        
+        /* Firewall Logs - FIXED: proper overflow handling */
+        .firewall-logs {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .log-list {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.85em;
+            min-height: 0;
+        }
+        
+        .log-list::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        
+        .log-list::-webkit-scrollbar-track {
+            background: #1a1a2e;
+        }
+        
+        .log-list::-webkit-scrollbar-thumb {
+            background: #00d4ff;
+            border-radius: 3px;
+        }
+        
+        .log-entry {
+            padding: 8px 10px;
+            border-bottom: 1px solid #2a2a40;
+            display: grid;
+            grid-template-columns: 90px 70px 140px 140px 80px 60px 1fr;
+            gap: 10px;
+            align-items: center;
+            animation: logSlide 0.3s ease;
+            min-width: max-content;
+        }
+        
+        @keyframes logSlide {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .log-entry:hover {
+            background: rgba(0, 212, 255, 0.1);
+        }
+        
+        .log-time {
+            color: #888;
+        }
+        
+        .log-action {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            text-align: center;
+        }
+        
+        .log-action.allow {
+            background: rgba(46, 213, 115, 0.2);
+            color: #2ed573;
+        }
+        
+        .log-action.deny {
+            background: rgba(255, 71, 87, 0.2);
+            color: #ff4757;
+        }
+        
+        .log-action.drop {
+            background: rgba(255, 165, 2, 0.2);
+            color: #ffa502;
+        }
+        
+        .log-protocol {
+            color: #00d4ff;
+        }
+        
+        /* Top Talkers - FIXED: proper scrolling */
+        .top-talkers {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .talker-list {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
+        }
+        
+        .talker-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #2a2a40;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .talker-rank {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #3498db, #00d4ff);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .talker-info {
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        .talker-ip {
+            font-weight: 600;
+            font-family: monospace;
+        }
+        
+        .talker-country {
+            font-size: 0.85em;
+            color: #888;
+        }
+        
+        .talker-bar-container {
+            width: 150px;
+            height: 8px;
+            background: #2a2a40;
+            border-radius: 4px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        
+        .talker-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ff4757, #ffa502);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        .talker-value {
+            width: 80px;
+            text-align: right;
+            font-family: monospace;
+            color: #00d4ff;
+            flex-shrink: 0;
+        }
+        
+        /* Port Activity - FIXED: proper grid layout */
+        .port-activity {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .port-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
+        }
+        
+        .port-item {
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #333;
+            transition: all 0.3s ease;
+            min-width: 90px;
+        }
+        
+        .port-item:hover {
+            border-color: #00d4ff;
+            transform: scale(1.02);
+        }
+        
+        .port-number {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #00d4ff;
+        }
+        
+        .port-service {
+            font-size: 0.85em;
+            color: #888;
+            margin: 5px 0;
+        }
+        
+        .port-connections {
+            font-size: 0.9em;
+        }
+        
+        .port-status {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        
+        .port-status.active {
+            background: #2ed573;
+            box-shadow: 0 0 10px #2ed573;
+        }
+        
+        .port-status.warning {
+            background: #ffa502;
+            animation: blink 1s infinite;
+        }
+        
+        .port-status.alert {
+            background: #ff4757;
+            animation: blink 0.5s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        /* SVG Map - Enhanced Realistic Styling */
+        .svg-world {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .country {
+            fill: #1a3a5c;
+            stroke: #2a6a9c;
+            stroke-width: 0.5;
+            transition: all 0.3s ease;
+        }
+        
+        .country:hover {
+            fill: #2a5a8c;
+            stroke: #4a9adc;
+            stroke-width: 0.8;
+            filter: brightness(1.2);
+        }
+        
+        .continents {
+            opacity: 0.85;
+        }
+        
+        /* FIXED: Responsive design */
+        @media (max-width: 1200px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto minmax(250px, auto) minmax(250px, auto) minmax(250px, auto) minmax(250px, auto);
+            }
+            .world-map-section,
+            .firewall-logs,
+            .top-talkers,
+            .port-activity {
+                grid-column: 1;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .header h1 {
+                font-size: 1.4em;
+            }
+            
+            .log-entry {
+                grid-template-columns: 80px 60px 100px 100px 60px 50px auto;
+                font-size: 0.75em;
+            }
+            
+            .talker-bar-container {
+                width: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>🌐 Network Traffic Monitor</h1>
+        <div class="header-info">
+            <div class="network-status">
+                <div class="network-stat">
+                    <div class="network-stat-value" style="color: #2ed573;" id="inbound-speed">0</div>
+                    <div class="network-stat-label">Inbound Gbps</div>
+                </div>
+                <div class="network-stat">
+                    <div class="network-stat-value" style="color: #00d4ff;" id="outbound-speed">0</div>
+                    <div class="network-stat-label">Outbound Gbps</div>
+                </div>
+                <div class="network-stat">
+                    <div class="network-stat-value" style="color: #ffa502;" id="active-connections">0</div>
+                    <div class="network-stat-label">Active Conn.</div>
+                </div>
+            </div>
+            <div class="datetime" id="datetime"></div>
+        </div>
+    </header>
+    
+    <main class="main-container">
+        <!-- World Map -->
+        <div class="card world-map-section">
+            <div class="card-header">
+                <span class="card-title">🗺️ Global Threat Map - Live Attack Visualization</span>
+                <span id="attacks-per-min">0 attacks/min</span>
+            </div>
+            <div class="world-map-container" id="map-container">
+                <svg class="svg-world" viewBox="0 0 1000 500" id="world-svg">
+                    <defs>
+                        <!-- Gradient for ocean -->
+                        <linearGradient id="oceanGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" style="stop-color:#0a1628"/>
+                            <stop offset="100%" style="stop-color:#061018"/>
+                        </linearGradient>
+                        <!-- Glow filter for continents -->
+                        <filter id="landGlow" x="-20%" y="-20%" width="140%" height="140%">
+                            <feGaussianBlur stdDeviation="1.5" result="blur"/>
+                            <feMerge>
+                                <feMergeNode in="blur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                    </defs>
+                    
+                    <!-- Ocean background -->
+                    <rect width="100%" height="100%" fill="url(#oceanGradient)"/>
+                    
+                    <!-- Latitude/Longitude Grid -->
+                    <g stroke="#1a3a5c" stroke-width="0.3" opacity="0.4">
+                        <line x1="0" y1="83" x2="1000" y2="83"/>
+                        <line x1="0" y1="145" x2="1000" y2="145"/>
+                        <line x1="0" y1="250" x2="1000" y2="250"/>
+                        <line x1="0" y1="355" x2="1000" y2="355"/>
+                        <line x1="0" y1="417" x2="1000" y2="417"/>
+                        <line x1="100" y1="0" x2="100" y2="500"/>
+                        <line x1="200" y1="0" x2="200" y2="500"/>
+                        <line x1="300" y1="0" x2="300" y2="500"/>
+                        <line x1="400" y1="0" x2="400" y2="500"/>
+                        <line x1="500" y1="0" x2="500" y2="500"/>
+                        <line x1="600" y1="0" x2="600" y2="500"/>
+                        <line x1="700" y1="0" x2="700" y2="500"/>
+                        <line x1="800" y1="0" x2="800" y2="500"/>
+                        <line x1="900" y1="0" x2="900" y2="500"/>
+                    </g>
+                    
+                    <!-- Detailed World Map Continents -->
+                    <g class="continents" filter="url(#landGlow)">
+                        
+                        <!-- NORTH AMERICA -->
+                        <!-- Greenland -->
+                        <path class="country" d="M340,45 Q355,40 375,42 Q395,45 405,55 Q415,68 415,85 Q412,100 400,110 Q385,118 365,115 Q345,112 335,100 Q328,88 330,72 Q332,55 340,45 Z" title="Greenland"/>
+                        
+                        <!-- Canada - more detailed shape -->
+                        <path class="country" d="M95,85 Q115,78 140,75 Q170,72 200,75 Q235,72 265,78 Q290,82 305,92 Q315,105 310,120 Q300,132 280,138 Q255,142 225,138 Q190,142 155,138 Q125,135 105,125 Q90,112 88,98 Q92,88 95,85 Z
+                                M160,55 Q185,50 205,55 Q222,62 225,75 Q220,88 200,92 Q178,90 165,82 Q155,72 160,55 Z
+                                M230,48 Q258,42 280,50 Q298,58 300,72 Q295,85 275,88 Q252,85 238,75 Q228,62 230,48 Z
+                                M290,42 Q315,38 335,48 Q350,58 348,75 Q342,88 320,92 Q298,88 288,78 Q282,62 290,42 Z" title="Canada"/>
+                        
+                        <!-- Alaska -->
+                        <path class="country" d="M55,82 Q75,75 95,78 Q115,85 125,98 Q130,115 122,128 Q108,138 88,135 Q68,130 55,118 Q45,105 48,92 Q52,85 55,82 Z
+                                M35,118 Q52,112 62,118 Q68,128 62,138 Q50,142 40,135 Q32,125 35,118 Z" title="Alaska"/>
+                        
+                        <!-- United States - detailed -->
+                        <path class="country" d="M115,138 Q145,132 180,135 Q215,132 250,138 Q280,142 295,155 Q305,172 295,188 Q278,200 255,205 Q225,208 195,205 Q165,208 140,202 Q118,195 108,178 Q102,160 108,145 Q112,140 115,138 Z" title="United States"/>
+                        
+                        <!-- Florida -->
+                        <path class="country" d="M255,195 Q268,192 278,200 Q288,215 285,235 Q278,250 265,255 Q252,252 248,238 Q248,218 255,195 Z" title="Florida"/>
+                        
+                        <!-- Mexico - detailed -->
+                        <path class="country" d="M115,200 Q145,195 175,202 Q195,212 205,232 Q208,255 195,275 Q175,290 150,288 Q128,280 118,262 Q112,240 115,218 Q115,205 115,200 Z" title="Mexico"/>
+                        
+                        <!-- Central America -->
+                        <path class="country" d="M195,275 Q212,268 228,278 Q242,292 248,312 Q245,332 232,345 Q215,352 200,345 Q188,332 185,312 Q188,292 195,275 Z" title="Central America"/>
+                        
+                        <!-- Caribbean -->
+                        <path class="country" d="M255,225 Q275,218 292,228 Q308,242 312,262 Q308,280 292,288 Q272,285 258,272 Q248,255 255,225 Z" title="Caribbean"/>
+                        
+                        <!-- SOUTH AMERICA -->
+                        <!-- Northern South America -->
+                        <path class="country" d="M232,318 Q262,308 292,318 Q318,332 328,355 Q325,378 308,395 Q285,405 258,400 Q235,390 225,368 Q222,345 232,318 Z" title="Colombia/Venezuela"/>
+                        
+                        <!-- Brazil - detailed -->
+                        <path class="country" d="M285,345 Q325,335 358,352 Q385,375 395,408 Q398,445 385,478 Q362,505 328,515 Q292,518 262,505 Q238,488 228,458 Q225,425 235,395 Q252,365 285,345 Z" title="Brazil"/>
+                        
+                        <!-- Peru/Ecuador -->
+                        <path class="country" d="M205,345 Q232,338 252,355 Q262,378 255,405 Q242,428 218,432 Q198,425 188,402 Q185,375 195,352 Q200,345 205,345 Z" title="Peru"/>
+                        
+                        <!-- Argentina/Chile -->
+                        <path class="country" d="M242,432 Q275,425 302,445 Q322,472 325,505 Q318,538 298,565 Q272,585 245,588 Q225,580 218,555 Q215,525 222,495 Q232,462 242,432 Z" title="Argentina"/>
+                        
+                        <!-- Chile -->
+                        <path class="country" d="M198,432 Q218,428 225,448 Q228,478 222,512 Q215,548 205,578 Q195,598 182,592 Q175,568 178,535 Q182,498 188,462 Q192,438 198,432 Z" title="Chile"/>
+                        
+                        <!-- EUROPE -->
+                        <!-- Iceland -->
+                        <path class="country" d="M398,68 Q418,62 432,70 Q442,82 438,95 Q428,105 412,102 Q398,98 392,85 Q392,72 398,68 Z" title="Iceland"/>
+                        
+                        <!-- UK & Ireland -->
+                        <path class="country" d="M438,102 Q452,95 465,102 Q475,115 472,132 Q462,145 448,148 Q435,145 428,132 Q428,118 438,102 Z" title="United Kingdom"/>
+                        <path class="country" d="M418,115 Q432,108 442,118 Q448,132 442,145 Q430,150 420,142 Q412,130 418,115 Z" title="Ireland"/>
+                        
+                        <!-- Scandinavia -->
+                        <path class="country" d="M478,52 Q502,45 525,55 Q545,68 552,88 Q548,112 532,128 Q512,138 488,135 Q468,125 462,105 Q462,82 478,52 Z" title="Scandinavia"/>
+                        
+                        <!-- Finland -->
+                        <path class="country" d="M538,55 Q558,48 572,60 Q582,78 578,98 Q568,112 548,115 Q532,108 528,90 Q530,70 538,55 Z" title="Finland"/>
+                        
+                        <!-- Western Europe (France) -->
+                        <path class="country" d="M448,148 Q472,142 492,152 Q508,168 505,188 Q492,205 468,210 Q448,205 438,188 Q435,168 448,148 Z" title="France"/>
+                        
+                        <!-- Iberian Peninsula -->
+                        <path class="country" d="M418,175 Q445,168 468,182 Q482,200 478,222 Q462,238 438,242 Q418,235 408,218 Q408,195 418,175 Z" title="Spain/Portugal"/>
+                        
+                        <!-- Central Europe -->
+                        <path class="country" d="M488,125 Q518,118 548,128 Q572,145 575,168 Q565,190 542,198 Q515,195 495,182 Q480,162 485,142 Q488,132 488,125 Z" title="Central Europe"/>
+                        
+                        <!-- Italy -->
+                        <path class="country" d="M495,195 Q515,188 530,202 Q540,222 535,248 Q522,272 502,278 Q485,272 478,252 Q478,225 488,205 Q492,198 495,195 Z" title="Italy"/>
+                        
+                        <!-- Sicily/Sardinia -->
+                        <path class="country" d="M505,278 Q522,275 532,288 Q535,305 522,315 Q508,318 498,308 Q495,292 505,278 Z" title="Sicily"/>
+                        
+                        <!-- Balkans -->
+                        <path class="country" d="M532,195 Q555,188 575,200 Q588,218 585,242 Q572,262 548,268 Q528,262 518,242 Q518,218 532,195 Z" title="Balkans"/>
+                        
+                        <!-- Eastern Europe -->
+                        <path class="country" d="M555,118 Q592,108 628,122 Q658,142 662,172 Q652,200 622,212 Q588,218 558,205 Q535,185 538,155 Q545,132 555,118 Z" title="Eastern Europe"/>
+                        
+                        <!-- RUSSIA -->
+                        <path class="country" d="M595,45 Q675,38 755,50 Q835,65 895,88 Q938,115 948,152 Q942,192 912,225 Q872,252 822,268 Q765,278 708,272 Q652,265 608,248 Q572,228 558,198 Q552,165 568,132 Q588,98 595,45 Z" title="Russia"/>
+                        
+                        <!-- AFRICA -->
+                        <!-- North Africa -->
+                        <path class="country" d="M418,242 Q472,232 528,245 Q578,262 602,292 Q612,328 598,362 Q568,388 528,398 Q485,402 448,388 Q418,368 408,335 Q408,295 418,242 Z" title="North Africa"/>
+                        
+                        <!-- West Africa -->
+                        <path class="country" d="M408,342 Q445,332 478,348 Q502,372 508,402 Q498,432 468,448 Q435,455 408,442 Q388,422 388,392 Q392,362 408,342 Z" title="West Africa"/>
+                        
+                        <!-- Central Africa -->
+                        <path class="country" d="M492,392 Q535,378 575,398 Q605,428 612,468 Q602,505 568,525 Q528,535 492,518 Q465,492 465,455 Q472,418 492,392 Z" title="Central Africa"/>
+                        
+                        <!-- East Africa -->
+                        <path class="country" d="M575,322 Q612,308 645,332 Q672,365 678,405 Q668,445 638,472 Q602,488 568,475 Q542,452 542,412 Q548,368 575,322 Z" title="East Africa"/>
+                        
+                        <!-- Southern Africa -->
+                        <path class="country" d="M502,502 Q548,488 592,508 Q628,538 638,578 Q625,618 588,638 Q545,648 508,628 Q478,602 478,562 Q485,525 502,502 Z" title="Southern Africa"/>
+                        
+                        <!-- Madagascar -->
+                        <path class="country" d="M628,488 Q648,478 662,498 Q672,528 665,562 Q652,588 632,592 Q618,578 618,545 Q622,512 628,488 Z" title="Madagascar"/>
+                        
+                        <!-- MIDDLE EAST -->
+                        <path class="country" d="M575,212 Q618,202 658,222 Q692,248 702,285 Q695,322 662,348 Q622,365 585,355 Q555,335 548,298 Q552,258 575,212 Z" title="Middle East"/>
+                        
+                        <!-- Arabian Peninsula -->
+                        <path class="country" d="M598,302 Q642,288 682,312 Q712,345 718,388 Q705,428 668,448 Q625,455 592,432 Q568,400 572,358 Q582,322 598,302 Z" title="Arabian Peninsula"/>
+                        
+                        <!-- ASIA -->
+                        <!-- Central Asia -->
+                        <path class="country" d="M648,155 Q712,142 772,165 Q818,195 828,238 Q815,278 768,302 Q715,315 665,295 Q628,268 625,225 Q632,185 648,155 Z" title="Central Asia"/>
+                        
+                        <!-- India - detailed -->
+                        <path class="country" d="M692,285 Q738,268 782,292 Q818,328 832,375 Q825,425 792,462 Q748,488 702,482 Q662,465 642,425 Q635,378 652,335 Q672,302 692,285 Z" title="India"/>
+                        
+                        <!-- Sri Lanka -->
+                        <path class="country" d="M728,465 Q745,458 758,475 Q762,498 752,515 Q738,522 725,508 Q722,485 728,465 Z" title="Sri Lanka"/>
+                        
+                        <!-- Southeast Asia mainland -->
+                        <path class="country" d="M788,338 Q828,322 865,345 Q895,378 902,418 Q892,458 858,485 Q818,498 782,482 Q755,455 755,412 Q762,368 788,338 Z" title="Southeast Asia"/>
+                        
+                        <!-- China - detailed -->
+                        <path class="country" d="M768,148 Q835,132 898,158 Q948,195 962,248 Q958,302 922,345 Q875,378 818,388 Q762,382 718,352 Q685,312 685,262 Q698,205 768,148 Z" title="China"/>
+                        
+                        <!-- Mongolia -->
+                        <path class="country" d="M792,108 Q852,95 905,118 Q942,148 945,188 Q928,222 885,238 Q838,245 798,225 Q768,198 772,162 Q778,132 792,108 Z" title="Mongolia"/>
+                        
+                        <!-- Korea -->
+                        <path class="country" d="M918,205 Q942,195 958,215 Q968,242 962,268 Q948,288 928,285 Q912,272 912,248 Q915,225 918,205 Z" title="Korea"/>
+                        
+                        <!-- Japan - detailed -->
+                        <path class="country" d="M938,168 Q962,158 978,178 Q988,205 982,235 Q968,258 948,265 Q932,255 928,232 Q932,202 938,168 Z" title="Honshu"/>
+                        <path class="country" d="M968,245 Q988,238 998,258 Q1002,282 992,302 Q975,312 962,302 Q955,278 968,245 Z" title="Kyushu"/>
+                        <path class="country" d="M945,138 Q968,132 982,148 Q988,168 978,182 Q962,188 948,178 Q942,162 945,138 Z" title="Hokkaido"/>
+                        
+                        <!-- Taiwan -->
+                        <path class="country" d="M908,325 Q925,318 935,335 Q938,358 928,375 Q912,382 902,368 Q898,345 908,325 Z" title="Taiwan"/>
+                        
+                        <!-- Philippines -->
+                        <path class="country" d="M895,378 Q918,368 935,388 Q948,418 942,452 Q925,475 902,472 Q882,455 882,422 Q888,395 895,378 Z" title="Philippines"/>
+                        
+                        <!-- Indonesia -->
+                        <path class="country" d="M848,448 Q895,435 938,458 Q972,488 982,528 Q968,565 928,582 Q882,588 842,568 Q812,538 815,498 Q825,465 848,448 Z" title="Indonesia"/>
+                        <path class="country" d="M802,465 Q828,455 848,478 Q858,508 845,532 Q822,545 802,532 Q788,508 798,482 Q802,472 802,465 Z" title="Borneo"/>
+                        
+                        <!-- OCEANIA -->
+                        <!-- Australia - detailed -->
+                        <path class="country" d="M862,482 Q918,465 968,498 Q1008,542 1018,598 Q1005,655 958,692 Q902,715 848,702 Q802,678 785,628 Q778,575 798,528 Q828,492 862,482 Z" title="Australia"/>
+                        
+                        <!-- New Zealand -->
+                        <path class="country" d="M1012,615 Q1032,602 1048,622 Q1058,652 1048,682 Q1032,702 1012,698 Q998,678 998,648 Q1002,625 1012,615 Z" title="New Zealand North"/>
+                        <path class="country" d="M998,692 Q1018,682 1032,702 Q1038,732 1025,755 Q1005,765 988,752 Q978,725 988,702 Q992,695 998,692 Z" title="New Zealand South"/>
+                        
+                        <!-- Papua New Guinea -->
+                        <path class="country" d="M938,408 Q972,395 998,418 Q1018,448 1012,482 Q992,505 962,508 Q935,498 928,468 Q928,438 938,408 Z" title="Papua New Guinea"/>
+                    </g>
+                    
+                    <!-- Major city markers (subtle dots) -->
+                    <g class="cities" fill="#3a7abd" opacity="0.5">
+                        <circle cx="255" cy="165" r="2.5"/> <!-- New York -->
+                        <circle cx="155" cy="175" r="2"/> <!-- Los Angeles -->
+                        <circle cx="458" cy="125" r="2.5"/> <!-- London -->
+                        <circle cx="478" cy="165" r="2"/> <!-- Paris -->
+                        <circle cx="518" cy="145" r="2"/> <!-- Berlin -->
+                        <circle cx="558" cy="132" r="2"/> <!-- Warsaw -->
+                        <circle cx="628" cy="118" r="2.5"/> <!-- Moscow -->
+                        <circle cx="818" cy="215" r="2.5"/> <!-- Beijing -->
+                        <circle cx="952" cy="205" r="2.5"/> <!-- Tokyo -->
+                        <circle cx="725" cy="385" r="2"/> <!-- Mumbai -->
+                        <circle cx="912" cy="585" r="2"/> <!-- Sydney -->
+                        <circle cx="478" cy="378" r="2"/> <!-- Lagos -->
+                        <circle cx="318" cy="448" r="2"/> <!-- São Paulo -->
+                        <circle cx="868" cy="358" r="2"/> <!-- Singapore -->
+                        <circle cx="575" cy="262" r="2"/> <!-- Cairo -->
+                    </g>
+                    
+                    <!-- Target indicator (defended network) -->
+                    <g class="target-indicator">
+                        <circle cx="240" cy="165" r="8" fill="none" stroke="#00ff88" stroke-width="2" opacity="0.8">
+                            <animate attributeName="r" values="8;15;8" dur="2s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" values="0.8;0.3;0.8" dur="2s" repeatCount="indefinite"/>
+                        </circle>
+                        <circle cx="240" cy="165" r="4" fill="#00ff88" opacity="0.9">
+                            <animate attributeName="opacity" values="0.9;0.5;0.9" dur="1.5s" repeatCount="indefinite"/>
+                        </circle>
+                    </g>
+                </svg>
+                
+                <!-- Target label overlay -->
+                <div class="target-label" style="position:absolute; left:24%; top:33%; transform:translate(-50%,-50%); pointer-events:none;">
+                    <div style="color:#00ff88; font-size:0.7em; font-weight:600; text-shadow:0 0 8px rgba(0,255,136,0.5); white-space:nowrap;">🛡️ PROTECTED</div>
+                </div>
+                
+                <div class="map-stats">
+                    <div class="map-stat">
+                        <div class="map-stat-value" id="blocked-attacks">0</div>
+                        <div class="map-stat-label">Blocked Today</div>
+                    </div>
+                    <div class="map-stat">
+                        <div class="map-stat-value" style="color: #ffa502;" id="suspicious-ips">0</div>
+                        <div class="map-stat-label">Suspicious IPs</div>
+                    </div>
+                </div>
+                
+                <div class="map-legend">
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background: #ff4757;"></div>
+                        <span>Critical</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background: #ffa502;"></div>
+                        <span>High</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background: #ffd43b;"></div>
+                        <span>Medium</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Traffic Graph -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">📈 Network Traffic (Real-Time)</span>
+            </div>
+            <div class="traffic-graph">
+                <canvas id="traffic-canvas" class="traffic-canvas"></canvas>
+            </div>
+            <div class="traffic-legend">
+                <div class="traffic-legend-item">
+                    <div class="traffic-legend-color" style="background: #2ed573;"></div>
+                    <span>Inbound</span>
+                </div>
+                <div class="traffic-legend-item">
+                    <div class="traffic-legend-color" style="background: #00d4ff;"></div>
+                    <span>Outbound</span>
+                </div>
+                <div class="traffic-legend-item">
+                    <div class="traffic-legend-color" style="background: #ff4757;"></div>
+                    <span>Blocked</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Top Talkers -->
+        <div class="card top-talkers">
+            <div class="card-header">
+                <span class="card-title">📊 Top Talkers (External IPs)</span>
+            </div>
+            <div class="talker-list" id="talker-list"></div>
+        </div>
+        
+        <!-- Firewall Logs -->
+        <div class="card firewall-logs">
+            <div class="card-header">
+                <span class="card-title">🔥 Firewall Logs (Live)</span>
+                <span id="log-count">0 events</span>
+            </div>
+            <div class="log-list" id="log-list">
+                <div class="log-entry" style="background: rgba(0,212,255,0.1); font-weight: bold;">
+                    <span>Time</span>
+                    <span>Action</span>
+                    <span>Source IP</span>
+                    <span>Dest IP</span>
+                    <span>Port</span>
+                    <span>Proto</span>
+                    <span>Rule</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Port Activity -->
+        <div class="card port-activity">
+            <div class="card-header">
+                <span class="card-title">📌 Port Activity Monitor</span>
+            </div>
+            <div class="port-grid" id="port-grid"></div>
+        </div>
+    </main>
+    
+    <script>
+        // Configuration - EXPANDED for 2+ hour viewing sessions
+        // Coordinates updated to match realistic world map (1000x500 viewBox)
+        const countries = [
+            // North America
+            { name: 'United States', code: 'US', x: 200, y: 170 },
+            { name: 'United States (East)', code: 'US-E', x: 265, y: 165 },
+            { name: 'United States (West)', code: 'US-W', x: 145, y: 175 },
+            { name: 'Canada', code: 'CA', x: 200, y: 105 },
+            { name: 'Mexico', code: 'MX', x: 160, y: 245 },
+            { name: 'Alaska', code: 'US-AK', x: 85, y: 95 },
+            // Europe
+            { name: 'Russia', code: 'RU', x: 750, y: 95 },
+            { name: 'Germany', code: 'DE', x: 515, y: 145 },
+            { name: 'UK', code: 'UK', x: 455, y: 125 },
+            { name: 'France', code: 'FR', x: 475, y: 170 },
+            { name: 'Netherlands', code: 'NL', x: 490, y: 135 },
+            { name: 'Ukraine', code: 'UA', x: 585, y: 160 },
+            { name: 'Poland', code: 'PL', x: 535, y: 145 },
+            { name: 'Romania', code: 'RO', x: 555, y: 185 },
+            { name: 'Sweden', code: 'SE', x: 505, y: 85 },
+            { name: 'Finland', code: 'FI', x: 555, y: 78 },
+            { name: 'Italy', code: 'IT', x: 510, y: 215 },
+            { name: 'Spain', code: 'ES', x: 445, y: 195 },
+            { name: 'Ireland', code: 'IE', x: 425, y: 125 },
+            { name: 'Iceland', code: 'IS', x: 415, y: 78 },
+            { name: 'Greece', code: 'GR', x: 555, y: 225 },
+            { name: 'Norway', code: 'NO', x: 495, y: 65 },
+            // Asia
+            { name: 'China', code: 'CN', x: 835, y: 225 },
+            { name: 'China (East)', code: 'CN-E', x: 885, y: 265 },
+            { name: 'India', code: 'IN', x: 735, y: 355 },
+            { name: 'Japan', code: 'JP', x: 958, y: 215 },
+            { name: 'South Korea', code: 'KR', x: 935, y: 245 },
+            { name: 'Taiwan', code: 'TW', x: 918, y: 345 },
+            { name: 'Vietnam', code: 'VN', x: 835, y: 385 },
+            { name: 'Singapore', code: 'SG', x: 855, y: 430 },
+            { name: 'Indonesia', code: 'ID', x: 885, y: 495 },
+            { name: 'Philippines', code: 'PH', x: 912, y: 415 },
+            { name: 'Thailand', code: 'TH', x: 825, y: 378 },
+            { name: 'Malaysia', code: 'MY', x: 838, y: 425 },
+            { name: 'Iran', code: 'IR', x: 638, y: 275 },
+            { name: 'North Korea', code: 'KP', x: 925, y: 215 },
+            { name: 'Pakistan', code: 'PK', x: 695, y: 295 },
+            { name: 'Bangladesh', code: 'BD', x: 768, y: 335 },
+            { name: 'Mongolia', code: 'MN', x: 845, y: 165 },
+            // South America
+            { name: 'Brazil', code: 'BR', x: 335, y: 415 },
+            { name: 'Argentina', code: 'AR', x: 285, y: 515 },
+            { name: 'Colombia', code: 'CO', x: 260, y: 335 },
+            { name: 'Peru', code: 'PE', x: 228, y: 385 },
+            { name: 'Chile', code: 'CL', x: 208, y: 505 },
+            { name: 'Venezuela', code: 'VE', x: 278, y: 325 },
+            // Africa
+            { name: 'Nigeria', code: 'NG', x: 465, y: 388 },
+            { name: 'South Africa', code: 'ZA', x: 555, y: 555 },
+            { name: 'Egypt', code: 'EG', x: 555, y: 298 },
+            { name: 'Kenya', code: 'KE', x: 598, y: 415 },
+            { name: 'Morocco', code: 'MA', x: 435, y: 268 },
+            { name: 'Algeria', code: 'DZ', x: 478, y: 275 },
+            { name: 'Ethiopia', code: 'ET', x: 608, y: 375 },
+            { name: 'Ghana', code: 'GH', x: 445, y: 378 },
+            // Oceania
+            { name: 'Australia', code: 'AU', x: 918, y: 575 },
+            { name: 'New Zealand', code: 'NZ', x: 1025, y: 658 },
+            // Middle East
+            { name: 'Israel', code: 'IL', x: 575, y: 275 },
+            { name: 'Turkey', code: 'TR', x: 565, y: 215 },
+            { name: 'UAE', code: 'AE', x: 648, y: 335 },
+            { name: 'Saudi Arabia', code: 'SA', x: 635, y: 355 },
+            { name: 'Iraq', code: 'IQ', x: 608, y: 275 },
+            { name: 'Qatar', code: 'QA', x: 655, y: 335 }
+        ];
+        
+        const targetLocation = { x: 240, y: 165 };
+        
+        const firewallActions = ['ALLOW', 'DENY', 'DROP', 'REJECT', 'LOG', 'QUARANTINE'];
+        
+        // Expanded protocols (25+)
+        const protocols = [
+            'TCP', 'UDP', 'ICMP', 'HTTP', 'HTTPS', 'SSH', 'DNS',
+            'FTP', 'SFTP', 'SMTP', 'POP3', 'IMAP', 'RDP', 'SMB',
+            'LDAP', 'LDAPS', 'NTP', 'SNMP', 'SIP', 'RTP',
+            'TLS', 'SSL', 'GRE', 'ESP', 'AH'
+        ];
+        
+        // Expanded firewall rules (30+)
+        const firewallRules = [
+            'Default-Allow', 'Block-Known-Bad', 'Rate-Limit', 'Geo-Block', 'IDS-Alert',
+            'Block-Scanner', 'Allow-Trusted', 'Block-TOR', 'Block-VPN', 'Allow-Partner',
+            'Block-Botnet', 'Rate-Limit-SSH', 'Block-Brute-Force', 'Allow-CDN', 'Block-C2',
+            'Allow-DNS', 'Block-Crypto', 'Allow-SMTP', 'Block-RDP-External', 'Allow-VPN-Users',
+            'Block-Port-Scan', 'Allow-Load-Balancer', 'Block-SQL-Inject', 'Allow-Monitoring',
+            'Block-Malware-Hash', 'Allow-Backup', 'Block-DGA', 'Rate-Limit-API', 'Block-Spam',
+            'Allow-Internal', 'Block-Anonymous', 'Emergency-Block', 'Quarantine-Suspected'
+        ];
+        
+        // Expanded monitored ports (24+)
+        const monitoredPorts = [
+            { port: 22, service: 'SSH', connections: 0, status: 'active' },
+            { port: 80, service: 'HTTP', connections: 0, status: 'active' },
+            { port: 443, service: 'HTTPS', connections: 0, status: 'active' },
+            { port: 3389, service: 'RDP', connections: 0, status: 'warning' },
+            { port: 3306, service: 'MySQL', connections: 0, status: 'active' },
+            { port: 21, service: 'FTP', connections: 0, status: 'alert' },
+            { port: 25, service: 'SMTP', connections: 0, status: 'active' },
+            { port: 53, service: 'DNS', connections: 0, status: 'active' },
+            { port: 445, service: 'SMB', connections: 0, status: 'warning' },
+            { port: 135, service: 'RPC', connections: 0, status: 'active' },
+            { port: 139, service: 'NetBIOS', connections: 0, status: 'warning' },
+            { port: 1433, service: 'MSSQL', connections: 0, status: 'active' },
+            { port: 1521, service: 'Oracle', connections: 0, status: 'active' },
+            { port: 5432, service: 'PostgreSQL', connections: 0, status: 'active' },
+            { port: 27017, service: 'MongoDB', connections: 0, status: 'warning' },
+            { port: 6379, service: 'Redis', connections: 0, status: 'active' },
+            { port: 8080, service: 'HTTP-Alt', connections: 0, status: 'active' },
+            { port: 8443, service: 'HTTPS-Alt', connections: 0, status: 'active' },
+            { port: 5900, service: 'VNC', connections: 0, status: 'alert' },
+            { port: 23, service: 'Telnet', connections: 0, status: 'alert' },
+            { port: 161, service: 'SNMP', connections: 0, status: 'active' },
+            { port: 389, service: 'LDAP', connections: 0, status: 'active' },
+            { port: 636, service: 'LDAPS', connections: 0, status: 'active' },
+            { port: 5985, service: 'WinRM', connections: 0, status: 'warning' }
+        ];
+        
+        let attackCount = 0;
+        let blockedCount = 8547;
+        let suspiciousIPs = 234;
+        let logCount = 0;
+        let topTalkers = [];
+        
+        let trafficData = {
+            inbound: Array(60).fill(0),
+            outbound: Array(60).fill(0),
+            blocked: Array(60).fill(0)
+        };
+        
+        function initTopTalkers() {
+            for (let i = 0; i < 8; i++) {
+                const country = countries[Math.floor(Math.random() * countries.length)];
+                topTalkers.push({
+                    ip: `${Math.floor(Math.random() * 223) + 1}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`,
+                    country: country.name,
+                    bytes: Math.floor(Math.random() * 10000000) + 1000000
+                });
+            }
+            topTalkers.sort((a, b) => b.bytes - a.bytes);
+        }
+        
+        function renderTopTalkers() {
+            const list = document.getElementById('talker-list');
+            const maxBytes = topTalkers[0].bytes;
+            
+            list.innerHTML = topTalkers.map((talker, i) => `
+                <div class="talker-item">
+                    <div class="talker-rank">${i + 1}</div>
+                    <div class="talker-info">
+                        <div class="talker-ip">${talker.ip}</div>
+                        <div class="talker-country">${talker.country}</div>
+                    </div>
+                    <div class="talker-bar-container">
+                        <div class="talker-bar" style="width: ${(talker.bytes / maxBytes) * 100}%"></div>
+                    </div>
+                    <div class="talker-value">${formatBytes(talker.bytes)}</div>
+                </div>
+            `).join('');
+        }
+        
+        function formatBytes(bytes) {
+            if (bytes >= 1000000) return (bytes / 1000000).toFixed(1) + ' MB';
+            if (bytes >= 1000) return (bytes / 1000).toFixed(1) + ' KB';
+            return bytes + ' B';
+        }
+        
+        function addAttackPoint() {
+            const container = document.getElementById('map-container');
+            const svg = document.getElementById('world-svg');
+            const source = countries[Math.floor(Math.random() * countries.length)];
+            const severities = ['critical', 'high', 'medium'];
+            const weights = [1, 3, 6]; // Less critical attacks are more common
+            const totalWeight = weights.reduce((a, b) => a + b, 0);
+            let random = Math.random() * totalWeight;
+            let severityIndex = 0;
+            for (let i = 0; i < weights.length; i++) {
+                random -= weights[i];
+                if (random <= 0) {
+                    severityIndex = i;
+                    break;
+                }
+            }
+            const severity = severities[severityIndex];
+            
+            // Create attack point
+            const point = document.createElement('div');
+            point.className = `attack-point ${severity}`;
+            point.style.left = `${(source.x / 1000) * 100}%`;
+            point.style.top = `${(source.y / 500) * 100}%`;
+            point.title = `${severity.toUpperCase()} - Attack from ${source.name}`;
+            
+            container.appendChild(point);
+            
+            // Add attack line for critical/high severity attacks (30% chance)
+            if ((severity === 'critical' || severity === 'high') && Math.random() > 0.7) {
+                addAttackLine(container, source, targetLocation, severity);
+            }
+            
+            setTimeout(() => point.remove(), 3500);
+            attackCount++;
+        }
+        
+        function addAttackLine(container, source, target, severity) {
+            const line = document.createElement('div');
+            line.className = `attack-line ${severity}`;
+            
+            // Calculate line position and angle
+            const containerRect = container.getBoundingClientRect();
+            const sourceX = (source.x / 1000) * containerRect.width;
+            const sourceY = (source.y / 500) * containerRect.height;
+            const targetX = (target.x / 1000) * containerRect.width;
+            const targetY = (target.y / 500) * containerRect.height;
+            
+            const deltaX = targetX - sourceX;
+            const deltaY = targetY - sourceY;
+            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
+            
+            line.style.left = `${(source.x / 1000) * 100}%`;
+            line.style.top = `${(source.y / 500) * 100}%`;
+            line.style.width = `${distance}px`;
+            line.style.transform = `rotate(${angle}deg)`;
+            line.style.setProperty('--line-color', severity === 'critical' ? '#ff4757' : '#ffa502');
+            
+            container.appendChild(line);
+            
+            setTimeout(() => line.remove(), 2000);
+        }
+        
+        function addFirewallLog() {
+            const list = document.getElementById('log-list');
+            const action = firewallActions[Math.floor(Math.random() * firewallActions.length)];
+            const protocol = protocols[Math.floor(Math.random() * protocols.length)];
+            const rule = firewallRules[Math.floor(Math.random() * firewallRules.length)];
+            
+            const sourceIP = `${Math.floor(Math.random() * 223) + 1}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`;
+            const destIP = `10.0.${Math.floor(Math.random() * 10)}.${Math.floor(Math.random() * 255)}`;
+            const port = [22, 80, 443, 3389, 3306, 21, 25, 8080][Math.floor(Math.random() * 8)];
+            
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.innerHTML = `
+                <span class="log-time">${new Date().toLocaleTimeString()}</span>
+                <span class="log-action ${action.toLowerCase()}">${action}</span>
+                <span>${sourceIP}</span>
+                <span>${destIP}</span>
+                <span>${port}</span>
+                <span class="log-protocol">${protocol}</span>
+                <span>${rule}</span>
+            `;
+            
+            const header = list.querySelector('.log-entry');
+            header.after(entry);
+            
+            const entries = list.querySelectorAll('.log-entry');
+            if (entries.length > 30) entries[entries.length - 1].remove();
+            
+            logCount++;
+            document.getElementById('log-count').textContent = `${logCount} events`;
+            
+            if (action !== 'ALLOW') blockedCount++;
+        }
+        
+        function renderPortGrid() {
+            const grid = document.getElementById('port-grid');
+            grid.innerHTML = monitoredPorts.map(port => `
+                <div class="port-item">
+                    <div class="port-number">${port.port}</div>
+                    <div class="port-service">${port.service}</div>
+                    <div class="port-connections">
+                        <span class="port-status ${port.status}"></span>
+                        <span id="port-${port.port}">${port.connections}</span> conn
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function updatePortConnections() {
+            monitoredPorts.forEach(port => {
+                const change = Math.floor(Math.random() * 20) - 5;
+                port.connections = Math.max(0, port.connections + change);
+                const el = document.getElementById(`port-${port.port}`);
+                if (el) el.textContent = port.connections;
+            });
+            renderPortGrid();
+        }
+        
+        function drawTrafficGraph() {
+            const canvas = document.getElementById('traffic-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = canvas.offsetWidth * 2;
+            canvas.height = canvas.offsetHeight * 2;
+            ctx.scale(2, 2);
+            
+            const width = canvas.offsetWidth;
+            const height = canvas.offsetHeight;
+            
+            ctx.clearRect(0, 0, width, height);
+            
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 0.5;
+            for (let i = 0; i < 5; i++) {
+                const y = (height / 5) * i;
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(width, y);
+                ctx.stroke();
+            }
+            
+            const drawLine = (data, color) => {
+                const max = Math.max(...data, 100);
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                
+                data.forEach((value, i) => {
+                    const x = (width / (data.length - 1)) * i;
+                    const y = height - (value / max) * (height - 20);
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                });
+                
+                ctx.stroke();
+            };
+            
+            drawLine(trafficData.inbound, '#2ed573');
+            drawLine(trafficData.outbound, '#00d4ff');
+            drawLine(trafficData.blocked, '#ff4757');
+        }
+        
+        function updateTrafficData() {
+            trafficData.inbound.shift();
+            trafficData.inbound.push(Math.floor(Math.random() * 80) + 20);
+            trafficData.outbound.shift();
+            trafficData.outbound.push(Math.floor(Math.random() * 60) + 10);
+            trafficData.blocked.shift();
+            trafficData.blocked.push(Math.floor(Math.random() * 20));
+            
+            drawTrafficGraph();
+            
+            document.getElementById('inbound-speed').textContent = (trafficData.inbound[trafficData.inbound.length - 1] / 10).toFixed(2);
+            document.getElementById('outbound-speed').textContent = (trafficData.outbound[trafficData.outbound.length - 1] / 10).toFixed(2);
+            document.getElementById('active-connections').textContent = Math.floor(Math.random() * 5000) + 10000;
+        }
+        
+        function updateStats() {
+            document.getElementById('blocked-attacks').textContent = blockedCount.toLocaleString();
+            document.getElementById('suspicious-ips').textContent = suspiciousIPs;
+            document.getElementById('attacks-per-min').textContent = `${Math.floor(attackCount / 2)} attacks/min`;
+            if (attackCount > 60) attackCount = 0;
+        }
+        
+        function updateDateTime() {
+            document.getElementById('datetime').textContent = new Date().toLocaleString('en-US', {
+                weekday: 'short', month: 'short', day: 'numeric',
+                hour: '2-digit', minute: '2-digit', second: '2-digit'
+            });
+        }
+        
+        function init() {
+            initTopTalkers();
+            renderTopTalkers();
+            renderPortGrid();
+            
+            for (let i = 0; i < 60; i++) {
+                trafficData.inbound[i] = Math.floor(Math.random() * 80) + 20;
+                trafficData.outbound[i] = Math.floor(Math.random() * 60) + 10;
+                trafficData.blocked[i] = Math.floor(Math.random() * 20);
+            }
+            drawTrafficGraph();
+            
+            monitoredPorts.forEach(port => {
+                port.connections = Math.floor(Math.random() * 300);
+            });
+            renderPortGrid();
+            
+            updateDateTime();
+            updateStats();
+            
+            setInterval(updateDateTime, 1000);
+            setInterval(addAttackPoint, 500);
+            setInterval(addFirewallLog, 800);
+            setInterval(updateTrafficData, 1000);
+            setInterval(updatePortConnections, 3000);
+            setInterval(updateStats, 2000);
+            
+            window.addEventListener('resize', drawTrafficGraph);
+        }
+        
+        init();
+    </script>
+</body>
+</html>
