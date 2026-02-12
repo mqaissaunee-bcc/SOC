@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOC Multi-Screen View</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@300;400;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-deep: #060611;
+            --bg-panel: #0c0c1d;
+            --bg-surface: #12122a;
+            --border-dim: rgba(0, 212, 255, 0.12);
+            --border-glow: rgba(0, 212, 255, 0.35);
+            --cyan: #00d4ff;
+            --cyan-dim: rgba(0, 212, 255, 0.6);
+            --green: #00ff88;
+            --amber: #ffaa00;
+            --red: #ff4444;
+            --text-primary: #e8ecf0;
+            --text-secondary: #7a8a9e;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── Control Bar ── */
+        .control-bar {
+            background: var(--bg-panel);
+            border-bottom: 1px solid var(--border-dim);
+            padding: 10px 24px;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            flex-shrink: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .control-bar .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+
+        .brand-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--cyan) 0%, #0066aa 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            box-shadow: 0 0 12px rgba(0, 212, 255, 0.25);
+        }
+
+        .brand-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--cyan);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .brand-sub {
+            font-family: 'Outfit', sans-serif;
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-weight: 400;
+            letter-spacing: 0.5px;
+        }
+
+        .divider {
+            width: 1px;
+            height: 32px;
+            background: var(--border-dim);
+            flex-shrink: 0;
+        }
+
+        .screen-toggles {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .screen-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+            user-select: none;
+            background: transparent;
+        }
+
+        .screen-toggle:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: var(--border-dim);
+        }
+
+        .screen-toggle.active {
+            background: rgba(0, 212, 255, 0.08);
+            border-color: var(--border-glow);
+        }
+
+        .screen-toggle input[type="checkbox"] {
+            display: none;
+        }
+
+        .toggle-indicator {
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            border: 2px solid var(--text-secondary);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .screen-toggle.active .toggle-indicator {
+            border-color: var(--cyan);
+            background: var(--cyan);
+        }
+
+        .toggle-indicator svg {
+            width: 12px;
+            height: 12px;
+            opacity: 0;
+            transition: opacity 0.15s ease;
+        }
+
+        .screen-toggle.active .toggle-indicator svg {
+            opacity: 1;
+        }
+
+        .toggle-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: color 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .screen-toggle.active .toggle-label {
+            color: var(--text-primary);
+        }
+
+        .toggle-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 700;
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 2px;
+            flex-shrink: 0;
+        }
+
+        .screen-toggle[data-screen="1"] .toggle-number { background: rgba(0, 212, 255, 0.15); color: var(--cyan); }
+        .screen-toggle[data-screen="2"] .toggle-number { background: rgba(0, 255, 136, 0.15); color: var(--green); }
+        .screen-toggle[data-screen="3"] .toggle-number { background: rgba(255, 170, 0, 0.15); color: var(--amber); }
+        .screen-toggle[data-screen="4"] .toggle-number { background: rgba(255, 68, 68, 0.15); color: var(--red); }
+
+        /* Layout presets */
+        .layout-presets {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+
+        .preset-btn {
+            padding: 6px 12px;
+            border-radius: 5px;
+            border: 1px solid var(--border-dim);
+            background: transparent;
+            color: var(--text-secondary);
+            font-family: 'Outfit', sans-serif;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .preset-btn:hover {
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-primary);
+            border-color: var(--border-glow);
+        }
+
+        .preset-btn.active-preset {
+            background: rgba(0, 212, 255, 0.1);
+            color: var(--cyan);
+            border-color: var(--cyan);
+        }
+
+        .fullscreen-btn {
+            padding: 6px 10px;
+            border-radius: 5px;
+            border: 1px solid var(--border-dim);
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fullscreen-btn:hover {
+            color: var(--cyan);
+            border-color: var(--border-glow);
+            background: rgba(0, 212, 255, 0.05);
+        }
+
+        .fullscreen-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* ── Screen Grid ── */
+        .screen-grid {
+            flex: 1;
+            display: grid;
+            gap: 2px;
+            background: var(--bg-deep);
+            overflow: hidden;
+            transition: grid-template-columns 0.3s ease, grid-template-rows 0.3s ease;
+        }
+
+        /* Dynamic grid layouts */
+        .screen-grid[data-count="1"] {
+            grid-template-columns: 1fr;
+            grid-template-rows: 1fr;
+        }
+
+        .screen-grid[data-count="2"] {
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr;
+        }
+
+        .screen-grid[data-count="3"] {
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+        }
+
+        .screen-grid[data-count="4"] {
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+        }
+
+        .screen-panel {
+            position: relative;
+            background: var(--bg-surface);
+            overflow: hidden;
+            display: none;
+            animation: panelFadeIn 0.35s ease;
+        }
+
+        .screen-panel.visible {
+            display: block;
+        }
+
+        /* When 3 screens: first panel spans full width of first row */
+        .screen-grid[data-count="3"] .screen-panel.visible:first-of-type {
+            /* handled dynamically via JS for correct ordering */
+        }
+
+        @keyframes panelFadeIn {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .screen-panel iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
+        .screen-label {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 4px;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            pointer-events: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .screen-panel:hover .screen-label {
+            opacity: 1;
+        }
+
+        .screen-panel[data-screen="1"] .screen-label { background: rgba(0, 212, 255, 0.2); color: var(--cyan); border: 1px solid rgba(0, 212, 255, 0.3); }
+        .screen-panel[data-screen="2"] .screen-label { background: rgba(0, 255, 136, 0.2); color: var(--green); border: 1px solid rgba(0, 255, 136, 0.3); }
+        .screen-panel[data-screen="3"] .screen-label { background: rgba(255, 170, 0, 0.2); color: var(--amber); border: 1px solid rgba(255, 170, 0, 0.3); }
+        .screen-panel[data-screen="4"] .screen-label { background: rgba(255, 68, 68, 0.2); color: var(--red); border: 1px solid rgba(255, 68, 68, 0.3); }
+
+        /* ── Empty State ── */
+        .empty-state {
+            display: none;
+            flex: 1;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .empty-state.visible {
+            display: flex;
+        }
+
+        .empty-state-inner {
+            max-width: 400px;
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-state h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* ── Loading overlay ── */
+        .loading-overlay {
+            position: absolute;
+            inset: 0;
+            background: var(--bg-surface);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+            transition: opacity 0.4s ease;
+        }
+
+        .loading-overlay.loaded {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid var(--border-dim);
+            border-top-color: var(--cyan);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ── Status indicator ── */
+        .status-bar {
+            background: var(--bg-panel);
+            border-top: 1px solid var(--border-dim);
+            padding: 4px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--text-secondary);
+            flex-shrink: 0;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .status-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--green);
+            box-shadow: 0 0 6px var(--green);
+            display: inline-block;
+            margin-right: 6px;
+        }
+
+        .back-link {
+            color: var(--cyan-dim);
+            text-decoration: none;
+            font-size: 11px;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--cyan);
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 900px) {
+            .control-bar {
+                padding: 8px 12px;
+                gap: 12px;
+                flex-wrap: wrap;
+            }
+
+            .brand-text { font-size: 12px; }
+            .brand-sub { display: none; }
+
+            .screen-toggle {
+                padding: 5px 10px;
+                gap: 6px;
+            }
+
+            .toggle-label { font-size: 11px; }
+
+            .layout-presets { margin-left: 0; }
+
+            .screen-grid[data-count="2"],
+            .screen-grid[data-count="3"],
+            .screen-grid[data-count="4"] {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Control Bar -->
+    <div class="control-bar">
+        <div class="brand">
+            <div class="brand-icon">&#x1F6E1;</div>
+            <div>
+                <div class="brand-text">SOC View</div>
+                <div class="brand-sub">Multi-Screen Monitor</div>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="screen-toggles">
+            <label class="screen-toggle active" data-screen="1" onclick="toggleScreen(1)">
+                <input type="checkbox" checked>
+                <span class="toggle-indicator">
+                    <svg viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#060611" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+                <span class="toggle-number">1</span>
+                <span class="toggle-label">SIEM</span>
+            </label>
+            <label class="screen-toggle active" data-screen="2" onclick="toggleScreen(2)">
+                <input type="checkbox" checked>
+                <span class="toggle-indicator">
+                    <svg viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#060611" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+                <span class="toggle-number">2</span>
+                <span class="toggle-label">Network</span>
+            </label>
+            <label class="screen-toggle active" data-screen="3" onclick="toggleScreen(3)">
+                <input type="checkbox" checked>
+                <span class="toggle-indicator">
+                    <svg viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#060611" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+                <span class="toggle-number">3</span>
+                <span class="toggle-label">Incidents</span>
+            </label>
+            <label class="screen-toggle active" data-screen="4" onclick="toggleScreen(4)">
+                <input type="checkbox" checked>
+                <span class="toggle-indicator">
+                    <svg viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#060611" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+                <span class="toggle-number">4</span>
+                <span class="toggle-label">Threat Intel</span>
+            </label>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="layout-presets">
+            <button class="preset-btn" onclick="applyPreset('all')" title="Show all 4 screens">Quad</button>
+            <button class="preset-btn" onclick="applyPreset('top')" title="SIEM + Network">Top 2</button>
+            <button class="preset-btn" onclick="applyPreset('bottom')" title="Incidents + Threat Intel">Bottom 2</button>
+            <button class="fullscreen-btn" onclick="goFullscreen()" title="Toggle fullscreen">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Screen Grid -->
+    <div class="screen-grid" id="screenGrid" data-count="4">
+        <div class="screen-panel visible" data-screen="1" id="panel1">
+            <div class="screen-label">SIEM Dashboard</div>
+            <div class="loading-overlay" id="loader1"><div class="loading-spinner"></div></div>
+            <iframe src="soc-screen1-siem-dashboard-fixed.html" onload="hideLoader(1)"></iframe>
+        </div>
+        <div class="screen-panel visible" data-screen="2" id="panel2">
+            <div class="screen-label">Network Monitor</div>
+            <div class="loading-overlay" id="loader2"><div class="loading-spinner"></div></div>
+            <iframe src="soc-screen2-network-monitor-enhanced.html" onload="hideLoader(2)"></iframe>
+        </div>
+        <div class="screen-panel visible" data-screen="3" id="panel3">
+            <div class="screen-label">Incident Response</div>
+            <div class="loading-overlay" id="loader3"><div class="loading-spinner"></div></div>
+            <iframe src="soc-screen3-incident-response-fixed.html" onload="hideLoader(3)"></iframe>
+        </div>
+        <div class="screen-panel visible" data-screen="4" id="panel4">
+            <div class="screen-label">Threat Intelligence</div>
+            <div class="loading-overlay" id="loader4"><div class="loading-spinner"></div></div>
+            <iframe src="soc-screen4-threat-intel-fixed.html" onload="hideLoader(4)"></iframe>
+        </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" id="emptyState">
+        <div class="empty-state-inner">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                <line x1="8" y1="21" x2="16" y2="21"/>
+                <line x1="12" y1="17" x2="12" y2="21"/>
+            </svg>
+            <h2>No Screens Selected</h2>
+            <p>Use the checkboxes above to select which SOC screens to display. You can show anywhere from 1 to 4 screens simultaneously.</p>
+        </div>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <div class="status-left">
+            <span><span class="status-dot"></span>Simulation Active</span>
+            <span id="screenCount">4 screens displayed</span>
+            <span id="clockDisplay"></span>
+        </div>
+        <a href="index.html" class="back-link">&larr; Back to SOC Hub</a>
+    </div>
+
+    <script>
+        // Track screen visibility
+        const screenState = { 1: true, 2: true, 3: true, 4: true };
+
+        const screenFiles = {
+            1: 'soc-screen1-siem-dashboard-fixed.html',
+            2: 'soc-screen2-network-monitor-enhanced.html',
+            3: 'soc-screen3-incident-response-fixed.html',
+            4: 'soc-screen4-threat-intel-fixed.html'
+        };
+
+        function toggleScreen(num) {
+            screenState[num] = !screenState[num];
+            updateGrid();
+        }
+
+        function applyPreset(preset) {
+            if (preset === 'all') {
+                screenState[1] = true; screenState[2] = true;
+                screenState[3] = true; screenState[4] = true;
+            } else if (preset === 'top') {
+                screenState[1] = true; screenState[2] = true;
+                screenState[3] = false; screenState[4] = false;
+            } else if (preset === 'bottom') {
+                screenState[1] = false; screenState[2] = false;
+                screenState[3] = true; screenState[4] = true;
+            }
+            updateGrid();
+        }
+
+        function updateGrid() {
+            const grid = document.getElementById('screenGrid');
+            const emptyState = document.getElementById('emptyState');
+            let visibleCount = 0;
+
+            // Update toggles and panels
+            for (let i = 1; i <= 4; i++) {
+                const toggle = document.querySelector(`.screen-toggle[data-screen="${i}"]`);
+                const panel = document.getElementById(`panel${i}`);
+                const checkbox = toggle.querySelector('input');
+
+                if (screenState[i]) {
+                    toggle.classList.add('active');
+                    panel.classList.add('visible');
+                    checkbox.checked = true;
+                    visibleCount++;
+
+                    // Lazy-load: if iframe has no src yet, set it
+                    const iframe = panel.querySelector('iframe');
+                    if (!iframe.src || iframe.src === 'about:blank') {
+                        iframe.src = screenFiles[i];
+                        document.getElementById(`loader${i}`).classList.remove('loaded');
+                    }
+                } else {
+                    toggle.classList.remove('active');
+                    panel.classList.remove('visible');
+                    checkbox.checked = false;
+                }
+            }
+
+            // Update grid layout
+            grid.setAttribute('data-count', visibleCount);
+
+            // Handle 3-screen layout: first visible panel spans 2 cols
+            const panels = grid.querySelectorAll('.screen-panel.visible');
+            grid.querySelectorAll('.screen-panel').forEach(p => {
+                p.style.gridColumn = '';
+            });
+            if (visibleCount === 3 && panels.length === 3) {
+                panels[0].style.gridColumn = 'span 2';
+            }
+
+            // Empty state
+            if (visibleCount === 0) {
+                grid.style.display = 'none';
+                emptyState.classList.add('visible');
+            } else {
+                grid.style.display = 'grid';
+                emptyState.classList.remove('visible');
+            }
+
+            // Update status
+            document.getElementById('screenCount').textContent =
+                visibleCount === 0 ? 'No screens' :
+                visibleCount === 1 ? '1 screen displayed' :
+                `${visibleCount} screens displayed`;
+
+            // Update preset button highlighting
+            document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active-preset'));
+            if (screenState[1] && screenState[2] && screenState[3] && screenState[4]) {
+                document.querySelector('.preset-btn[onclick*="all"]').classList.add('active-preset');
+            } else if (screenState[1] && screenState[2] && !screenState[3] && !screenState[4]) {
+                document.querySelector('.preset-btn[onclick*="top"]').classList.add('active-preset');
+            } else if (!screenState[1] && !screenState[2] && screenState[3] && screenState[4]) {
+                document.querySelector('.preset-btn[onclick*="bottom"]').classList.add('active-preset');
+            }
+        }
+
+        function hideLoader(num) {
+            const loader = document.getElementById(`loader${num}`);
+            if (loader) {
+                setTimeout(() => loader.classList.add('loaded'), 300);
+            }
+        }
+
+        function goFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // Clock
+        function updateClock() {
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('clockDisplay').textContent = `${h}:${m}:${s} UTC`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Initialize
+        updateGrid();
+    </script>
+</body>
+</html>
