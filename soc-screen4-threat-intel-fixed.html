@@ -71,10 +71,10 @@
         .main-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            grid-template-rows: auto minmax(280px, 1fr) minmax(280px, 1fr);
+            grid-template-rows: auto auto auto auto;
             gap: 15px;
             padding: 15px;
-            height: calc(100vh - 80px);
+            min-height: calc(100vh - 80px);
         }
         
         .card {
@@ -83,7 +83,6 @@
             padding: 15px;
             border: 1px solid #333;
             box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-            overflow: hidden;
             display: flex;
             flex-direction: column;
             min-height: 280px;
@@ -169,7 +168,6 @@
         
         /* Endpoint Grid */
         .endpoint-grid-section {
-            overflow: hidden;
         }
         
         .endpoint-grid {
@@ -242,7 +240,6 @@
         
         /* IOC Feed */
         .ioc-feed {
-            overflow: hidden;
         }
         
         .ioc-list {
@@ -301,7 +298,6 @@
         
         /* Vulnerability Panel */
         .vuln-panel {
-            overflow: hidden;
         }
         
         .vuln-summary {
@@ -383,7 +379,6 @@
         
         /* EDR Alerts */
         .edr-alerts {
-            overflow: hidden;
         }
         
         .edr-list {
@@ -517,11 +512,57 @@
             color: #e0e0e0;
             cursor: pointer;
         }
+        
+        /* Responsive Design */
+        @media (max-width: 1400px) {
+            .main-container {
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: auto auto auto auto;
+            }
+            
+            .endpoint-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+        }
+        
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto;
+            }
+            
+            .threat-feed {
+                grid-column: 1;
+            }
+            
+            .card {
+                min-height: 250px;
+            }
+            
+            .header {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .vuln-summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .compliance-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .endpoint-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            }
+        }
     </style>
 </head>
 <body>
     <header class="header">
-        <h1>🔍 Threat Intelligence & Endpoint Status</h1>
+        <h1>🔍 Threat Intelligence & Endpoint Status</h1>
         <div class="header-info">
             <div class="endpoint-summary">
                 <div class="endpoint-stat">
@@ -761,7 +802,7 @@
                 { prefix: 'LPT', icon: '💼', type: 'Laptop' },
                 { prefix: 'APP', icon: '📱', type: 'App Server' },
                 { prefix: 'FW', icon: '🛡️', type: 'Firewall' },
-                { prefix: 'VPN', icon: '🔐', type: 'VPN Gateway' },
+                { prefix: 'VPN', icon: '🔒', type: 'VPN Gateway' },
                 { prefix: 'MX', icon: '📧', type: 'Mail Server' },
                 { prefix: 'FS', icon: '📁', type: 'File Server' },
                 { prefix: 'PRNT', icon: '🖨️', type: 'Print Server' },
