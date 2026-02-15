@@ -405,7 +405,7 @@
         }
 
         .tier-card ul li::before {
-            content: '&#8594;';
+            content: '\2192';
             position: absolute;
             left: 0;
             color: var(--text-dim);
@@ -1715,6 +1715,109 @@
         <div class="sim-feedback" id="triageFeedback2"></div>
     </div>
 
+    <!-- TRIAGE EXERCISE 3: Brute Force -->
+    <div class="alert-sim">
+        <div class="sim-header">
+            <h4>&#127919; Practice: Brute Force or Pen Test?</h4>
+        </div>
+        <div class="sim-alert">
+            <div class="alert-title">47 failed SSH login attempts from 203.0.113.42 to DMZ-WEB-01 in 3 minutes</div>
+            <div class="alert-meta">Source: DMZ-WEB-01 (Public Web Server) &#183; External IP: 203.0.113.42 (Geo: Romania) &#183; Time: 09:15 UTC &#183; Rule: Brute Force Detection</div>
+        </div>
+        <p style="font-size:0.9rem; color:var(--text-secondary); margin-bottom:1rem;">What is the correct first action?</p>
+        <div class="sim-actions" id="triageSim3">
+            <button class="sim-btn" onclick="checkTriage(this, false, 'triageSim3')">Block the IP immediately at the firewall</button>
+            <button class="sim-btn" onclick="checkTriage(this, true, 'triageSim3')">Check the pen test schedule, then verify if any login succeeded</button>
+            <button class="sim-btn" onclick="checkTriage(this, false, 'triageSim3')">Ignore &#8212; DMZ servers always get scanned</button>
+            <button class="sim-btn" onclick="checkTriage(this, false, 'triageSim3')">Shut down the SSH service on the server</button>
+        </div>
+        <div class="sim-feedback" id="triageFeedback3"></div>
+    </div>
+
+    <!-- TRIAGE EXERCISE 4: Phishing Click -->
+    <div class="alert-sim">
+        <div class="sim-header">
+            <h4>&#127919; Practice: Phishing Response</h4>
+        </div>
+        <div class="sim-alert">
+            <div class="alert-title">User reported clicking a link in a suspicious email; a login page appeared before they closed the tab</div>
+            <div class="alert-meta">Source: Email Security Gateway &#183; User: arodriguez (Accounting) &#183; Time: 11:04 UTC &#183; URL: hxxps://m1crosoft-verify[.]com/signin</div>
+        </div>
+        <p style="font-size:0.9rem; color:var(--text-secondary); margin-bottom:1rem;">What is the most important immediate action?</p>
+        <div class="sim-actions" id="triageSim4">
+            <button class="sim-btn" onclick="checkTriage(this, false, 'triageSim4')">Tell the user to run a virus scan and monitor for a week</button>
+            <button class="sim-btn" onclick="checkTriage(this, false, 'triageSim4')">Block the domain and close the ticket &#8212; the user didn't enter credentials</button>
+            <button class="sim-btn" onclick="checkTriage(this, true, 'triageSim4')">Ask if credentials were entered, then reset the password and check for suspicious logins</button>
+            <button class="sim-btn" onclick="checkTriage(this, false, 'triageSim4')">Escalate directly to Tier 3 &#8212; this requires threat hunting</button>
+        </div>
+        <div class="sim-feedback" id="triageFeedback4"></div>
+    </div>
+
+    <!-- TRIAGE EXERCISE 5: Ransomware Indicator -->
+    <div class="alert-sim">
+        <div class="sim-header">
+            <h4>&#127919; Practice: File Integrity Alert</h4>
+        </div>
+        <div class="sim-alert">
+            <div class="alert-title">File Integrity Monitor: 1,247 files renamed with .locked extension on FS-HR-03 in the last 90 seconds</div>
+            <div class="alert-meta">Source: FS-HR-03 (HR File Server) &#183; Process: svchost.exe spawning unknown child process &#183; Time: 03:42 UTC &#183; Rule: Mass File Modification</div>
+        </div>
+        <p style="font-size:0.9rem; color:var(--text-secondary); margin-bottom:1rem;">What is the correct response?</p>
+        <div class="sim-actions" id="triageSim5">
+            <button class="sim-btn" onclick="checkTriage(this, true, 'triageSim5')">Immediately isolate FS-HR-03 from the network and escalate as a critical incident</button>
+            <button class="sim-btn" onclick="checkTriage(this, false, 'triageSim5')">Investigate what application is renaming the files before acting</button>
+            <button class="sim-btn" onclick="checkTriage(this, false, 'triageSim5')">Check if this is a scheduled backup encryption job</button>
+            <button class="sim-btn" onclick="checkTriage(this, false, 'triageSim5')">Submit a ticket to the sysadmin team for review in the morning</button>
+        </div>
+        <div class="sim-feedback" id="triageFeedback5"></div>
+    </div>
+
+    <!-- TRIAGE EXERCISE 6: Insider Threat Indicators -->
+    <div class="alert-sim">
+        <div class="sim-header">
+            <h4>&#127919; Practice: Unusual Data Access</h4>
+        </div>
+        <div class="sim-alert">
+            <div class="alert-title">DLP Alert: User downloaded 340 files from SharePoint "Confidential &#8212; M&A Projects" folder in 12 minutes</div>
+            <div class="alert-meta">Source: DLP Gateway &#183; User: kwilson (Corporate Development) &#183; Time: 17:55 UTC (near end of business) &#183; Rule: Bulk Sensitive File Download</div>
+        </div>
+        <p style="font-size:0.9rem; color:var(--text-secondary); margin-bottom:1rem;">What should you do first?</p>
+        <div class="sim-actions" id="triageSim6">
+            <button class="sim-btn" onclick="checkTriage(this, false, 'triageSim6')">Immediately disable kwilson's account</button>
+            <button class="sim-btn" onclick="checkTriage(this, true, 'triageSim6')">Verify kwilson's role and check HR for any upcoming status changes (resignation, termination)</button>
+            <button class="sim-btn" onclick="checkTriage(this, false, 'triageSim6')">Mark as false positive &#8212; Corporate Development works with M&A files</button>
+            <button class="sim-btn" onclick="checkTriage(this, false, 'triageSim6')">Ignore until the download exceeds 1,000 files</button>
+        </div>
+        <div class="sim-feedback" id="triageFeedback6"></div>
+    </div>
+
+    <!-- TRIAGE EXERCISE 7: Multi-Alert Correlation -->
+    <div class="alert-sim">
+        <div class="sim-header">
+            <h4>&#127919; Practice: Correlate These Three Alerts</h4>
+        </div>
+        <div class="sim-alert">
+            <div class="alert-title">Alert 1: Successful VPN login for dchung from 91.x.x.x (Ukraine) at 01:14 UTC</div>
+            <div class="alert-meta">Source: VPN Gateway &#183; User: dchung (Engineering) &#183; Rule: Geolocation Anomaly &#8212; user's last login was from San Jose, CA 6 hours ago</div>
+        </div>
+        <div class="sim-alert">
+            <div class="alert-title">Alert 2: dchung accessed source code repo "core-platform" and cloned 3 repositories at 01:22 UTC</div>
+            <div class="alert-meta">Source: GitLab Audit Log &#183; Unusual: dchung typically works on "mobile-app" repo only</div>
+        </div>
+        <div class="sim-alert">
+            <div class="alert-title">Alert 3: New SSH key added to dchung's GitHub account at 01:25 UTC</div>
+            <div class="alert-meta">Source: GitHub Enterprise Audit &#183; Key fingerprint does not match any known device in asset inventory</div>
+        </div>
+        <p style="font-size:0.9rem; color:var(--text-secondary); margin-bottom:1rem;">How should these alerts be handled?</p>
+        <div class="sim-actions" id="triageSim7">
+            <button class="sim-btn" onclick="checkTriage(this, false, 'triageSim7')">Investigate each alert independently &#8212; they triggered different rules</button>
+            <button class="sim-btn" onclick="checkTriage(this, false, 'triageSim7')">Contact dchung to verify the VPN login &#8212; handle the others later</button>
+            <button class="sim-btn" onclick="checkTriage(this, true, 'triageSim7')">Correlate as one incident &#8212; likely compromised credentials. Disable VPN session, lock the account, and escalate immediately</button>
+            <button class="sim-btn" onclick="checkTriage(this, false, 'triageSim7')">Flag for review in the morning &#8212; engineers sometimes work late</button>
+        </div>
+        <div class="sim-feedback" id="triageFeedback7"></div>
+    </div>
+
     <div class="section-nav-bottom">
         <button class="nav-prev" onclick="goToSection(4)">&#8592; IOCs</button>
         <button class="nav-next" onclick="goToSection(6)">Your 4 Screens &#8594;</button>
@@ -2222,14 +2325,39 @@
         const feedback = document.getElementById(feedbackId);
         if (feedback) {
             feedback.classList.add('show', correct ? 'correct' : 'wrong');
-            if (simId === 'triageSim1') {
-                feedback.textContent = correct
-                    ? '&#10003; Correct! Always investigate context first. PowerShell can be legitimate &#8212; check if the user is authorized to run scripts before escalating or isolating.'
-                    : '&#10007; Not quite. Before taking drastic action, you need to investigate the context. PowerShell is used legitimately by many departments &#8212; check if jsmith has authorization to run scripts.';
-            } else {
-                feedback.textContent = correct
-                    ? '&#10003; Correct! Alert A is a false positive (authorized scanner). Alert B shows classic exfiltration indicators: large transfer, finance server, off-hours, unknown destination. Investigate immediately.'
-                    : '&#10007; Not quite. Alert A is from a known, authorized security scanner during its scheduled window &#8212; it\'s a false positive. Alert B has multiple red flags: large data transfer, off-hours, finance server, unknown external IP.';
+            const messages = {
+                triageSim1: {
+                    correct: '\u2713 Correct! Always investigate context first. PowerShell can be legitimate \u2014 check if the user is authorized to run scripts before escalating or isolating.',
+                    wrong: '\u2717 Not quite. Before taking drastic action, you need to investigate the context. PowerShell is used legitimately by many departments \u2014 check if jsmith has authorization to run scripts.'
+                },
+                triageSim2: {
+                    correct: '\u2713 Correct! Alert A is a false positive (authorized scanner). Alert B shows classic exfiltration indicators: large transfer, finance server, off-hours, unknown destination. Investigate immediately.',
+                    wrong: '\u2717 Not quite. Alert A is from a known, authorized security scanner during its scheduled window \u2014 it\'s a false positive. Alert B has multiple red flags: large data transfer, off-hours, finance server, unknown external IP.'
+                },
+                triageSim3: {
+                    correct: '\u2713 Correct! Before blocking, verify it isn\'t a scheduled pen test. Then check authentication logs \u2014 if any login succeeded, this becomes a much higher priority. Blocking without context could disrupt authorized security testing.',
+                    wrong: '\u2717 Not quite. While this looks concerning, your first step should be checking the pen test schedule and verifying whether any of those 47 attempts actually succeeded. A successful login changes this from a nuisance to a potential breach.'
+                },
+                triageSim4: {
+                    correct: '\u2713 Correct! The defanged URL mimics Microsoft \u2014 this is a credential harvesting page. You need to determine exposure immediately: did the user enter their password? If so (or if uncertain), reset credentials right away and check for unauthorized logins from new locations.',
+                    wrong: '\u2717 Not quite. This is a credential harvesting phishing page (note the typosquatted domain "m1crosoft"). The critical question is whether the user entered credentials. A password reset and login audit should happen immediately \u2014 waiting or just blocking the domain leaves a potential compromise unaddressed.'
+                },
+                triageSim5: {
+                    correct: '\u2713 Correct! Mass file renaming to a .locked extension with a suspicious parent process at 3 AM is a textbook ransomware indicator. Every second of delay means more encrypted files. Isolate immediately, then investigate. This is one of the rare cases where you act first and ask questions after.',
+                    wrong: '\u2717 Not quite. 1,247 files renamed to .locked in 90 seconds from an unknown child process of svchost.exe at 3:42 AM \u2014 this is almost certainly ransomware in progress. Speed is critical: isolate the server immediately to prevent lateral spread. Investigating first costs you files and potentially the entire network.'
+                },
+                triageSim6: {
+                    correct: '\u2713 Correct! The volume and timing are suspicious, but the user\'s department legitimately works with M&A files. Check with HR first \u2014 if kwilson recently resigned or is on a performance improvement plan, this could be data theft. Context turns this from "maybe normal" to "confirmed insider threat" or "business as usual."',
+                    wrong: '\u2717 Not quite. Before taking action, you need context. Kwilson works in Corporate Development, so M&A file access may be normal. But 340 files in 12 minutes near end-of-day is unusual volume. Check with HR for any status changes (resignation, termination) \u2014 that context determines whether this is routine work or data exfiltration.'
+                },
+                triageSim7: {
+                    correct: '\u2713 Correct! These three alerts tell a clear story when correlated: impossible travel (San Jose to Ukraine in 6 hours), access to unusual repos, and persistence via a new SSH key \u2014 classic signs of a compromised account. Treating them separately would miss the pattern. Disable the session and lock the account immediately.',
+                    wrong: '\u2717 Not quite. These alerts are strongly correlated: an impossible-travel VPN login, followed by access to unusual repositories, followed by adding a new SSH key for persistence \u2014 all within 11 minutes. This is a textbook account compromise. Each alert alone might be explainable, but together they demand immediate action: kill the VPN session, lock the account, and escalate.'
+                }
+            };
+            const msg = messages[simId];
+            if (msg) {
+                feedback.textContent = correct ? msg.correct : msg.wrong;
             }
         }
     }
