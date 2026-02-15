@@ -493,7 +493,7 @@
                 justify-content: center;
             }
         }
-
+    
         /* -- Display Info Button & Panel -- */
         .display-info-btn {
             position: fixed;
@@ -515,18 +515,13 @@
             font-size: 12px;
             white-space: nowrap;
         }
-
         .display-info-btn:hover {
             color: #00d4ff;
             border-color: rgba(0, 212, 255, 0.5);
             background: rgba(26, 26, 46, 0.95);
             box-shadow: 0 0 12px rgba(0, 212, 255, 0.15);
         }
-
-        .display-info-btn svg {
-            width: 15px;
-            height: 15px;
-        }
+        .display-info-btn svg { width: 15px; height: 15px; }
 
         .di-overlay {
             position: fixed;
@@ -538,7 +533,6 @@
             align-items: center;
             justify-content: center;
         }
-
         .di-overlay.visible { display: flex; }
 
         .di-panel {
@@ -554,7 +548,6 @@
             color: #e8ecf0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
         @keyframes diSlideIn {
             from { opacity: 0; transform: translateY(20px) scale(0.97); }
             to { opacity: 1; transform: translateY(0) scale(1); }
@@ -564,170 +557,214 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 20px 28px;
-            border-bottom: 1px solid rgba(0, 212, 255, 0.12);
-            position: sticky;
-            top: 0;
-            background: #0c0c1d;
-            z-index: 2;
-            border-radius: 12px 12px 0 0;
+            padding: 20px 24px;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
         }
-
         .di-header h2 {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 700;
+            letter-spacing: 0.1em;
             color: #00d4ff;
-            letter-spacing: 1px;
             display: flex;
             align-items: center;
             gap: 10px;
             margin: 0;
-            text-shadow: none;
         }
-
+        .di-header h2 svg { width: 20px; height: 20px; }
         .di-close {
-            width: 32px;
-            height: 32px;
+            width: 32px; height: 32px;
             border-radius: 6px;
-            border: 1px solid rgba(0, 212, 255, 0.12);
+            border: 1px solid rgba(255,255,255,0.1);
             background: transparent;
             color: #7a8a9e;
+            font-size: 18px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.2s;
-            font-size: 18px;
         }
+        .di-close:hover { color: #ff4444; border-color: rgba(255,68,68,0.4); }
 
-        .di-close:hover {
-            color: #ff4444;
-            border-color: #ff4444;
-            background: rgba(255, 68, 68, 0.1);
-        }
-
-        .di-body { padding: 24px 28px 28px; }
+        .di-body { padding: 24px; }
 
         .di-detect {
-            background: #12122a;
-            border: 1px solid rgba(0, 212, 255, 0.12);
-            border-radius: 8px;
-            padding: 16px 20px;
-            margin-bottom: 24px;
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 20px;
+            padding: 16px 20px;
+            background: rgba(0, 212, 255, 0.05);
+            border: 1px solid rgba(0, 212, 255, 0.15);
+            border-radius: 8px;
+            margin-bottom: 24px;
             flex-wrap: wrap;
         }
-
-        .di-detect-label {
-            font-size: 11px;
-            color: #7a8a9e;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .di-detect-value {
-            font-size: 14px;
-            font-weight: 700;
-            color: #e8ecf0;
-            font-family: monospace;
-        }
-
+        .di-detect-item { text-align: center; }
+        .di-detect-label { font-size: 10px; letter-spacing: 0.08em; color: #7a8a9e; text-transform: uppercase; margin-bottom: 4px; }
+        .di-detect-value { font-size: 16px; font-weight: 700; color: #e8ecf0; font-family: 'JetBrains Mono', monospace; }
+        .di-detect-divider { width: 1px; height: 36px; background: rgba(0, 212, 255, 0.2); }
         .di-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
             font-size: 11px;
             font-weight: 700;
-            padding: 4px 10px;
-            border-radius: 4px;
-            letter-spacing: 0.5px;
-            font-family: monospace;
+            letter-spacing: 0.05em;
         }
-
-        .di-badge.optimal { background: rgba(0, 255, 136, 0.15); color: #00ff88; border: 1px solid rgba(0, 255, 136, 0.3); }
-        .di-badge.acceptable { background: rgba(255, 170, 0, 0.15); color: #ffaa00; border: 1px solid rgba(255, 170, 0, 0.3); }
-        .di-badge.limited { background: rgba(255, 68, 68, 0.15); color: #ff4444; border: 1px solid rgba(255, 68, 68, 0.3); }
-
-        .di-sep { width: 1px; height: 24px; background: rgba(0, 212, 255, 0.12); }
-
-        .di-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            margin-bottom: 24px;
-            font-size: 13px;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid rgba(0, 212, 255, 0.12);
-        }
-
-        .di-table thead th {
-            background: #12122a;
-            padding: 10px 16px;
-            text-align: left;
-            font-size: 11px;
-            font-weight: 700;
-            color: #00d4ff;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border-bottom: 1px solid rgba(0, 212, 255, 0.12);
-        }
-
-        .di-table tbody td {
-            padding: 10px 16px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-            color: #e8ecf0;
-            line-height: 1.5;
-        }
-
-        .di-table tbody tr:last-child td { border-bottom: none; }
-        .di-table tbody tr:hover { background: rgba(0, 212, 255, 0.03); }
-        .di-table .sn { font-weight: 600; white-space: nowrap; }
-        .di-table .rmin { font-family: monospace; font-size: 12px; color: #ffaa00; }
-        .di-table .rrec { font-family: monospace; font-size: 12px; color: #00ff88; }
-        .di-table .nt { font-size: 12px; color: #7a8a9e; }
+        .di-badge.optimal { background: rgba(46,213,115,0.15); color: #2ed573; border: 1px solid rgba(46,213,115,0.3); }
+        .di-badge.good { background: rgba(0,212,255,0.15); color: #00d4ff; border: 1px solid rgba(0,212,255,0.3); }
+        .di-badge.acceptable { background: rgba(255,170,0,0.15); color: #ffaa00; border: 1px solid rgba(255,170,0,0.3); }
+        .di-badge.limited { background: rgba(255,68,68,0.15); color: #ff4444; border: 1px solid rgba(255,68,68,0.3); }
 
         .di-section { margin-bottom: 20px; }
-
         .di-section h3 {
-            font-size: 14px;
-            font-weight: 600;
-            color: #e8ecf0;
+            font-size: 13px;
+            font-weight: 700;
+            color: #00d4ff;
             margin-bottom: 10px;
-            padding-bottom: 6px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            letter-spacing: 0.05em;
         }
-
         .di-section p {
             font-size: 13px;
-            line-height: 1.7;
-            color: #7a8a9e;
+            line-height: 1.6;
+            color: #9ab;
             margin-bottom: 8px;
         }
 
-        .di-section p strong { color: #e8ecf0; font-weight: 600; }
-
-        .di-tip {
-            background: rgba(0, 212, 255, 0.06);
-            border-left: 3px solid #00d4ff;
-            border-radius: 0 6px 6px 0;
-            padding: 12px 16px;
-            margin-top: 12px;
-            font-size: 12px;
-            color: #7a8a9e;
-            line-height: 1.6;
+        .di-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
         }
+        .di-table th {
+            text-align: left;
+            padding: 10px 14px;
+            font-size: 11px;
+            letter-spacing: 0.08em;
+            color: #7a8a9e;
+            text-transform: uppercase;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.15);
+            background: rgba(0, 212, 255, 0.03);
+        }
+        .di-table td {
+            padding: 10px 14px;
+            font-size: 13px;
+            color: #c8d0d8;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+        .di-table tr:hover td { background: rgba(0, 212, 255, 0.03); }
 
-        .di-tip strong { color: #00d4ff; }
-
-        .di-panel::-webkit-scrollbar { width: 6px; }
-        .di-panel::-webkit-scrollbar-track { background: transparent; }
-        .di-panel::-webkit-scrollbar-thumb { background: rgba(0, 212, 255, 0.12); border-radius: 3px; }
-        .di-panel::-webkit-scrollbar-thumb:hover { background: rgba(0, 212, 255, 0.35); }
     </style>
 </head>
 <body>
+
+    <!-- Display Info Button -->
+    <button class="display-info-btn" onclick="toggleDisplayInfo()" title="Display Recommendations">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="16" x2="12" y2="12"/>
+            <line x1="12" y1="8" x2="12.01" y2="8"/>
+        </svg>
+        <span>Display Info</span>
+    </button>
+
+    <!-- Display Info Overlay -->
+    <div class="di-overlay" id="diOverlay" onclick="if(event.target===this)toggleDisplayInfo()">
+        <div class="di-panel">
+            <div class="di-header">
+                <h2>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                        <line x1="8" y1="21" x2="16" y2="21"/>
+                        <line x1="12" y1="17" x2="12" y2="21"/>
+                    </svg>
+                    DISPLAY RECOMMENDATIONS
+                </h2>
+                <button class="di-close" onclick="toggleDisplayInfo()" title="Close">&times;</button>
+            </div>
+            <div class="di-body">
+                <!-- Live Detection -->
+                <div class="di-detect" id="diDetect">
+                    <div class="di-detect-item">
+                        <div class="di-detect-label">Your Display</div>
+                        <div class="di-detect-value" id="diResolution">--</div>
+                    </div>
+                    <div class="di-detect-divider"></div>
+                    <div class="di-detect-item">
+                        <div class="di-detect-label">Pixel Ratio</div>
+                        <div class="di-detect-value" id="diDPR">--</div>
+                    </div>
+                    <div class="di-detect-divider"></div>
+                    <div class="di-detect-item">
+                        <div class="di-detect-label">Viewport</div>
+                        <div class="di-detect-value" id="diViewport">--</div>
+                    </div>
+                    <div class="di-detect-divider"></div>
+                    <div class="di-detect-item">
+                        <div class="di-detect-label">Rating</div>
+                        <span class="di-badge" id="diBadge">--</span>
+                    </div>
+                </div>
+
+                <!-- Reference Table -->
+                <div class="di-section">
+                    <h3>&#x1F4CA; Quick Reference</h3>
+                    <table class="di-table">
+                        <thead>
+                            <tr>
+                                <th>Setup</th>
+                                <th>Minimum</th>
+                                <th>Recommended</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Individual Screen</td>
+                                <td>1280 &times; 720</td>
+                                <td>1920 &times; 1080+</td>
+                            </tr>
+                            <tr>
+                                <td>Multi-Screen (Quad)</td>
+                                <td>1920 &times; 1080</td>
+                                <td>2560 &times; 1440+</td>
+                            </tr>
+                            <tr>
+                                <td>Physical Display</td>
+                                <td>24&rdquo; monitor</td>
+                                <td>32&rdquo;&ndash;55&rdquo; or larger</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Individual Screen Guidance -->
+                <div class="di-section">
+                    <h3>&#x1F5A5;&#xFE0F; Individual Screen (This View)</h3>
+                    <p>This dashboard is optimized for <strong>1920&times;1080 (Full HD)</strong> or higher. At this resolution, all panels, charts, and data feeds display at full fidelity without collapsing.</p>
+                    <p>At <strong>1280&times;720</strong>, the layout still works but some elements may wrap or compress. Below 720p, content may be difficult to read.</p>
+                </div>
+
+                <!-- Practical Tips -->
+                <div class="di-section">
+                    <h3>&#x1F4A1; Practical Tips</h3>
+                    <p><strong>Classroom TVs (55&rdquo;&ndash;65&rdquo;):</strong> Use 4K resolution for maximum clarity. At 1080p, text remains readable from 6&ndash;10 feet but may appear softer on larger panels.</p>
+                    <p><strong>Desktop Monitors (24&rdquo;&ndash;32&rdquo;):</strong> 1080p is fine for individual screens. For the multi-screen quad view, 1440p or 4K is strongly recommended.</p>
+                    <p><strong>Projectors:</strong> Ensure native 1080p or higher. Lower-resolution projectors will cause text to blur, making alert details difficult to read.</p>
+                    <p><strong>Browser Zoom:</strong> If text appears too small, use Ctrl/Cmd + to increase zoom. The dashboards respond well to 110&ndash;125% zoom on high-resolution displays.</p>
+                </div>
+
+                <!-- Font & Readability -->
+                <div class="di-section">
+                    <h3>&#x1F524; Font Scaling &amp; Readability</h3>
+                    <p>Dashboard fonts are set in pixels (11&ndash;14px base). These don&rsquo;t scale with display DPI. On a large low-resolution display (e.g. 65&rdquo; 1080p TV at 10ft), text will be physically large but may appear soft. On a 27&rdquo; 4K monitor up close, everything is crisp but physically small.</p>
+                    <p>The sweet spot depends on the combination of <strong>resolution</strong>, <strong>physical screen size</strong>, and <strong>viewing distance</strong>. For classroom settings, a 55&rdquo;&ndash;65&rdquo; 4K TV viewed from 6&ndash;10 feet is the ideal range.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <header class="header">
-        <h1>🛡️ SIEM Dashboard - Security Operations Center</h1>
+        <h1>&#128737;&#65039; SIEM Dashboard - Security Operations Center</h1>
         <div class="header-info">
             <div class="audio-indicator">
                 <div class="sound-wave">
@@ -775,7 +812,7 @@
         <!-- Alert Queue -->
         <div class="card alert-queue">
             <div class="card-header">
-                <span class="card-title">📋 Real-Time Alert Queue</span>
+                <span class="card-title">&#128203; Real-Time Alert Queue</span>
                 <span id="queue-count">0 alerts</span>
             </div>
             <div class="filter-controls">
@@ -791,13 +828,13 @@
         <!-- Activity Timeline -->
         <div class="card activity-timeline">
             <div class="card-header">
-                <span class="card-title">📊 Alerts Per Hour</span>
+                <span class="card-title">&#128202; Alerts Per Hour</span>
             </div>
             <div class="chart-container">
                 <div class="bar-chart" id="hourly-chart"></div>
             </div>
             <div class="card-header" style="margin-top: 20px;">
-                <span class="card-title">⏱ Recent Activity</span>
+                <span class="card-title">&#9201;&#65039; Recent Activity</span>
             </div>
             <div class="timeline-content" id="timeline"></div>
         </div>
@@ -805,7 +842,7 @@
         <!-- MITRE ATT&CK Heatmap -->
         <div class="card mitre-section">
             <div class="card-header">
-                <span class="card-title">🎯 MITRE ATT&CK Coverage</span>
+                <span class="card-title">&#127919; MITRE ATT&CK Coverage</span>
             </div>
             <div class="mitre-grid" id="mitre-grid"></div>
             <div style="margin-top: 15px; display: flex; justify-content: space-around; font-size: 0.75em; flex-wrap: wrap; gap: 10px;">
@@ -1299,7 +1336,9 @@
             }, 30000);
         }
         
-        
+        init();
+    
+
         // -- Display Info Panel --
         function toggleDisplayInfo() {
             var overlay = document.getElementById('diOverlay');
@@ -1310,169 +1349,34 @@
                 updateDI();
             }
         }
-
         function updateDI() {
-            var w = window.screen.width;
-            var h = window.screen.height;
+            var w = screen.width, h = screen.height;
             var dpr = window.devicePixelRatio || 1;
-            var vpW = window.innerWidth;
-            var vpH = window.innerHeight;
-
-            document.getElementById('diRes').textContent = w + ' \u00d7 ' + h;
-            document.getElementById('diDPR').textContent = dpr + 'x';
-            document.getElementById('diViewport').textContent = vpW + ' \u00d7 ' + vpH + 'px';
-
+            var vpW = window.innerWidth, vpH = window.innerHeight;
+            document.getElementById('diResolution').textContent = w + ' x ' + h;
+            document.getElementById('diDPR').textContent = dpr.toFixed(1) + 'x';
+            document.getElementById('diViewport').textContent = vpW + ' x ' + vpH;
             var badge = document.getElementById('diBadge');
-            if (vpW >= 1920 && vpH >= 1080) {
-                badge.textContent = 'OPTIMAL';
-                badge.className = 'di-badge optimal';
-            } else if (vpW >= 1400) {
-                badge.textContent = 'GOOD';
-                badge.className = 'di-badge optimal';
-            } else if (vpW >= 1200) {
-                badge.textContent = 'ACCEPTABLE';
-                badge.className = 'di-badge acceptable';
-            } else {
-                badge.textContent = 'LIMITED';
-                badge.className = 'di-badge limited';
-            }
+            var rating, cls;
+            if (vpW >= 1920) { rating = 'Optimal'; cls = 'optimal'; }
+            else if (vpW >= 1400) { rating = 'Good'; cls = 'good'; }
+            else if (vpW >= 1200) { rating = 'Acceptable'; cls = 'acceptable'; }
+            else { rating = 'Limited'; cls = 'limited'; }
+            badge.textContent = rating;
+            badge.className = 'di-badge ' + cls;
         }
-
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 var overlay = document.getElementById('diOverlay');
                 if (overlay && overlay.classList.contains('visible')) {
-                    toggleDisplayInfo();
+                    overlay.classList.remove('visible');
                 }
             }
         });
-
         window.addEventListener('resize', function() {
-            var overlay = document.getElementById('diOverlay');
-            if (overlay && overlay.classList.contains('visible')) {
-                updateDI();
-            }
+            if (document.getElementById('diOverlay').classList.contains('visible')) updateDI();
         });
 
-        init();
     </script>
-
-    <!-- Display Info Button -->
-    <button class="display-info-btn" onclick="toggleDisplayInfo()" title="Display recommendations">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
-            <line x1="8" y1="21" x2="16" y2="21"/>
-            <line x1="12" y1="17" x2="12" y2="21"/>
-        </svg>
-        Display Info
-    </button>
-
-    <!-- Display Recommendations Overlay -->
-    <div class="di-overlay" id="diOverlay" onclick="if(event.target===this)toggleDisplayInfo()">
-        <div class="di-panel">
-            <div class="di-header">
-                <h2>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;">
-                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
-                        <line x1="8" y1="21" x2="16" y2="21"/>
-                        <line x1="12" y1="17" x2="12" y2="21"/>
-                    </svg>
-                    DISPLAY RECOMMENDATIONS
-                </h2>
-                <button class="di-close" onclick="toggleDisplayInfo()" title="Close">&times;</button>
-            </div>
-            <div class="di-body">
-
-                <div class="di-detect" id="diDetect">
-                    <div>
-                        <div class="di-detect-label">Your Display</div>
-                        <div class="di-detect-value" id="diRes">--</div>
-                    </div>
-                    <div class="di-sep"></div>
-                    <div>
-                        <div class="di-detect-label">Device Pixel Ratio</div>
-                        <div class="di-detect-value" id="diDPR">--</div>
-                    </div>
-                    <div class="di-sep"></div>
-                    <div>
-                        <div class="di-detect-label">Viewport</div>
-                        <div class="di-detect-value" id="diViewport">--</div>
-                    </div>
-                    <div class="di-sep"></div>
-                    <div>
-                        <div class="di-detect-label">Rating</div>
-                        <span class="di-badge" id="diBadge">--</span>
-                    </div>
-                </div>
-
-                <div class="di-section">
-                    <h3>&#x1F4CB; Quick Reference</h3>
-                    <table class="di-table">
-                        <thead>
-                            <tr><th>Setup</th><th>Minimum</th><th>Recommended</th><th>Notes</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td class="sn">Individual Screen</td>
-                                <td class="rmin">1920 &times; 1080</td>
-                                <td class="rrec">1920 &times; 1080+</td>
-                                <td class="nt">Full layout renders at 1080p</td>
-                            </tr>
-                            <tr>
-                                <td class="sn">Multi-Screen (Quad)</td>
-                                <td class="rmin">1920 &times; 1080</td>
-                                <td class="rrec">3840 &times; 2160</td>
-                                <td class="nt">4K gives full HD per quadrant</td>
-                            </tr>
-                            <tr>
-                                <td class="sn">Multi-Screen (2-up)</td>
-                                <td class="rmin">1920 &times; 1080</td>
-                                <td class="rrec">2560 &times; 1440</td>
-                                <td class="nt">Good compromise layout</td>
-                            </tr>
-                            <tr>
-                                <td class="sn">Projector / Large TV</td>
-                                <td class="rmin">1920 &times; 1080</td>
-                                <td class="rrec">3840 &times; 2160</td>
-                                <td class="nt">Viewing distance matters most</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="di-section">
-                    <h3>&#x1F5A5; Individual Screens (One Dashboard per Display)</h3>
-                    <p>Each dashboard is designed for <strong>1920 &times; 1080 (Full HD)</strong> as the baseline. At this resolution, all grid layouts render fully: the three-column SIEM view, the world map with side panels, the incident timeline, and the threat intel feeds.</p>
-                    <p>Responsive breakpoints exist at <strong>1400px</strong>, <strong>1200px</strong>, <strong>900px</strong>, and <strong>768px</strong>, but these are graceful fallbacks that stack content vertically. They work, but lose the "wall of data at a glance" SOC feel. Standard 22"&ndash;27" monitors at 1080p are ideal.</p>
-                </div>
-
-                <div class="di-section">
-                    <h3>&#x1F4FA; Multi-Screen Viewer</h3>
-                    <p>In quad view, the viewport divides into a 2&times;2 grid. Each quadrant gets roughly <strong>half the viewport width and height</strong> minus the control bar.</p>
-                    <p><strong>At 1920 &times; 1080:</strong> Each quadrant is ~960 &times; 490px. Below the 1200px breakpoint, so dashboards show simplified layouts. Functional but compressed.</p>
-                    <p><strong>At 2560 &times; 1440:</strong> Each quadrant is ~1280 &times; 670px. Clears the 1200px breakpoint. Most layouts stay intact.</p>
-                    <p><strong>At 3840 &times; 2160 (4K):</strong> Each quadrant is ~1920 &times; 1040px. Full HD per quadrant &mdash; the ideal experience.</p>
-                    <div class="di-tip">
-                        <strong>Tip:</strong> If using a 1080p display for multi-screen, use the 2-up layout (Top 2 / Bottom 2 presets) instead of quad view. Each panel gets the full viewport width.
-                    </div>
-                </div>
-
-                <div class="di-section">
-                    <h3>&#x1F4A1; Practical Advice</h3>
-                    <p><strong>Four individual stations:</strong> Standard 1080p monitors of any size (22"&ndash;27") work perfectly. Bigger is better for readability at a distance, but resolution is the key factor.</p>
-                    <p><strong>Large presentation display:</strong> Push for the highest resolution available. A 55"+ TV at 4K delivers the full experience. A 1080p projector works but text in quad view will be small from more than a few feet away.</p>
-                    <p><strong>Budget option:</strong> A single 1440p ultrawide (3440 &times; 1440) in 2-up mode gives each panel ~1720 &times; 1390px &mdash; very comfortable.</p>
-                </div>
-
-                <div class="di-section">
-                    <h3>&#x1F520; Font Scaling &amp; Readability</h3>
-                    <p>Dashboards use <strong>fixed pixel font sizes</strong> (10&ndash;14px for data, monospace). These don't scale with display DPI. On a large low-resolution display (e.g. 65" 1080p TV at 10ft), text will be physically large but may appear soft. On a 27" 4K monitor up close, everything is crisp but physically small.</p>
-                    <p>The sweet spot depends on the combination of <strong>resolution</strong>, <strong>physical screen size</strong>, and <strong>viewing distance</strong>. For classroom settings, a 55"&ndash;65" 4K TV viewed from 6&ndash;10 feet is the ideal range.</p>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
 </body>
 </html>
