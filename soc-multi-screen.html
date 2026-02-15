@@ -247,6 +247,31 @@
             height: 16px;
         }
 
+        .lesson-link {
+            margin-left: auto;
+            padding: 6px 14px;
+            border-radius: 5px;
+            border: 1px solid var(--border-dim);
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 0.04em;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .lesson-link:hover {
+            color: var(--cyan);
+            border-color: var(--border-glow);
+            background: rgba(0, 212, 255, 0.05);
+        }
+
         /* â”€â”€ Screen Grid â”€â”€ */
         .screen-grid {
             flex: 1;
@@ -530,6 +555,8 @@
                 </svg>
             </button>
         </div>
+
+        <a href="soc-interactive-lesson.html" class="lesson-link" title="Return to Pre-Training Lesson">📖 Pre-Training Lesson</a>
     </div>
 
     <!-- Screen Grid -->
@@ -542,7 +569,7 @@
         <div class="screen-panel visible" data-screen="2" id="panel2">
             <div class="screen-label">Network Monitor</div>
             <div class="loading-overlay" id="loader2"><div class="loading-spinner"></div></div>
-            <iframe src="soc-screen2-network-monitor-realistic.html" onload="hideLoader(2)"></iframe>
+            <iframe src="soc-screen2-network-monitor-enhanced.html" onload="hideLoader(2)"></iframe>
         </div>
         <div class="screen-panel visible" data-screen="3" id="panel3">
             <div class="screen-label">Incident Response</div>
@@ -585,7 +612,7 @@
 
         const screenFiles = {
             1: 'soc-screen1-siem-dashboard-fixed.html',
-            2: 'soc-screen2-network-monitor-realistic.html',
+            2: 'soc-screen2-network-monitor-enhanced.html',
             3: 'soc-screen3-incident-response-fixed.html',
             4: 'soc-screen4-threat-intel-fixed.html'
         };
