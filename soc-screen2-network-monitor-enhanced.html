@@ -2,7 +2,13 @@
 <html lang="en">
 <head>
 <script>
-(function () { document.documentElement.setAttribute('data-theme', 'dark'); })();
+(function () {
+    try {
+        var saved = localStorage.getItem('soc-theme');
+        var theme = saved || (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+        document.documentElement.setAttribute('data-theme', theme);
+    } catch (e) { document.documentElement.setAttribute('data-theme', 'dark'); }
+})();
 </script>
 
     <meta charset="UTF-8">
@@ -837,12 +843,260 @@
             box-shadow: 0 4px 14px rgba(0,0,0,0.18);
         }
         @media print { .theme-toggle { display: none !important; } }
+    
+        /* ===== Dashboard light theme (structural remap; semantics preserved) ===== */
+        html[data-theme="light"] body {
+            background: linear-gradient(135deg, #e9eef5 0%, #d6e0ec 100%) !important;
+            color: #1c2733 !important;
+        }
+        /* Solid dark panel/surface fills -> light surfaces */
+        html[data-theme="light"] [style*="#0c0c1d"],
+        html[data-theme="light"] [style*="#0f1320"],
+        html[data-theme="light"] [style*="#0d1421"] { /* inline fallbacks, rare */
+            background-color: #ffffff !important;
+        }
+        /* The common class-based dark fills. These selectors are broad on purpose:
+           any element whose computed background is one of the dark brand colors
+           gets a light surface. We target by the structural class families used
+           across the dashboards. */
+        html[data-theme="light"] .card,
+        html[data-theme="light"] .panel,
+        html[data-theme="light"] .widget,
+        html[data-theme="light"] .stat-card,
+        html[data-theme="light"] .alert-item,
+        html[data-theme="light"] .incident-item,
+        html[data-theme="light"] .ioc-item,
+        html[data-theme="light"] .edr-alert,
+        html[data-theme="light"] .endpoint-item,
+        html[data-theme="light"] .log-entry,
+        html[data-theme="light"] .mitre-section,
+        html[data-theme="light"] .chart-container,
+        html[data-theme="light"] .timeline-item,
+        html[data-theme="light"] .top-talkers,
+        html[data-theme="light"] .port-grid,
+        html[data-theme="light"] .main-container,
+        html[data-theme="light"] .sidebar,
+        html[data-theme="light"] .header,
+        html[data-theme="light"] .map-container,
+        html[data-theme="light"] .feed-section,
+        html[data-theme="light"] .detail-panel,
+        html[data-theme="light"] .screen-panel,
+        html[data-theme="light"] .control-bar,
+        html[data-theme="light"] .notes-section {
+            background: #ffffff !important;
+            background-image: none !important;
+            color: #1c2733 !important;
+            border-color: rgba(0,0,0,0.14) !important;
+        }
+        /* Translucent-black overlays read as muddy on light; lighten them. */
+        html[data-theme="light"] [style*="rgba(0,0,0"],
+        html[data-theme="light"] [style*="rgba(0, 0, 0"] {
+            background-color: rgba(0,0,0,0.04) !important;
+        }
+        /* Gray body text -> readable dark */
+        html[data-theme="light"] { --text: #1c2733; --muted: #51606f; }
+        html[data-theme="light"] body,
+        html[data-theme="light"] p,
+        html[data-theme="light"] li,
+        html[data-theme="light"] td,
+        html[data-theme="light"] span:not(.value):not([class*="severity"]):not([class*="status"]):not([class*="badge"]):not([class*="tag"]),
+        html[data-theme="light"] .label,
+        html[data-theme="light"] .stat-label,
+        html[data-theme="light"] .timeline-time,
+        html[data-theme="light"] .card-title,
+        html[data-theme="light"] .subtitle {
+            color: #28323d !important;
+        }
+        /* Keep monospaced log/console panes dark for readability of colored text */
+        html[data-theme="light"] .log-list,
+        html[data-theme="light"] .console-output,
+        html[data-theme="light"] pre,
+        html[data-theme="light"] .terminal,
+        html[data-theme="light"] #log {
+            background: #161b22 !important;
+            color: #e6edf3 !important;
+        }
+        /* The fixed top header bars use a dark translucent bg; give them a light one */
+        html[data-theme="light"] .header,
+        html[data-theme="light"] .top-bar,
+        html[data-theme="light"] .status-bar {
+            background: rgba(255,255,255,0.92) !important;
+            border-bottom-color: rgba(0,0,0,0.12) !important;
+        }
+
+        /* Floating theme toggle (shared) */
+        .theme-toggle {
+            position: fixed; bottom: 18px; right: 18px; z-index: 10050;
+            width: 46px; height: 46px; border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.25);
+            background: rgba(20,28,46,0.85); color: #ffe27a;
+            font-size: 1.2rem; cursor: pointer; line-height: 1;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+            font-family: inherit;
+        }
+        .theme-toggle:hover { filter: brightness(1.15); }
+        .theme-toggle:focus-visible { outline: 2px solid #00d4ff; outline-offset: 2px; }
+        html[data-theme="light"] .theme-toggle {
+            background: #ffffff; color: #b8860b; border-color: rgba(0,0,0,0.18);
+            box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+        }
+        @media print { .theme-toggle { display: none !important; } }
+    
+            
+        /* ===================================================================
+           CONSOLIDATED CONTRAST LAYER (single source of truth)
+           Principles:
+           - Dark panels that persist into light mode keep LIGHT text.
+           - Accent text (cyan/green/amber) on a LIGHT page is darkened.
+           - Severity/semantic swatch colors are never changed.
+           =================================================================== */
+
+        /* --- Code/terminal blocks: dark in BOTH themes -> always-light text --- */
+        .alert-data, .alert-data p, .alert-data .label { color: #e6edf3 !important; }
+        .alert-data .value { color: #7ee787 !important; }
+        .alert-data .value.critical { color: #ff7b72 !important; }
+        .alert-data .drill-caption { color: #b8a6ff !important; }
+
+        /* --- Display-Info popover: dark in both themes -> always-light text --- */
+        .di-overlay, .di-body, .di-header, .di-detect-item, .di-detect-divider { color: #e6edf3 !important; }
+        .di-detect-label { color: #b6c2d0 !important; }
+        .di-detect-value, .di-badge { color: #ffffff !important; }
+        .di-button { background: #1e2733 !important; color: #e6edf3 !important; }
+
+        /* --- LIGHT MODE structural remap --- */
+        html[data-theme="light"] body { background: linear-gradient(135deg,#e9eef5 0%,#d6e0ec 100%) !important; color:#1c2733 !important; }
+        html[data-theme="light"] .card, html[data-theme="light"] .panel, html[data-theme="light"] .exercise,
+        html[data-theme="light"] .scenario-box, html[data-theme="light"] .nav-card, html[data-theme="light"] .stat-card,
+        html[data-theme="light"] .section, html[data-theme="light"] .quiz-question, html[data-theme="light"] .expand-panel,
+        html[data-theme="light"] .glossary-item, html[data-theme="light"] .whats-new-panel, html[data-theme="light"] .tier-section,
+        html[data-theme="light"] .info-sect, html[data-theme="light"] .case-section,
+        html[data-theme="light"] .widget, html[data-theme="light"] .alert-item, html[data-theme="light"] .incident-item,
+        html[data-theme="light"] .ioc-item, html[data-theme="light"] .edr-alert, html[data-theme="light"] .endpoint-item,
+        html[data-theme="light"] .mitre-section, html[data-theme="light"] .chart-container, html[data-theme="light"] .timeline-item,
+        html[data-theme="light"] .top-talkers, html[data-theme="light"] .main-container, html[data-theme="light"] .sidebar,
+        html[data-theme="light"] .header, html[data-theme="light"] .map-container, html[data-theme="light"] .feed-section,
+        html[data-theme="light"] .detail-panel, html[data-theme="light"] .notes-section {
+            background:#ffffff !important; background-image:none !important; color:#1c2733 !important; border-color:rgba(0,0,0,0.14) !important;
+        }
+        /* dark inner tables inside light panels (display-req table, etc.) -> light surface */
+        html[data-theme="light"] .info-sect table, html[data-theme="light"] .info-sect td,
+        html[data-theme="light"] .info-sect th, html[data-theme="light"] .ref-table,
+        html[data-theme="light"] .ref-table td, html[data-theme="light"] .ref-table th {
+            background:#f3f6fa !important; color:#1c2733 !important; border-color:rgba(0,0,0,0.12) !important;
+        }
+        /* body text + the pervasive gray labels (#888/#7a8a9e/#6a7a8a) on light */
+        html[data-theme="light"] p, html[data-theme="light"] li, html[data-theme="light"] td,
+        html[data-theme="light"] label, html[data-theme="light"] .stat-label, html[data-theme="light"] .case-section-title,
+        html[data-theme="light"] [class*="-label"], html[data-theme="light"] .time-estimate,
+        html[data-theme="light"] small, html[data-theme="light"] .di-note, html[data-theme="light"] .subtitle,
+        html[data-theme="light"] .description { color:#33414f !important; }
+        /* accent headings/links on light page -> deep teal/blue (kept "accent"-ish, AA on white) */
+        html[data-theme="light"] h1, html[data-theme="light"] h2, html[data-theme="light"] h3, html[data-theme="light"] h4,
+        html[data-theme="light"] .card-title, html[data-theme="light"] .section-title, html[data-theme="light"] .nav-card h3,
+        html[data-theme="light"] .stat-value, html[data-theme="light"] .tier-header h2, html[data-theme="light"] .exercise-title,
+        html[data-theme="light"] .case-section-title, html[data-theme="light"] .info-sect h2, html[data-theme="light"] .info-sect h3 {
+            color:#0f3a52 !important;
+        }
+        html[data-theme="light"] a:not(.action-link):not(.nav-card):not(.theme-toggle):not([href="soc-multi-screen.html"]) { color:#0a558c !important; }
+        html[data-theme="light"] .version-info { color:#2a3642 !important; background:transparent !important; }
+        html[data-theme="light"] .screen-used { color:#6b5800 !important; }
+        html[data-theme="light"] .whats-new-pill, html[data-theme="light"] .whats-new-panel h2 { color:#1a7a3e !important; }
+
+        /* exercise headers (dark-translucent) -> light surface + dark title in light mode */
+        html[data-theme="light"] .exercise-header { background:#eef2f7 !important; }
+        html[data-theme="light"] .exercise-title { color:#11212e !important; }
+
+        /* --- Badges / pills: solid fills, white text, AA-safe (both themes) --- */
+        .exercise-number { background:#5b21b6 !important; color:#ffffff !important; }
+        .difficulty { color:#ffffff !important; }
+        .difficulty.beginner { background:#0d5c2b !important; }
+        .difficulty.intermediate { background:#8a4600 !important; }
+        .difficulty.advanced { background:#a30f20 !important; }
+        .difficulty.capstone, .difficulty.expert { background:#7a1230 !important; }
+        .sev-badge { background:#b3261e !important; color:#ffffff !important; padding:1px 8px; border-radius:10px; }
+        .points { color:#9a4a00 !important; }
+        html[data-theme="dark"] .points { color:#ffc14d !important; }
+
+        /* --- Dark-mode label nudges (a few #6a7a8a/#4a5562 were ~2.8-4.4) --- */
+        html[data-theme="dark"] .di-detect-label, html[data-theme="dark"] .stat-label,
+        html[data-theme="dark"] .case-section-title, html[data-theme="dark"] [class*="-label"] { color:#9fb0c2 !important; }
+
+        /* --- preset/filter buttons readable in both themes --- */
+        html[data-theme="light"] .preset-btn { color:#1c2733 !important; }
+        html[data-theme="dark"] .preset-btn { color:#e6edf3 !important; }
+
+        /* --- Launch link: solid dark-blue bg, white text, always --- */
+        a[href="soc-multi-screen.html"] { background:#1e40af !important; background-image:none !important; color:#ffffff !important; }
+
+        /* --- skip link --- */
+        .skip-link { background:#0f1320 !important; color:#ffffff !important; }
+    
+        /* --- Consolidated layer: addendum for residual light-mode + dashboard labels --- */
+        /* discipline-lens chips: light purple washes out on white */
+        html[data-theme="light"] .discipline-lens,
+        html[data-theme="light"] [class*="lens"] { color:#4c1d95 !important; }
+        /* dashboard gray legend/stat labels (#888,#7a8a9e) that aren't *-label classed */
+        html[data-theme="light"] .legend-item, html[data-theme="light"] .legend-label,
+        html[data-theme="light"] .stat-name, html[data-theme="light"] .stat-title,
+        html[data-theme="light"] th, html[data-theme="light"] .di-detect-label,
+        html[data-theme="light"] .severity-legend span, html[data-theme="light"] .status-legend span {
+            color:#3c4854 !important;
+        }
+        /* Display Info button - ensure our pill wins */
+        .di-button, button.di-button { background:#1e2733 !important; color:#e6edf3 !important; }
+        .di-button span, .di-button svg { color:#e6edf3 !important; }
+        /* '--' placeholder values */
+        html[data-theme="light"] .di-value, html[data-theme="light"] .di-detect-value,
+        html[data-theme="light"] .metric-value { color:#1c2733 !important; }
+        /* Capstone pill (it's a difficulty-like tag) */
+        .difficulty.capstone, .lens-capstone, span.capstone { background:#7a1230 !important; color:#fff !important; padding:1px 8px; border-radius:10px; }
+        /* Draft banner: darken text on the orange for legibility (banner kept) */
+        .draft-banner { color:#2b0f00 !important; }
+        /* filter 'All' button: deeper blue for white text */
+        .filter-btn, .filter-all, button[data-filter] { }
+        html[data-theme="dark"] .filter-btn.active, button[data-filter="all"].active { background:#1d6fa5 !important; }
+        /* helper tip text */
+        html[data-theme="light"] .tip, html[data-theme="light"] .di-tip, html[data-theme="light"] .help-text { color:#465260 !important; }
+    
+        /* --- Final: dark-tile contexts keep LIGHT text in both themes --- */
+        /* Network map stat tiles + legend sit on the dark map; never darken their text. */
+        .map-stat-label, .map-stat-value, .map-legend span, .map-legend .legend-item span { color:#e6edf3 !important; }
+        html[data-theme="light"] .map-stat-label, html[data-theme="light"] .map-stat-value,
+        html[data-theme="light"] .map-legend span { color:#e6edf3 !important; }
+        /* ioc-table (playbook/notes) header row is dark; keep header text light. */
+        .ioc-table th { color:#e6edf3 !important; background:#1e2733 !important; }
+        html[data-theme="light"] .ioc-table th { color:#e6edf3 !important; background:#1e2733 !important; }
+        /* di-detect-value placeholders are inside the dark di popover -> light text. */
+        .di-detect-value { color:#ffffff !important; }
+        /* Severity legend words that sit beside a colored dot on a dark panel: light. */
+        html[data-theme="light"] .legend-dot + span,
+        html[data-theme="light"] .severity-legend span,
+        html[data-theme="light"] .map-legend span { color:#e6edf3 !important; }
+        /* 'Add' note button: deepen red so white text clears AA (both themes). */
+        .add-note-btn, button.add-note, .note-add, .btn-add, .add-btn { background:#b3261e !important; color:#ffffff !important; }
+        /* Capstone tag explicit */
+        .difficulty.capstone { background:#7a1230 !important; color:#ffffff !important; }
+        /* index 'Tip:' helper + remaining placeholders on white */
+        html[data-theme="light"] .di-tip, html[data-theme="light"] .fullscreen-tip { color:#3c4854 !important; }
+    
+        /* --- Final targeted (real residuals) --- */
+        /* stat-label is #888; on the light stat-card in light mode it needs to be dark. */
+        html[data-theme="light"] .stat-label { color:#3c4854 !important; }
+        html[data-theme="dark"] .stat-label { color:#aab4c0 !important; }
+        /* Add note button: deeper green/red fill, white text */
+        .note-submit, button.note-submit { background:#1a7a3e !important; color:#ffffff !important; }
+        /* Capstone marker pill */
+        .capstone-marker { background:#7a1230 !important; color:#ffffff !important; padding:1px 8px; border-radius:10px; }
+        /* index fullscreen Tip helper */
+        html[data-theme="light"] .fullscreen-tip, html[data-theme="light"] .di-footer-tip,
+        html[data-theme="light"] .info-sect .tip { color:#3c4854 !important; }
     </style>
 </head>
 <body>
 
     <!-- Display Info Button -->
-    <button class="display-info-btn" data-action="toggleDisplayInfo()" title="Display Recommendations">
+    <button class="di-button" class="display-info-btn" data-action="toggleDisplayInfo()" title="Display Recommendations">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"/>
             <line x1="12" y1="16" x2="12" y2="12"/>
@@ -2094,5 +2348,34 @@
     });
 })();
 </script>
-</body>
+<script>
+(function () {
+    'use strict';
+    function curTheme() { return document.documentElement.getAttribute('data-theme') || 'dark'; }
+    function apply(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        try { localStorage.setItem('soc-theme', theme); } catch (e) {}
+        var btn = document.querySelector('.theme-toggle');
+        if (btn) {
+            var light = theme === 'light';
+            btn.textContent = light ? '\u2600\uFE0F' : '\uD83C\uDF19';
+            btn.setAttribute('aria-label', light ? 'Switch to dark mode' : 'Switch to light mode');
+            btn.setAttribute('aria-pressed', light ? 'true' : 'false');
+        }
+    }
+    function build() {
+        if (document.querySelector('.theme-toggle')) return;
+        var btn = document.createElement('button');
+        btn.className = 'theme-toggle';
+        btn.type = 'button';
+        btn.textContent = curTheme() === 'light' ? '\u2600\uFE0F' : '\uD83C\uDF19';
+        btn.setAttribute('aria-label', curTheme() === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
+        btn.setAttribute('aria-pressed', curTheme() === 'light' ? 'true' : 'false');
+        btn.addEventListener('click', function () { apply(curTheme() === 'light' ? 'dark' : 'light'); });
+        document.body.appendChild(btn);
+    }
+    if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', build); }
+    else { build(); }
+})();
+</script></body>
 </html>
