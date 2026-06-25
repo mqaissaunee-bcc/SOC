@@ -1091,6 +1091,38 @@
         /* index fullscreen Tip helper */
         html[data-theme="light"] .fullscreen-tip, html[data-theme="light"] .di-footer-tip,
         html[data-theme="light"] .info-sect .tip { color:#3c4854 !important; }
+    
+        /* ===== Learning Mode (instructor highlight of active injection) ===== */
+        body.learning-active [data-incident] { opacity: 0.32; transition: opacity 0.25s, box-shadow 0.25s, outline 0.25s; }
+        body.learning-active [data-incident].soc-highlight {
+            opacity: 1;
+            outline: 2px solid #ffd43b;
+            outline-offset: 1px;
+            box-shadow: 0 0 0 3px rgba(255, 212, 59, 0.25), 0 0 18px rgba(255, 212, 59, 0.35);
+            border-radius: 6px;
+            position: relative;
+            z-index: 2;
+        }
+        /* dim non-injection ambient content too, so the trail stands out */
+        body.learning-active .alert-item:not([data-incident]),
+        body.learning-active .incident-item:not([data-incident]),
+        body.learning-active .ioc-item:not([data-incident]),
+        body.learning-active .edr-alert:not([data-incident]),
+        body.learning-active .log-entry:not([data-incident]) { opacity: 0.4; }
+        #learning-label {
+            position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
+            z-index: 10060; display: none; align-items: center; gap: 10px;
+            background: rgba(20, 18, 8, 0.94); color: #ffd43b;
+            border: 1px solid rgba(255, 212, 59, 0.5); border-radius: 22px;
+            padding: 8px 18px; font-size: 0.82rem; font-weight: 600;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.4); font-family: inherit;
+            max-width: 92vw;
+        }
+        #learning-label .ll-dot { width: 9px; height: 9px; border-radius: 50%; background: #ffd43b;
+            box-shadow: 0 0 8px #ffd43b; animation: ll-pulse 1.6s ease-in-out infinite; }
+        @keyframes ll-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+        @media (prefers-reduced-motion: reduce) { #learning-label .ll-dot { animation: none; } }
+        body.learning-active #learning-label { display: inline-flex; }
     </style>
 </head>
 <body>
@@ -1723,6 +1755,11 @@
                     window.postMessage({ type: 'soc-sim', cmd: evt.cmd }, '*');
                     return;
                 }
+                if (evt.type === 'learning-event') {
+                    seen[evt.id] = true;
+                    window.postMessage({ type: 'soc-learning', active: evt.active, incidentId: evt.incidentId, title: evt.title }, '*');
+                    return;
+                }
                 if (evt.type !== 'scenario-event') return;
                 seen[evt.id] = true;
                 handlers.forEach(function (h) { try { h(evt); } catch (e) {} });
@@ -1748,6 +1785,65 @@
         })();
 
         /* --- Correlated traffic from scenario events (item 15) --- */
+
+        /* --- Learning Mode listener (item: learning mode) --- */
+        var __learning = { on: false, incidentId: null, title: null };
+        function __applyLearning() {
+            var label = document.getElementById('learning-label');
+            if (__learning.on && __learning.incidentId) {
+                document.body.classList.add('learning-active');
+                if (label) {
+                    label.querySelector('.ll-text').textContent =
+                        'Learning Mode \u2014 tracking: ' + (__learning.title || __learning.incidentId);
+                }
+                // mark matching artifacts
+                var nodes = document.querySelectorAll('[data-incident]');
+                Array.prototype.forEach.call(nodes, function (el) {
+                    if (el.getAttribute('data-incident') === __learning.incidentId) {
+                        el.classList.add('soc-highlight');
+                    } else {
+                        el.classList.remove('soc-highlight');
+                    }
+                });
+            } else {
+                document.body.classList.remove('learning-active');
+            }
+        }
+        function __ensureLearningLabel() {
+            if (document.getElementById('learning-label')) return;
+            var d = document.createElement('div');
+            d.id = 'learning-label';
+            d.innerHTML = '<span class="ll-dot" aria-hidden="true"></span><span class="ll-text">Learning Mode</span>';
+            document.body.appendChild(d);
+        }
+        window.addEventListener('message', function (ev) {
+            var m = ev.data;
+            if (!m || m.type !== 'soc-learning') return;
+            __learning.on = !!m.active;
+            __learning.incidentId = m.incidentId || null;
+            __learning.title = m.title || null;
+            __ensureLearningLabel();
+            (function(){})();
+            __applyLearning();
+        });
+        // also receive via BroadcastChannel directly (hosted multi-tab)
+        try {
+            var __lbc = new BroadcastChannel('soc-sim');
+            __lbc.onmessage = function (ev) {
+                var m = ev.data;
+                if (m && m.type === 'learning-event') {
+                    __learning.on = !!m.active;
+                    __learning.incidentId = m.incidentId || null;
+                    __learning.title = m.title || null;
+                    __ensureLearningLabel();
+                    (function(){})();
+                    __applyLearning();
+                }
+            };
+        } catch (e) {}
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', __ensureLearningLabel);
+        else __ensureLearningLabel();
+
         function scenarioAttackPoint(evt) {
             var container = document.getElementById('map-container');
             if (!container) return;
@@ -1756,6 +1852,7 @@
             var sev = (evt.severity === 'critical' || evt.severity === 'high') ? evt.severity : 'high';
             var point = document.createElement('div');
             point.className = 'attack-point ' + sev;
+            if (evt.incidentId) point.setAttribute('data-incident', evt.incidentId);
             point.style.left = ((source.x / 1000) * 100) + '%';
             point.style.top = ((source.y / 500) * 100) + '%';
             point.title = sev.toUpperCase() + ' - ' + (evt.title || 'Attack') + ' from ' + source.name + ' [' + (evt.incidentId || 'scenario') + ']';
@@ -1767,6 +1864,7 @@
             if (!list) return;
             var entry = document.createElement('div');
             entry.className = 'log-entry';
+            if (evt.incidentId) entry.setAttribute('data-incident', evt.incidentId);
             entry.innerHTML = '<span class="log-time">' + new Date().toLocaleTimeString() + '</span>' +
                 '<span class="log-action block">BLOCK</span>' +
                 '<span>' + (evt.sourceIp || 'unknown') + '</span>' +
