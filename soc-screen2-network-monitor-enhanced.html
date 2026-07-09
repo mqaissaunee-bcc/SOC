@@ -1118,6 +1118,13 @@
             box-shadow: 0 4px 18px rgba(0,0,0,0.4); font-family: inherit;
             max-width: 92vw;
         }
+        /* Keep the label legible in light mode: its background stays dark, so its
+           text must stay amber regardless of theme contrast rules. */
+        #learning-label, #learning-label .ll-text,
+        html[data-theme="light"] #learning-label,
+        html[data-theme="light"] #learning-label .ll-text {
+            color: #ffd43b !important;
+        }
         #learning-label .ll-dot { width: 9px; height: 9px; border-radius: 50%; background: #ffd43b;
             box-shadow: 0 0 8px #ffd43b; animation: ll-pulse 1.6s ease-in-out infinite; }
         @keyframes ll-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
@@ -1879,10 +1886,16 @@
         }
         SocBus.subscribe(function (evt) {
             [500, 4000, 9000].forEach(function (delay) {
-                setTimeout(function () { scenarioAttackPoint(evt); }, delay);
+                setTimeout(function () {
+                    if (SimTimers.isPaused && SimTimers.isPaused()) return;
+                    scenarioAttackPoint(evt);
+                }, delay);
             });
             [1500, 7000].forEach(function (delay) {
-                setTimeout(function () { scenarioFirewallLog(evt); }, delay);
+                setTimeout(function () {
+                    if (SimTimers.isPaused && SimTimers.isPaused()) return;
+                    scenarioFirewallLog(evt);
+                }, delay);
             });
         });
 
@@ -1925,7 +1938,8 @@
                     timers.push(t);
                     if (running) { t.id = setInterval(fn, ms); }
                     return t.id;
-                }
+                },
+                isPaused: function () { return parentPaused; }
             };
         })();
 
